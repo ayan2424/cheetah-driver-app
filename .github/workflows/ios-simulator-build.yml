@@ -29,6 +29,10 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
+      - name: Run Pod Install
+        working-directory: ios
+        run: pod install
+
       - name: Build iOS for Simulator
         # This builds a .app which doesn't require a paid Apple Developer Account
         run: flutter build ios --simulator
