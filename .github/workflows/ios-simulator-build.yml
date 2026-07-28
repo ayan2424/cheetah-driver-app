@@ -2,7 +2,7 @@ name: iOS Simulator Build for LambdaTest
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "master" ]
   workflow_dispatch:
 
 jobs:
