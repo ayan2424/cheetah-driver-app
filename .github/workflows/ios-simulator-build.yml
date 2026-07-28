@@ -27,21 +27,19 @@ jobs:
           cache: true
 
       - name: Install Dependencies
-        working-directory: ./cheetah_driver_app
         run: flutter pub get
 
       - name: Build iOS for Simulator
-        working-directory: ./cheetah_driver_app
         # This builds a .app which doesn't require a paid Apple Developer Account
         run: flutter build ios --simulator
 
       - name: Zip the .app for LambdaTest
-        working-directory: ./cheetah_driver_app/build/ios/iphonesimulator
+        working-directory: build/ios/iphonesimulator
         run: zip -r Runner.app.zip Runner.app
 
       - name: Upload iOS Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ios-simulator-build
-          path: cheetah_driver_app/build/ios/iphonesimulator/Runner.app.zip
+          path: build/ios/iphonesimulator/Runner.app.zip
           retention-days: 5
