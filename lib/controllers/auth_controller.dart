@@ -16,6 +16,7 @@ class AuthController extends GetxController {
   var branchName = ''.obs;
   var branchCity = ''.obs;
   var isDarkMode = true.obs;
+  var themePreference = 'system'.obs; // 'system', 'dark', 'light'
 
   @override
   void onInit() {
@@ -32,11 +33,31 @@ class AuthController extends GetxController {
     userAvatarUrl.value = prefs.getString('user_avatar') ?? '';
     branchName.value = prefs.getString('branch_name') ?? 'Main Hub';
     branchCity.value = prefs.getString('branch_city') ?? 'Headquarters';
-    isDarkMode.value = prefs.getBool('is_dark_mode') ?? true;
+    
+    themePreference.value = prefs.getString('theme_preference') ?? 'dark';
+    _applyThemePreference(themePreference.value);
 
     if (userToken.value.isNotEmpty) {
       fetchUserProfile();
       LocationService.startLiveLocationTracking(userToken.value);
+    }
+  }
+
+  Future<void> setThemePreference(String mode) async {
+    themePreference.value = mode;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('theme_preference', mode);
+    _applyThemePreference(mode);
+  }
+
+  void _applyThemePreference(String mode) {
+    if (mode == 'dark') {
+      isDarkMode.value = true;
+    } else if (mode == 'light') {
+      isDarkMode.value = false;
+    } else {
+      // System mode: default to dark for rider app
+      isDarkMode.value = true;
     }
   }
 

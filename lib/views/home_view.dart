@@ -640,42 +640,32 @@ class HomeView extends StatelessWidget {
           subtextColor: subtextColor,
           onTap: () => _openChangePasswordDialog(context, isDark),
         ),
-        _buildProfileTile(
-          icon: Icons.notifications_active_outlined,
-          title: 'Push & Delivery Alerts',
-          subtitle: 'Instant delivery assignment notifications active',
-          cardColor: cardColor,
-          borderColor: borderColor,
-          textColor: textColor,
-          subtextColor: subtextColor,
-          onTap: () {
-            Get.snackbar('Notifications', 'Push notifications are active for your rider account',
-                snackPosition: SnackPosition.BOTTOM);
-          },
-        ),
-        _buildProfileTile(
-          icon: isDark ? Icons.light_mode : Icons.dark_mode,
-          title: 'Theme Preference',
-          subtitle: isDark ? 'Dark Theme Active (Tap to switch)' : 'Light Theme Active (Tap to switch)',
-          cardColor: cardColor,
-          borderColor: borderColor,
-          textColor: textColor,
-          subtextColor: subtextColor,
-          onTap: () => authController.toggleTheme(),
-        ),
+        Obx(() {
+          final pref = authController.themePreference.value;
+          String prefLabel = 'Dark Mode Active';
+          IconData prefIcon = Icons.dark_mode;
+          if (pref == 'system') {
+            prefLabel = 'System Theme (Auto)';
+            prefIcon = Icons.brightness_auto;
+          } else if (pref == 'light') {
+            prefLabel = 'Light Mode Active';
+            prefIcon = Icons.light_mode;
+          }
+          return _buildProfileTile(
+            icon: prefIcon,
+            title: 'Theme Preference',
+            subtitle: prefLabel,
+            cardColor: cardColor,
+            borderColor: borderColor,
+            textColor: textColor,
+            subtextColor: subtextColor,
+            onTap: () => _openThemeSelectorModal(context, isDark),
+          );
+        }),
         _buildProfileTile(
           icon: Icons.speed_outlined,
           title: 'App Version',
           subtitle: 'v1.0.0 (Cheetah Express Systems)',
-          cardColor: cardColor,
-          borderColor: borderColor,
-          textColor: textColor,
-          subtextColor: subtextColor,
-        ),
-        _buildProfileTile(
-          icon: Icons.security_outlined,
-          title: 'Security Session',
-          subtitle: 'Secure Token Session',
           cardColor: cardColor,
           borderColor: borderColor,
           textColor: textColor,
@@ -1594,6 +1584,166 @@ class HomeView extends StatelessWidget {
     );
   }
 
+  void _openThemeSelectorModal(BuildContext context, bool isDark) {
+    final cardColor = isDark ? AppColors.cardBg : AppColorsLight.cardBg;
+    final borderColor = isDark ? AppColors.cardBorder : AppColorsLight.cardBorder;
+    final textColor = isDark ? Colors.white : AppColorsLight.textMain;
+    final subtextColor = isDark ? const Color(0xFFd4d4d8) : AppColorsLight.textMuted;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: cardColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return Obx(() {
+          final currentMode = authController.themePreference.value;
+          return Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: borderColor,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Theme Preference',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: textColor,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Choose your preferred visual appearance mode',
+                  style: TextStyle(fontSize: 12, color: subtextColor),
+                ),
+                const SizedBox(height: 20),
+                
+                _buildThemeOptionTile(
+                  title: 'System Theme (Auto)',
+                  subtitle: 'Matches device system light / dark settings',
+                  icon: Icons.brightness_auto,
+                  isSelected: currentMode == 'system',
+                  onTap: () {
+                    authController.setThemePreference('system');
+                    Navigator.pop(ctx);
+                  },
+                  textColor: textColor,
+                  subtextColor: subtextColor,
+                  borderColor: borderColor,
+                  isDark: isDark,
+                ),
+                const SizedBox(height: 10),
+
+                _buildThemeOptionTile(
+                  title: 'Dark Mode',
+                  subtitle: 'Sleek dark theme optimized for night duty',
+                  icon: Icons.dark_mode_outlined,
+                  isSelected: currentMode == 'dark',
+                  onTap: () {
+                    authController.setThemePreference('dark');
+                    Navigator.pop(ctx);
+                  },
+                  textColor: textColor,
+                  subtextColor: subtextColor,
+                  borderColor: borderColor,
+                  isDark: isDark,
+                ),
+                const SizedBox(height: 10),
+
+                _buildThemeOptionTile(
+                  title: 'Light Mode',
+                  subtitle: 'Clean high-contrast theme for daylight visibility',
+                  icon: Icons.light_mode_outlined,
+                  isSelected: currentMode == 'light',
+                  onTap: () {
+                    authController.setThemePreference('light');
+                    Navigator.pop(ctx);
+                  },
+                  textColor: textColor,
+                  subtextColor: subtextColor,
+                  borderColor: borderColor,
+                  isDark: isDark,
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
+          );
+        });
+      },
+    );
+  }
+
+  Widget _buildThemeOptionTile({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required bool isSelected,
+    required VoidCallback onTap,
+    required Color textColor,
+    required Color subtextColor,
+    required Color borderColor,
+    required bool isDark,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppColors.primary.withOpacity(0.12)
+              : (isDark ? const Color(0xFF1E293B) : Colors.grey.shade100),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? AppColors.primary : borderColor,
+            width: isSelected ? 2 : 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: isSelected ? AppColors.primary : subtextColor, size: 24),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: isSelected ? AppColors.primary : textColor,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: TextStyle(fontSize: 11, color: subtextColor),
+                  ),
+                ],
+              ),
+            ),
+            if (isSelected)
+              const Icon(Icons.check_circle, color: AppColors.primary, size: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _openChangePasswordDialog(BuildContext context, bool isDark) {
     final currentPassCtrl = TextEditingController();
     final newPassCtrl = TextEditingController();
@@ -1606,9 +1756,11 @@ class HomeView extends StatelessWidget {
 
     Get.dialog(
       Dialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
         backgroundColor: cardColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: Padding(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        child: Container(
+          width: MediaQuery.of(context).size.width,
           padding: const EdgeInsets.all(24.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -1616,97 +1768,125 @@ class HomeView extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.lock_reset_outlined, color: AppColors.primary, size: 24),
-                  const SizedBox(width: 10),
-                  Text(
-                    'Change Password',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: textColor,
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.lock_reset_rounded, color: AppColors.primary, size: 26),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Change Password',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: textColor,
+                          ),
+                        ),
+                        Text(
+                          'Update your rider account security password',
+                          style: TextStyle(fontSize: 11, color: subtextColor),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
               TextField(
                 controller: currentPassCtrl,
                 obscureText: true,
                 style: TextStyle(color: textColor, fontSize: 14),
                 decoration: InputDecoration(
                   labelText: 'Current Password',
+                  prefixIcon: const Icon(Icons.lock_outline, size: 20),
                   labelStyle: TextStyle(color: subtextColor),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(14),
                     borderSide: BorderSide(color: borderColor),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.primary),
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(color: AppColors.primary, width: 2),
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 14),
               TextField(
                 controller: newPassCtrl,
                 obscureText: true,
                 style: TextStyle(color: textColor, fontSize: 14),
                 decoration: InputDecoration(
                   labelText: 'New Password',
+                  prefixIcon: const Icon(Icons.key_outlined, size: 20),
                   labelStyle: TextStyle(color: subtextColor),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(14),
                     borderSide: BorderSide(color: borderColor),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.primary),
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(color: AppColors.primary, width: 2),
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 14),
               TextField(
                 controller: confirmPassCtrl,
                 obscureText: true,
                 style: TextStyle(color: textColor, fontSize: 14),
                 decoration: InputDecoration(
                   labelText: 'Confirm New Password',
+                  prefixIcon: const Icon(Icons.check_circle_outline, size: 20),
                   labelStyle: TextStyle(color: subtextColor),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(14),
                     borderSide: BorderSide(color: borderColor),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.primary),
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(color: AppColors.primary, width: 2),
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
                       onPressed: () => Get.back(),
-                      child: Text('Cancel', style: TextStyle(color: subtextColor)),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        side: BorderSide(color: borderColor),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      child: Text('Cancel', style: TextStyle(color: subtextColor, fontWeight: FontWeight.bold)),
                     ),
-                    const SizedBox(width: 8),
-                    ElevatedButton(
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
                       onPressed: () async {
                         if (currentPassCtrl.text.isEmpty || newPassCtrl.text.isEmpty) {
-                          Get.snackbar('Error', 'Please fill in all fields',
+                          Get.snackbar('Validation Error', 'Please fill in all password fields',
                               snackPosition: SnackPosition.BOTTOM);
                           return;
                         }
                         if (newPassCtrl.text != confirmPassCtrl.text) {
-                          Get.snackbar('Error', 'New passwords do not match',
+                          Get.snackbar('Validation Error', 'New passwords do not match',
                               snackPosition: SnackPosition.BOTTOM);
                           return;
                         }
                         if (newPassCtrl.text.length < 6) {
-                          Get.snackbar('Error', 'Password must be at least 6 characters',
+                          Get.snackbar('Validation Error', 'Password must be at least 6 characters',
                               snackPosition: SnackPosition.BOTTOM);
                           return;
                         }
@@ -1717,14 +1897,16 @@ class HomeView extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(14),
                         ),
+                        elevation: 2,
                       ),
-                      child: const Text('Update Password'),
+                      child: const Text('Update Password', style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ],
           ),
