@@ -77,6 +77,15 @@ class LocationService {
         longitude: position.longitude,
       );
 
+      if (res['success'] == false) {
+        final err = (res['error'] ?? '').toString().toLowerCase();
+        if (err.contains('invalid api token') || err.contains('session expired') || err.contains('token is required')) {
+          if (Get.isRegistered<AuthController>()) {
+            Get.find<AuthController>().handleSessionExpired();
+          }
+        }
+      }
+
       if (kDebugMode) {
         print("GPS Update sent: ${position.latitude}, ${position.longitude} -> $res");
       }
