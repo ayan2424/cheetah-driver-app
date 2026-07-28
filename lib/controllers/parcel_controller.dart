@@ -65,6 +65,11 @@ class ParcelController extends GetxController {
       stats.value = res['stats'];
       _applyFilterAndSearch();
     } else {
+      final err = (res['error'] ?? '').toString().toLowerCase();
+      if (err.contains('invalid api token') || err.contains('session expired') || err.contains('token is required')) {
+        authController.handleSessionExpired();
+        return;
+      }
       Get.snackbar('Error', res['error'] ?? 'Failed to load parcels',
           snackPosition: SnackPosition.BOTTOM);
     }

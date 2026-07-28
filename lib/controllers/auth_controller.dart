@@ -117,6 +117,24 @@ class AuthController extends GetxController {
     Get.offAllNamed(AppRoutes.LOGIN);
   }
 
+  Future<void> handleSessionExpired() async {
+    LocationService.stopLiveLocationTracking();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    userToken.value = '';
+    userName.value = '';
+    userAvatarUrl.value = '';
+    Get.offAllNamed(AppRoutes.LOGIN);
+    Get.snackbar(
+      'Session Expired ⚠️',
+      'Your account was logged in on another device. Please log in again.',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: const Color(0xFFDC2626),
+      colorText: const Color(0xFFFFFFFF),
+      duration: const Duration(seconds: 5),
+    );
+  }
+
   Future<bool> updateAvatar({File? avatarFile, String? presetAvatar}) async {
     if (userToken.value.isEmpty) return false;
     isLoading.value = true;
