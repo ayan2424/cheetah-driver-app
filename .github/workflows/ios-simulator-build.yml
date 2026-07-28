@@ -34,16 +34,25 @@ jobs:
         run: pod install
 
       - name: Build iOS for Simulator
-        # This builds a .app which doesn't require a paid Apple Developer Account
         run: flutter build ios --simulator
 
-      - name: Zip the .app for LambdaTest
+      - name: Build iOS .ipa for Real Devices & Testing
+        run: |
+          flutter build ios --release --no-codesign
+          mkdir -p build/ios/iphoneos/Payload
+          cp -r build/ios/iphoneos/Runner.app build/ios/iphoneos/Payload/
+          cd build/ios/iphoneos
+          zip -r CheetahDriver.ipa Payload
+
+      - name: Zip the .app for LambdaTest Simulators
         working-directory: build/ios/iphonesimulator
         run: zip -r Runner.app.zip Runner.app
 
-      - name: Upload iOS Build Artifact
+      - name: Upload iOS Build Artifacts (.ipa and .app.zip)
         uses: actions/upload-artifact@v4
         with:
-          name: ios-simulator-build
-          path: build/ios/iphonesimulator/Runner.app.zip
+          name: ios-build-files
+          path: |
+            build/ios/iphonesimulator/Runner.app.zip
+            build/ios/iphoneos/CheetahDriver.ipa
           retention-days: 5
