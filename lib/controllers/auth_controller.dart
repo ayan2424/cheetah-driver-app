@@ -129,8 +129,8 @@ class AuthController extends GetxController {
       'Session Expired ⚠️',
       'Your account was logged in on another device. Please log in again.',
       snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: const Color(0xFFDC2626),
-      colorText: const Color(0xFFFFFFFF),
+      backgroundColor: Colors.redAccent,
+      colorText: Colors.white,
       duration: const Duration(seconds: 5),
     );
   }

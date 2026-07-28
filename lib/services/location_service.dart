@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import '../controllers/auth_controller.dart';
 import 'api_service.dart';
 
 class LocationService {
