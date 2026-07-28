@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api_service.dart';
+import '../services/location_service.dart';
 import '../utils/constants.dart';
 
 class AuthController extends GetxController {
@@ -34,6 +35,7 @@ class AuthController extends GetxController {
 
     if (userToken.value.isNotEmpty) {
       fetchUserProfile();
+      LocationService.startLiveLocationTracking(userToken.value);
     }
   }
 
@@ -94,6 +96,7 @@ class AuthController extends GetxController {
       userEmail.value = userEmailVal;
 
       fetchUserProfile();
+      LocationService.startLiveLocationTracking(token);
 
       Get.offAllNamed(AppRoutes.HOME);
       Get.snackbar('Success', 'Welcome back, $name!',
@@ -105,6 +108,7 @@ class AuthController extends GetxController {
   }
 
   Future<void> logout() async {
+    LocationService.stopLiveLocationTracking();
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
     userToken.value = '';
