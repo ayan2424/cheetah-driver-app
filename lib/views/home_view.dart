@@ -1511,6 +1511,18 @@ class HomeView extends StatelessWidget {
     );
   }
 
+  void _launchExternalUrl(String urlString) async {
+    try {
+      final Uri url = Uri.parse(urlString);
+      if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+        await launchUrl(url);
+      }
+    } catch (e) {
+      Get.snackbar('Link', 'Opening $urlString...',
+          snackPosition: SnackPosition.BOTTOM);
+    }
+  }
+
   void _makePhoneCall(String phone) async {
     final cleanPhone = phone.replaceAll(RegExp(r'[^\d+]'), '');
     if (cleanPhone.isEmpty) return;
