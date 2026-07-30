@@ -503,186 +503,336 @@ class HomeView extends StatelessWidget {
     );
   }
 
-  // TAB 3: Rider Profile & System Info
+  // TAB 3: Rider Profile & System Info (Clean 3-Card Architecture)
   Widget _buildProfileTab(BuildContext context, bool isDark, Color cardColor,
       Color borderColor, Color textColor, Color subtextColor) {
     return ListView(
       padding: const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 24),
       children: [
-        Center(
+        // CARD 1: ACCOUNT & SECURITY CARD
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: borderColor),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(isDark ? 0.2 : 0.04),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Obx(() {
-                final avatar = authController.userAvatarUrl.value;
-                return GestureDetector(
-                  onTap: () => _openAvatarPicker(context, isDark),
-                  child: Stack(
-                    children: [
-                      Container(
-                        width: 86,
-                        height: 86,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: const LinearGradient(
-                            colors: [AppColors.primary, AppColors.primaryLight],
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                                color: AppColors.primary.withOpacity(0.35),
-                                blurRadius: 20),
+              Row(
+                children: [
+                  const Icon(Icons.shield_outlined, color: AppColors.primary, size: 22),
+                  const SizedBox(width: 8),
+                  Text('Account & Security', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Center(
+                child: Column(
+                  children: [
+                    Obx(() {
+                      final avatar = authController.userAvatarUrl.value;
+                      return GestureDetector(
+                        onTap: () => _openAvatarPicker(context, isDark),
+                        child: Stack(
+                          children: [
+                            Container(
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: const LinearGradient(
+                                  colors: [AppColors.primary, AppColors.primaryLight],
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: AppColors.primary.withOpacity(0.35),
+                                      blurRadius: 15),
+                                ],
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(40),
+                                child: avatar.isNotEmpty
+                                    ? Image.network(
+                                        avatar,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (ctx, err, stack) => Center(
+                                          child: Text(
+                                            authController.userName.value.isNotEmpty
+                                                ? authController.userName.value[0].toUpperCase()
+                                                : 'R',
+                                            style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
+                                          ),
+                                        ),
+                                      )
+                                    : Center(
+                                        child: Text(
+                                          authController.userName.value.isNotEmpty
+                                              ? authController.userName.value[0].toUpperCase()
+                                              : 'R',
+                                          style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
+                                        ),
+                                      ),
+                              ),
+                            ),
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: Container(
+                                padding: const EdgeInsets.all(5),
+                                decoration: const BoxDecoration(
+                                  color: AppColors.primary,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.camera_alt, color: Colors.white, size: 12),
+                              ),
+                            ),
                           ],
                         ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(43),
-                          child: avatar.isNotEmpty
-                              ? Image.network(
-                                  avatar,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (ctx, err, stack) => Center(
-                                    child: Text(
-                                      authController.userName.value.isNotEmpty
-                                          ? authController.userName.value[0].toUpperCase()
-                                          : 'R',
-                                      style: const TextStyle(
-                                          fontSize: 34,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white),
-                                    ),
-                                  ),
-                                )
-                              : Center(
-                                  child: Text(
-                                    authController.userName.value.isNotEmpty
-                                        ? authController.userName.value[0].toUpperCase()
-                                        : 'R',
-                                    style: const TextStyle(
-                                        fontSize: 34,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white),
-                                  ),
-                                ),
-                        ),
+                      );
+                    }),
+                    const SizedBox(height: 12),
+                    Obx(() => Text(
+                          authController.userName.value,
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor),
+                        )),
+                    const SizedBox(height: 3),
+                    Obx(() => Text(
+                          authController.userEmail.value,
+                          style: TextStyle(fontSize: 13, color: subtextColor),
+                        )),
+                    const SizedBox(height: 10),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.accentGreen.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.accentGreen.withOpacity(0.3)),
                       ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: const BoxDecoration(
-                            color: AppColors.primary,
-                            shape: BoxShape.circle,
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.fiber_manual_record, size: 8, color: AppColors.accentGreen),
+                          SizedBox(width: 6),
+                          Text(
+                            'Rider Account Active',
+                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.accentGreen),
                           ),
-                          child: const Icon(Icons.camera_alt, color: Colors.white, size: 14),
-                        ),
+                        ],
                       ),
-                    ],
-                  ),
-                );
-              }),
-              const SizedBox(height: 14),
-              Obx(() => Text(
-                    authController.userName.value,
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: textColor),
-                  )),
-              const SizedBox(height: 4),
-              Obx(() => Text(
-                    authController.userEmail.value,
-                    style: TextStyle(
-                        fontSize: 13, color: subtextColor),
-                  )),
-              const SizedBox(height: 10),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                decoration: BoxDecoration(
-                  color: AppColors.accentGreen.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.accentGreen.withOpacity(0.3)),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.fiber_manual_record,
-                        size: 8, color: AppColors.accentGreen),
-                    SizedBox(width: 6),
-                    Text(
-                      'Online Rider Portal Active',
-                      style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.accentGreen),
                     ),
                   ],
                 ),
               ),
+              const SizedBox(height: 16),
+              const Divider(height: 1),
+              const SizedBox(height: 10),
+              Obx(() => _buildProfileTile(
+                icon: Icons.storefront_outlined,
+                title: 'Assigned Branch',
+                subtitle: '${authController.branchName.value} (${authController.branchCity.value})',
+                cardColor: Colors.transparent,
+                borderColor: Colors.transparent,
+                textColor: textColor,
+                subtextColor: subtextColor,
+              )),
+              _buildProfileTile(
+                icon: Icons.lock_reset_outlined,
+                title: 'Change Password',
+                subtitle: 'Update your login password',
+                cardColor: Colors.transparent,
+                borderColor: Colors.transparent,
+                textColor: textColor,
+                subtextColor: subtextColor,
+                onTap: () => _openChangePasswordDialog(context, isDark),
+              ),
             ],
           ),
         ),
-        const SizedBox(height: 24),
-        Obx(() => _buildProfileTile(
-          icon: Icons.storefront_outlined,
-          title: 'Assigned Branch',
-          subtitle: '${authController.branchName.value} (${authController.branchCity.value})',
-          cardColor: cardColor,
-          borderColor: borderColor,
-          textColor: textColor,
-          subtextColor: subtextColor,
-        )),
-        _buildProfileTile(
-          icon: Icons.lock_reset_outlined,
-          title: 'Change Account Password',
-          subtitle: 'Update your login password securely',
-          cardColor: cardColor,
-          borderColor: borderColor,
-          textColor: textColor,
-          subtextColor: subtextColor,
-          onTap: () => _openChangePasswordDialog(context, isDark),
+
+        const SizedBox(height: 20),
+
+        // CARD 2: APP SETTINGS CARD
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: borderColor),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(isDark ? 0.2 : 0.04),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.settings_suggest_outlined, color: AppColors.primary, size: 22),
+                  const SizedBox(width: 8),
+                  Text('App Settings & Preferences', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
+                ],
+              ),
+              const SizedBox(height: 14),
+              Obx(() {
+                final lang = authController.selectedLanguage.value;
+                final Map<String, String> langNames = {
+                  'en': 'English (Global Default 🌐)',
+                  'sw': 'Kiswahili (Tanzania 🇹🇿)',
+                  'ur': 'اردو (Pakistan 🇵🇰)',
+                  'ar': 'العربية (Saudi Arabia 🇸🇦)',
+                  'tr': 'Türkçe (Turkey 🇹🇷)',
+                  'hi': 'हिन्दी (India 🇮🇳)',
+                  'fr': 'Français (France 🇫🇷)',
+                  'zh': '中文 (China 🇨🇳)',
+                  'es': 'Español (Spain 🇪🇸)',
+                  'es-co': 'Español (Colombia 🇨🇴)',
+                  'es-ar': 'Español (Argentina 🇦🇷)',
+                  'es-do': 'Español (Dominicana 🇩🇴)',
+                  'pt-pt': 'Português (Portugal 🇵🇹)',
+                  'pt-br': 'Português (Brasil 🇧🇷)',
+                  'ru': 'Русский (Russia 🇷🇺)',
+                  'zh-tw': '繁體中文 (Taiwan 🇹🇼)',
+                  'de': 'Deutsch (Germany 🇩🇪)',
+                  'id': 'Indonesian (Bahasa 🇮🇩)',
+                  'nl-nl': 'Nederlands (Dutch 🇳🇱)',
+                  'ko-kr': '한국어 (Korea 🇰🇷)',
+                  'vi-vn': 'Tiếng Việt (Vietnam 🇻🇳)',
+                  'ja-jp': '日本語 (Japan 🇯🇵)',
+                  'ro-ro': 'Română (Romania 🇷🇴)',
+                };
+                final langLabel = langNames[lang] ?? 'English (Global Default 🌐)';
+
+                return _buildProfileTile(
+                  icon: Icons.language_outlined,
+                  title: 'App Language',
+                  subtitle: langLabel,
+                  cardColor: Colors.transparent,
+                  borderColor: Colors.transparent,
+                  textColor: textColor,
+                  subtextColor: subtextColor,
+                  onTap: () => _openLanguageSelectorModal(context, isDark),
+                );
+              }),
+              Obx(() {
+                final pref = authController.themePreference.value;
+                String prefLabel = 'Dark Mode Active';
+                IconData prefIcon = Icons.dark_mode_outlined;
+                if (pref == 'system') {
+                  prefLabel = 'System Theme (Auto)';
+                  prefIcon = Icons.brightness_auto_outlined;
+                } else if (pref == 'light') {
+                  prefLabel = 'Light Mode Active';
+                  prefIcon = Icons.light_mode_outlined;
+                }
+                return _buildProfileTile(
+                  icon: prefIcon,
+                  title: 'Theme Preference',
+                  subtitle: prefLabel,
+                  cardColor: Colors.transparent,
+                  borderColor: Colors.transparent,
+                  textColor: textColor,
+                  subtextColor: subtextColor,
+                  onTap: () => _openThemeSelectorModal(context, isDark),
+                );
+              }),
+            ],
+          ),
         ),
-        Obx(() {
-          final pref = authController.themePreference.value;
-          String prefLabel = 'Dark Mode Active';
-          IconData prefIcon = Icons.dark_mode;
-          if (pref == 'system') {
-            prefLabel = 'System Theme (Auto)';
-            prefIcon = Icons.brightness_auto;
-          } else if (pref == 'light') {
-            prefLabel = 'Light Mode Active';
-            prefIcon = Icons.light_mode;
-          }
-          return _buildProfileTile(
-            icon: prefIcon,
-            title: 'Theme Preference',
-            subtitle: prefLabel,
-            cardColor: cardColor,
-            borderColor: borderColor,
-            textColor: textColor,
-            subtextColor: subtextColor,
-            onTap: () => _openThemeSelectorModal(context, isDark),
-          );
-        }),
-        _buildProfileTile(
-          icon: Icons.speed_outlined,
-          title: 'App Version',
-          subtitle: 'v1.0.0 (Cheetah Express Systems)',
-          cardColor: cardColor,
-          borderColor: borderColor,
-          textColor: textColor,
-          subtextColor: subtextColor,
+
+        const SizedBox(height: 20),
+
+        // CARD 3: ABOUT & POLICIES CARD
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: borderColor),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(isDark ? 0.2 : 0.04),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.info_outline_rounded, color: AppColors.primary, size: 22),
+                  const SizedBox(width: 8),
+                  Text('About & System Policies', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
+                ],
+              ),
+              const SizedBox(height: 14),
+              _buildProfileTile(
+                icon: Icons.speed_outlined,
+                title: 'App Version',
+                subtitle: 'v1.0.0 (Cheetah Express Systems)',
+                cardColor: Colors.transparent,
+                borderColor: Colors.transparent,
+                textColor: textColor,
+                subtextColor: subtextColor,
+              ),
+              _buildProfileTile(
+                icon: Icons.gavel_outlined,
+                title: 'Terms of Service',
+                subtitle: 'Read driver terms & service policies',
+                cardColor: Colors.transparent,
+                borderColor: Colors.transparent,
+                textColor: textColor,
+                subtextColor: subtextColor,
+                onTap: () => _launchExternalUrl('https://cheetah.ayan24.me/terms-and-conditions'),
+              ),
+              _buildProfileTile(
+                icon: Icons.privacy_tip_outlined,
+                title: 'Privacy Policy',
+                subtitle: 'Data usage & privacy standards',
+                cardColor: Colors.transparent,
+                borderColor: Colors.transparent,
+                textColor: textColor,
+                subtextColor: subtextColor,
+                onTap: () => _launchExternalUrl('https://cheetah.ayan24.me/privacy-policy'),
+              ),
+              _buildProfileTile(
+                icon: Icons.delete_sweep_outlined,
+                title: 'Data Deletion Request',
+                subtitle: 'Account & data deletion options',
+                cardColor: Colors.transparent,
+                borderColor: Colors.transparent,
+                textColor: textColor,
+                subtextColor: subtextColor,
+                onTap: () => _launchExternalUrl('https://cheetah.ayan24.me/data-deletion'),
+              ),
+            ],
+          ),
         ),
+
         const SizedBox(height: 24),
         ElevatedButton.icon(
           onPressed: () => _confirmLogout(context, isDark),
           icon: const Icon(Icons.logout, color: Colors.white),
-          label: const Text('Sign Out of Device',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+          label: const Text('Sign Out of Device', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.redAccent,
             foregroundColor: Colors.white,
             minimumSize: const Size(double.infinity, 50),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
         ),
       ],
@@ -1577,6 +1727,102 @@ class HomeView extends StatelessWidget {
                 },
               ),
               const SizedBox(height: 10),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _openLanguageSelectorModal(BuildContext context, bool isDark) {
+    final cardColor = isDark ? AppColors.cardBg : AppColorsLight.cardBg;
+    final borderColor = isDark ? AppColors.cardBorder : AppColorsLight.cardBorder;
+    final textColor = isDark ? Colors.white : AppColorsLight.textMain;
+    final subtextColor = isDark ? const Color(0xFFd4d4d8) : AppColorsLight.textMuted;
+
+    final List<Map<String, String>> languages = [
+      {'code': 'en', 'name': 'English', 'region': 'Global Default 🌐'},
+      {'code': 'sw', 'name': 'Kiswahili', 'region': 'Tanzania 🇹🇿'},
+      {'code': 'ur', 'name': 'اردو', 'region': 'Pakistan 🇵🇰'},
+      {'code': 'ar', 'name': 'العربية', 'region': 'Saudi Arabia 🇸🇦'},
+      {'code': 'tr', 'name': 'Türkçe', 'region': 'Turkey 🇹🇷'},
+      {'code': 'hi', 'name': 'हिन्दी', 'region': 'India 🇮🇳'},
+      {'code': 'fr', 'name': 'Français', 'region': 'France 🇫🇷'},
+      {'code': 'zh', 'name': '中文 (簡)', 'region': 'China 🇨🇳'},
+      {'code': 'es', 'name': 'Español', 'region': 'Spain 🇪🇸'},
+      {'code': 'es-co', 'name': 'Español', 'region': 'Colombia 🇨🇴'},
+      {'code': 'es-ar', 'name': 'Español', 'region': 'Argentina 🇦🇷'},
+      {'code': 'es-do', 'name': 'Español', 'region': 'Dominicana 🇩🇴'},
+      {'code': 'pt-pt', 'name': 'Português', 'region': 'Portugal 🇵🇹'},
+      {'code': 'pt-br', 'name': 'Português', 'region': 'Brasil 🇧🇷'},
+      {'code': 'ru', 'name': 'Русский', 'region': 'Russia 🇷🇺'},
+      {'code': 'zh-tw', 'name': '繁體中文', 'region': 'Taiwan 🇹🇼'},
+      {'code': 'de', 'name': 'Deutsch', 'region': 'Germany 🇩🇪'},
+      {'code': 'id', 'name': 'Indonesian', 'region': 'Bahasa 🇮🇩'},
+      {'code': 'nl-nl', 'name': 'Nederlands', 'region': 'Dutch 🇳🇱'},
+      {'code': 'ko-kr', 'name': '한국어', 'region': 'Korea 🇰🇷'},
+      {'code': 'vi-vn', 'name': 'Tiếng Việt', 'region': 'Vietnam 🇻🇳'},
+      {'code': 'ja-jp', 'name': '日本語', 'region': 'Japan 🇯🇵'},
+      {'code': 'ro-ro', 'name': 'Română', 'region': 'Romania 🇷🇴'},
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: cardColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(color: borderColor, borderRadius: BorderRadius.circular(2)),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Select App Language',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Choose your preferred language for the Rider Portal',
+                style: TextStyle(fontSize: 12, color: subtextColor),
+              ),
+              const SizedBox(height: 16),
+              Flexible(
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: languages.length,
+                  separatorBuilder: (c, i) => const Divider(height: 1),
+                  itemBuilder: (c, idx) {
+                    final item = languages[idx];
+                    return Obx(() {
+                      final isSelected = authController.selectedLanguage.value == item['code'];
+                      return ListTile(
+                        onTap: () {
+                          authController.setAppLanguage(item['code']!);
+                          Navigator.pop(ctx);
+                          Get.snackbar(
+                            'Language Updated',
+                            'App language set to ${item['name']}',
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: AppColors.primary,
+                            colorText: Colors.white,
+                          );
+                        },
+                        title: Text(item['name']!, style: TextStyle(fontWeight: isSelected ? FontWeight.bold : FontWeight.normal, color: textColor)),
+                        subtitle: Text(item['region']!, style: TextStyle(fontSize: 11, color: subtextColor)),
+                        trailing: isSelected ? const Icon(Icons.check_circle, color: AppColors.primary) : null,
+                      );
+                    });
+                  },
+                ),
+              ),
             ],
           ),
         );

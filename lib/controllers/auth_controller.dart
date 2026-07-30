@@ -17,6 +17,7 @@ class AuthController extends GetxController with WidgetsBindingObserver {
   var branchCity = ''.obs;
   var isDarkMode = true.obs;
   var themePreference = 'system'.obs; // 'system', 'dark', 'light'
+  var selectedLanguage = 'en'.obs; // 'en', 'sw', 'ur', 'ar', 'fr', 'es', 'de', 'tr', 'zh'
 
   @override
   void onInit() {
@@ -115,6 +116,12 @@ class AuthController extends GetxController with WidgetsBindingObserver {
       await prefs.setString('branch_name', branchName.value);
       await prefs.setString('branch_city', branchCity.value);
     }
+  }
+
+  Future<void> setAppLanguage(String langCode) async {
+    selectedLanguage.value = langCode;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('selected_language', langCode);
   }
 
   Future<void> toggleTheme() async {
