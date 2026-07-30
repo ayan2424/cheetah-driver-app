@@ -15,7 +15,7 @@ class DeliveriesTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final isDark = authController.isDarkMode.value;
+      final isDark = authController.isDark(context);
       final cardColor = isDark ? AppColors.cardBg : AppColorsLight.cardBg;
       final borderColor = isDark ? AppColors.cardBorder : AppColorsLight.cardBorder;
       final textColor = isDark ? Colors.white : AppColorsLight.textMain;

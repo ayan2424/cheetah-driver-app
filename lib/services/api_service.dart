@@ -27,6 +27,26 @@ class ApiService {
     }
   }
 
+  // Request Password Reset Link via Email
+  static Future<Map<String, dynamic>> forgotPassword(String email) async {
+    try {
+      final response = await http.post(
+        Uri.parse('${AppConstants.apiUrl}forgot_password.php'),
+        body: {'email': email},
+      );
+      if (response.body.trim().startsWith('<')) {
+        return {'success': false, 'message': 'Server error. Please check server URL.'};
+      }
+      final data = json.decode(response.body);
+      return {
+        'success': data['status'] == 'success',
+        'message': data['message'] ?? 'Check your email for password reset instructions.'
+      };
+    } catch (e) {
+      return {'success': false, 'message': 'Connection error: $e'};
+    }
+  }
+
   // Fetch Driver Full Profile Details
   static Future<Map<String, dynamic>> fetchProfile(String token) async {
     try {

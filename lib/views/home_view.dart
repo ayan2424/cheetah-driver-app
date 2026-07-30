@@ -21,7 +21,7 @@ class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final isDark = authController.isDarkMode.value;
+      final isDark = authController.isDark(context);
       final bgColor = isDark ? AppColors.background : AppColorsLight.background;
       final cardColor = isDark ? AppColors.cardBg : AppColorsLight.cardBg;
       final borderColor = isDark ? AppColors.cardBorder : AppColorsLight.cardBorder;

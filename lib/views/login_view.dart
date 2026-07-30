@@ -13,7 +13,7 @@ class LoginView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final isDark = authController.isDarkMode.value;
+      final isDark = authController.isDark(context);
       final bgColor = isDark ? AppColors.background : AppColorsLight.background;
       final cardColor = isDark ? AppColors.cardBg : AppColorsLight.cardBg;
       final borderColor = isDark ? AppColors.cardBorder : AppColorsLight.cardBorder;
@@ -162,7 +162,104 @@ class LoginView extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 10),
+
+                  // Forgot Password Action Link
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () {
+                        final resetEmailController = TextEditingController(text: emailController.text);
+                        Get.dialog(
+                          Dialog(
+                            backgroundColor: cardColor,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(24.0),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primary.withOpacity(0.12),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(Icons.mark_email_read_outlined, size: 36, color: AppColors.primary),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'Reset Your Password',
+                                    style: TextStyle(color: textColor, fontSize: 18, fontWeight: FontWeight.bold),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Enter your email address to receive an official password reset link.',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(color: subtextColor, fontSize: 13),
+                                  ),
+                                  const SizedBox(height: 20),
+                                  TextField(
+                                    controller: resetEmailController,
+                                    keyboardType: TextInputType.emailAddress,
+                                    style: TextStyle(color: textColor, fontSize: 14),
+                                    decoration: InputDecoration(
+                                      hintText: 'Enter registered email...',
+                                      hintStyle: TextStyle(color: subtextColor),
+                                      prefixIcon: const Icon(Icons.email_outlined, color: AppColors.primary),
+                                      filled: true,
+                                      fillColor: bgColor,
+                                      contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                        borderSide: BorderSide(color: borderColor),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 24),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: TextButton(
+                                          onPressed: () => Get.back(),
+                                          child: Text('Cancel', style: TextStyle(color: subtextColor)),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            final emailToReset = resetEmailController.text.trim();
+                                            Get.back();
+                                            authController.requestPasswordReset(emailToReset);
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: AppColors.primary,
+                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                            padding: const EdgeInsets.symmetric(vertical: 12),
+                                          ),
+                                          child: const Text('Send Link', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        'Forgot Password?',
+                        style: TextStyle(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
 
                   // Premium Gradient Submit Button
                   Obx(() => Container(

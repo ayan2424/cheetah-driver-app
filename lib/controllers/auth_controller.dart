@@ -6,7 +6,7 @@ import '../services/api_service.dart';
 import '../services/location_service.dart';
 import '../utils/constants.dart';
 
-class AuthController extends GetxController {
+class AuthController extends GetxController with WidgetsBindingObserver {
   var isLoading = false.obs;
   var userToken = ''.obs;
   var userName = ''.obs;
@@ -21,7 +21,30 @@ class AuthController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    WidgetsBinding.instance.addObserver(this);
     loadUserSession();
+  }
+
+  @override
+  void onClose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.onClose();
+  }
+
+  @override
+  void didChangePlatformBrightness() {
+    super.didChangePlatformBrightness();
+    if (themePreference.value == 'system') {
+      _applyThemePreference('system');
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed && themePreference.value == 'system') {
+      _applyThemePreference('system');
+    }
   }
 
   Future<void> loadUserSession() async {
@@ -34,7 +57,7 @@ class AuthController extends GetxController {
     branchName.value = prefs.getString('branch_name') ?? 'Main Hub';
     branchCity.value = prefs.getString('branch_city') ?? 'Headquarters';
     
-    themePreference.value = prefs.getString('theme_preference') ?? 'dark';
+    themePreference.value = prefs.getString('theme_preference') ?? 'system';
     _applyThemePreference(themePreference.value);
 
     if (userToken.value.isNotEmpty) {
@@ -50,14 +73,22 @@ class AuthController extends GetxController {
     _applyThemePreference(mode);
   }
 
+  bool isDark(BuildContext context) {
+    final pref = themePreference.value;
+    if (pref == 'dark') return true;
+    if (pref == 'light') return false;
+    return MediaQuery.of(context).platformBrightness == Brightness.dark;
+  }
+
   void _applyThemePreference(String mode) {
     if (mode == 'dark') {
       isDarkMode.value = true;
     } else if (mode == 'light') {
       isDarkMode.value = false;
     } else {
-      // System mode: default to dark for rider app
-      isDarkMode.value = true;
+      // System mode: Query actual mobile device platform brightness!
+      final brightness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
+      isDarkMode.value = (brightness == Brightness.dark);
     }
   }
 
@@ -126,6 +157,33 @@ class AuthController extends GetxController {
     } else {
       Get.snackbar('Login Failed', res['error'] ?? 'Invalid credentials',
           snackPosition: SnackPosition.BOTTOM);
+    }
+  }
+
+  Future<void> requestPasswordReset(String email) async {
+    if (email.isEmpty || !email.contains('@')) {
+      Get.snackbar('Error', 'Please enter a valid email address',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.redAccent,
+          colorText: Colors.white);
+      return;
+    }
+
+    isLoading.value = true;
+    final res = await ApiService.forgotPassword(email);
+    isLoading.value = false;
+
+    if (res['success'] == true) {
+      Get.snackbar('Email Sent', res['message'],
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 4));
+    } else {
+      Get.snackbar('Error', res['message'],
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.redAccent,
+          colorText: Colors.white);
     }
   }
 
