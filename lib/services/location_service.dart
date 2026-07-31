@@ -25,12 +25,20 @@ class LocationService {
     _serviceStatusSubscription = Geolocator.getServiceStatusStream().listen((ServiceStatus status) {
       if (status == ServiceStatus.disabled) {
         if (kDebugMode) print("OS Event: GPS Hardware Turned OFF!");
+        if (Get.isRegistered<AuthController>()) {
+          final token = Get.find<AuthController>().userToken.value;
+          if (token.isNotEmpty) _sendGpsOffStatus(token);
+        }
         _forceEnableGpsHardware();
       } else if (status == ServiceStatus.enabled) {
         if (kDebugMode) print("OS Event: GPS Hardware Turned ON!");
         if (_isGpsDialogShowing && Get.isDialogOpen == true) {
           Get.back();
           _isGpsDialogShowing = false;
+        }
+        if (Get.isRegistered<AuthController>()) {
+          final token = Get.find<AuthController>().userToken.value;
+          if (token.isNotEmpty) _sendCurrentLocation(token);
         }
       }
     });
@@ -113,12 +121,27 @@ class LocationService {
     _isPermissionDialogShowing = false;
   }
 
+  /// Sends explicit GPS OFF status to server so web portal updates in real time
+  static Future<void> _sendGpsOffStatus(String apiToken) async {
+    if (apiToken.isEmpty) return;
+    try {
+      await ApiService.updateLocation(
+        token: apiToken,
+        gpsEnabled: 0,
+      );
+      if (kDebugMode) print("Sent GPS OFF status ping to server.");
+    } catch (e) {
+      if (kDebugMode) print("Error sending GPS OFF status: $e");
+    }
+  }
+
   static Future<void> _sendCurrentLocation(String apiToken) async {
     try {
       // 1. Check if device Location/GPS hardware toggle is turned ON
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         if (kDebugMode) print("GPS Location services disabled on device!");
+        _sendGpsOffStatus(apiToken);
         await _forceEnableGpsHardware();
         return;
       } else {
@@ -133,12 +156,14 @@ class LocationService {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
+          _sendGpsOffStatus(apiToken);
           await _forceGrantLocationPermission(isPermanent: false);
           return;
         }
       }
 
       if (permission == LocationPermission.deniedForever) {
+        _sendGpsOffStatus(apiToken);
         await _forceGrantLocationPermission(isPermanent: true);
         return;
       }
@@ -188,9 +213,6 @@ class LocationService {
     if (_isGpsDialogShowing) return;
     _isGpsDialogShowing = true;
 
-    // Automatically trigger system location settings screen
-    await Geolocator.openLocationSettings();
-
     Get.dialog(
       WillPopScope(
         onWillPop: () async => false, // Prevent dialog back button dismissal
@@ -230,7 +252,7 @@ class LocationService {
                 icon: const Icon(Icons.gps_fixed, color: Colors.white),
                 label: const FittedBox(
                   fit: BoxFit.scaleDown,
-                  child: Text('TURN ON GPS LOCATION NOW', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                  child: Text('TURN ON GPS'.localize(lang), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFF4D00),
@@ -246,18 +268,17 @@ class LocationService {
       ),
       barrierDismissible: false,
     );
+
+    // Automatically trigger system location settings screen after dialog renders
+    Future.delayed(const Duration(milliseconds: 300), () {
+      Geolocator.openLocationSettings();
+    });
   }
 
   /// Displays an un-dismissible, persistent modal forcing location permission grant
   static Future<void> _forceGrantLocationPermission({required bool isPermanent}) async {
     if (_isPermissionDialogShowing) return;
     _isPermissionDialogShowing = true;
-
-    if (isPermanent) {
-      await Geolocator.openAppSettings();
-    } else {
-      await Geolocator.requestPermission();
-    }
 
     Get.dialog(
       WillPopScope(
@@ -322,5 +343,13 @@ class LocationService {
       ),
       barrierDismissible: false,
     );
+
+    Future.delayed(const Duration(milliseconds: 300), () async {
+      if (isPermanent) {
+        await Geolocator.openAppSettings();
+      } else {
+        await Geolocator.requestPermission();
+      }
+    });
   }
 }

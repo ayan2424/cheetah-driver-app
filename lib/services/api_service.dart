@@ -181,20 +181,24 @@ class ApiService {
     }
   }
 
-  // Update Live GPS Location
+  // Update Live GPS Location & Online Status
   static Future<Map<String, dynamic>> updateLocation({
     required String token,
-    required double latitude,
-    required double longitude,
+    double? latitude,
+    double? longitude,
+    int gpsEnabled = 1,
   }) async {
     try {
+      final Map<String, String> body = {
+        'api_token': token,
+        'gps_enabled': gpsEnabled.toString(),
+      };
+      if (latitude != null) body['latitude'] = latitude.toString();
+      if (longitude != null) body['longitude'] = longitude.toString();
+
       final response = await http.post(
         Uri.parse('${AppConstants.apiUrl}update_location.php'),
-        body: {
-          'api_token': token,
-          'latitude': latitude.toString(),
-          'longitude': longitude.toString(),
-        },
+        body: body,
       );
       return json.decode(response.body);
     } catch (e) {

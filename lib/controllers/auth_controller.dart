@@ -18,13 +18,19 @@ class AuthController extends GetxController with WidgetsBindingObserver {
   var isDarkMode = true.obs;
   var themePreference = 'system'.obs; // 'system', 'dark', 'light'
   var selectedLanguage = 'en'.obs; // 'en', 'sw', 'ur', 'ar', 'fr', 'es', 'de', 'tr', 'zh'
+  RxString get appLanguage => selectedLanguage;
 
   @override
   void onInit() {
     super.onInit();
     WidgetsBinding.instance.addObserver(this);
-    LocationService.initGlobalLocationGuard();
     loadUserSession();
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+    LocationService.initGlobalLocationGuard();
   }
 
   @override

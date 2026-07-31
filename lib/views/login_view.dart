@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/auth_controller.dart';
 import '../utils/constants.dart';
+import '../utils/app_translations.dart';
 
 class LoginView extends StatelessWidget {
   final AuthController authController = Get.put(AuthController());
@@ -20,6 +21,7 @@ class LoginView extends StatelessWidget {
       final textColor = isDark ? Colors.white : AppColorsLight.textMain;
       final subtextColor = isDark ? const Color(0xFFd4d4d8) : AppColorsLight.textMuted;
       final logoAsset = isDark ? 'assets/images/whiteLogo.png' : 'assets/images/logo.png';
+      final lang = authController.appLanguage.value;
 
       return Scaffold(
         backgroundColor: bgColor,
@@ -77,7 +79,7 @@ class LoginView extends StatelessWidget {
 
                   // High-Contrast Dynamic Title & Subtitle
                   Text(
-                    'Cheetah Driver Portal',
+                    'Cheetah Driver Portal'.localize(lang),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 26,
@@ -88,7 +90,7 @@ class LoginView extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Official Rider & Delivery Agent App',
+                    'Official Rider & Delivery Agent App'.localize(lang),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 14,
@@ -100,7 +102,7 @@ class LoginView extends StatelessWidget {
 
                   // Email Input Box
                   Text(
-                    'Email Address',
+                    'Email Address'.localize(lang),
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
@@ -113,7 +115,7 @@ class LoginView extends StatelessWidget {
                     keyboardType: TextInputType.emailAddress,
                     style: TextStyle(color: textColor, fontSize: 15),
                     decoration: InputDecoration(
-                      hintText: 'e.g. rider@cheetah.com',
+                      hintText: 'e.g. rider@cheetah.com'.localize(lang),
                       hintStyle: TextStyle(color: subtextColor),
                       prefixIcon: const Icon(Icons.email_outlined, color: AppColors.primary),
                       filled: true,
@@ -133,7 +135,7 @@ class LoginView extends StatelessWidget {
 
                   // Password Input Box
                   Text(
-                    'Password',
+                    'Password'.localize(lang),
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
@@ -189,12 +191,12 @@ class LoginView extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 16),
                                   Text(
-                                    'Reset Your Password',
+                                    'Reset Your Password'.localize(lang),
                                     style: TextStyle(color: textColor, fontSize: 18, fontWeight: FontWeight.bold),
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    'Enter your email address to receive an official password reset link.',
+                                    'Enter your email address to receive an official password reset link.'.localize(lang),
                                     textAlign: TextAlign.center,
                                     style: TextStyle(color: subtextColor, fontSize: 13),
                                   ),
@@ -204,7 +206,7 @@ class LoginView extends StatelessWidget {
                                     keyboardType: TextInputType.emailAddress,
                                     style: TextStyle(color: textColor, fontSize: 14),
                                     decoration: InputDecoration(
-                                      hintText: 'Enter registered email...',
+                                      hintText: 'e.g. rider@cheetah.com'.localize(lang),
                                       hintStyle: TextStyle(color: subtextColor),
                                       prefixIcon: const Icon(Icons.email_outlined, color: AppColors.primary),
                                       filled: true,
@@ -222,7 +224,7 @@ class LoginView extends StatelessWidget {
                                       Expanded(
                                         child: TextButton(
                                           onPressed: () => Get.back(),
-                                          child: Text('Cancel', style: TextStyle(color: subtextColor)),
+                                          child: Text('Cancel'.localize(lang), style: TextStyle(color: subtextColor)),
                                         ),
                                       ),
                                       const SizedBox(width: 12),
@@ -238,7 +240,7 @@ class LoginView extends StatelessWidget {
                                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                             padding: const EdgeInsets.symmetric(vertical: 12),
                                           ),
-                                          child: const Text('Send Link', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                          child: Text('Send Reset Link'.localize(lang), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                                         ),
                                       ),
                                     ],
@@ -249,9 +251,9 @@ class LoginView extends StatelessWidget {
                           ),
                         );
                       },
-                      child: const Text(
-                        'Forgot Password?',
-                        style: TextStyle(
+                      child: Text(
+                        'Forgot Password?'.localize(lang),
+                        style: const TextStyle(
                           color: AppColors.primary,
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
@@ -302,9 +304,9 @@ class LoginView extends StatelessWidget {
                                   child: CircularProgressIndicator(
                                       color: Colors.white, strokeWidth: 2.5),
                                 )
-                              : const Text(
-                                  'Sign In to Driver App',
-                                  style: TextStyle(
+                              : Text(
+                                  'Sign In'.localize(lang),
+                                  style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,

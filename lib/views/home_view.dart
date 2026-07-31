@@ -19,7 +19,7 @@ class HomeView extends StatelessWidget {
 
   HomeView({Key? key}) : super(key: key);
 
-  String t(String text) => text.tr(authController.selectedLanguage.value);
+  String t(String text) => text.localize(authController.selectedLanguage.value);
 
   @override
   Widget build(BuildContext context) {
@@ -304,7 +304,7 @@ class HomeView extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 24),
       children: [
-        Text('Cash Collection Summary',
+        Text(t('Cash Collection Summary'),
             style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -330,7 +330,7 @@ class HomeView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Collected COD Cash Today',
+              Text(t('Collected COD Cash Today'),
                   style: TextStyle(color: Colors.white70, fontSize: 13)),
               const SizedBox(height: 4),
               Text('Rs. ${totalCollected.toStringAsFixed(0)}',
@@ -360,7 +360,7 @@ class HomeView extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 20),
-        Text('COD Parcels Log',
+        Text(t('COD Parcels Log'),
             style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -422,13 +422,13 @@ class HomeView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Parcel Search & QR Scanner',
+                    Text(t('Parcel Search & QR Scanner'),
                         style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: textColor)),
                     const SizedBox(height: 2),
-                    Text('Type tracking code or tap QR icon to scan',
+                    Text(t('Type tracking code or tap QR icon to scan'),
                         style: TextStyle(fontSize: 12, color: subtextColor)),
                   ],
                 ),
@@ -468,7 +468,7 @@ class HomeView extends StatelessWidget {
           ElevatedButton.icon(
             onPressed: () => _openCameraQrScanner(context, isDark),
             icon: const Icon(Icons.camera_alt, size: 20),
-            label: const Text('Open Camera Scanner',
+            label: Text(t('Open Camera Scanner'),
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
@@ -640,7 +640,7 @@ class HomeView extends StatelessWidget {
               const SizedBox(height: 10),
               Obx(() => _buildProfileTile(
                 icon: Icons.storefront_outlined,
-                title: 'Assigned Branch',
+                title: t('Assigned Branch'),
                 subtitle: '${authController.branchName.value} (${authController.branchCity.value})',
                 cardColor: Colors.transparent,
                 borderColor: Colors.transparent,
@@ -649,7 +649,7 @@ class HomeView extends StatelessWidget {
               )),
               _buildProfileTile(
                 icon: Icons.lock_reset_outlined,
-                title: 'Change Password',
+                title: t('Update Password'),
                 subtitle: 'Update your login password',
                 cardColor: Colors.transparent,
                 borderColor: Colors.transparent,
@@ -720,7 +720,7 @@ class HomeView extends StatelessWidget {
 
                 return _buildProfileTile(
                   icon: Icons.language_outlined,
-                  title: 'App Language',
+                  title: t('Select App Language'),
                   subtitle: langLabel,
                   cardColor: Colors.transparent,
                   borderColor: Colors.transparent,
@@ -731,18 +731,18 @@ class HomeView extends StatelessWidget {
               }),
               Obx(() {
                 final pref = authController.themePreference.value;
-                String prefLabel = 'Dark Mode Active';
+                String prefLabel = t('Dark Mode');
                 IconData prefIcon = Icons.dark_mode_outlined;
                 if (pref == 'system') {
-                  prefLabel = 'System Theme (Auto)';
+                  prefLabel = t('System Default');
                   prefIcon = Icons.brightness_auto_outlined;
                 } else if (pref == 'light') {
-                  prefLabel = 'Light Mode Active';
+                  prefLabel = t('Light Mode');
                   prefIcon = Icons.light_mode_outlined;
                 }
                 return _buildProfileTile(
                   icon: prefIcon,
-                  title: 'Theme Preference',
+                  title: t('Theme Preferences'),
                   subtitle: prefLabel,
                   cardColor: Colors.transparent,
                   borderColor: Colors.transparent,
@@ -779,7 +779,7 @@ class HomeView extends StatelessWidget {
                 children: [
                   const Icon(Icons.info_outline_rounded, color: AppColors.primary, size: 22),
                   const SizedBox(width: 8),
-                  Text('About & System Policies', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
+                  Text(t('About & System Policies'), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
                 ],
               ),
               const SizedBox(height: 14),
@@ -794,7 +794,7 @@ class HomeView extends StatelessWidget {
               ),
               _buildProfileTile(
                 icon: Icons.gavel_outlined,
-                title: 'Terms of Service',
+                title: t('Terms of Service'),
                 subtitle: 'Read driver terms & service policies',
                 cardColor: Colors.transparent,
                 borderColor: Colors.transparent,
@@ -804,7 +804,7 @@ class HomeView extends StatelessWidget {
               ),
               _buildProfileTile(
                 icon: Icons.privacy_tip_outlined,
-                title: 'Privacy Policy',
+                title: t('Privacy Policy'),
                 subtitle: 'Data usage & privacy standards',
                 cardColor: Colors.transparent,
                 borderColor: Colors.transparent,
@@ -814,7 +814,7 @@ class HomeView extends StatelessWidget {
               ),
               _buildProfileTile(
                 icon: Icons.delete_sweep_outlined,
-                title: 'Data Deletion Request',
+                title: t('Data Deletion'),
                 subtitle: 'Account & data deletion options',
                 cardColor: Colors.transparent,
                 borderColor: Colors.transparent,
@@ -828,11 +828,11 @@ class HomeView extends StatelessWidget {
 
         const SizedBox(height: 24),
         ElevatedButton.icon(
-          onPressed: () => _confirmLogout(context, isDark),
+          onPressed: () => authController.logout(),
           icon: const Icon(Icons.logout, color: Colors.white),
-          label: const Text('Sign Out of Device', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+          label: Text(t('Sign Out of Device'), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white)),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.redAccent,
+            backgroundColor: AppColors.error,
             foregroundColor: Colors.white,
             minimumSize: const Size(double.infinity, 50),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -1129,7 +1129,7 @@ class HomeView extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Payment Mode',
+                  Text(t('Payment Mode'),
                       style: TextStyle(fontSize: 11, color: subtextColor)),
                   const SizedBox(height: 2),
                   Text(
@@ -1174,7 +1174,7 @@ class HomeView extends StatelessWidget {
             ElevatedButton.icon(
               onPressed: null,
               icon: const Icon(Icons.check_circle, size: 18),
-              label: const Text('Delivered (POD Verified)',
+              label: Text(t('Delivered (POD Verified)'),
                   style: TextStyle(fontWeight: FontWeight.bold)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.accentGreen.withOpacity(0.18),
@@ -1188,7 +1188,7 @@ class HomeView extends StatelessWidget {
             ElevatedButton.icon(
               onPressed: () => _showPodBottomSheet(context, p, cardColor, borderColor, textColor, subtextColor),
               icon: const Icon(Icons.camera_alt, size: 18),
-              label: const Text('Mark Delivered & POD',
+              label: Text(t('Mark Delivered & POD'),
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
               style: ElevatedButton.styleFrom(
@@ -1277,7 +1277,7 @@ class HomeView extends StatelessWidget {
                   ),
                   const SizedBox(height: 14),
 
-                  Text('Receiver Name *',
+                  Text(t('Receiver Name *'),
                       style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
@@ -1300,7 +1300,7 @@ class HomeView extends StatelessWidget {
                   ),
                   const SizedBox(height: 14),
 
-                  Text('Photo Proof (Camera or Gallery)',
+                  Text(t('Photo Proof (Camera or Gallery)'),
                       style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
@@ -1333,7 +1333,7 @@ class HomeView extends StatelessWidget {
                                 Icon(Icons.camera_alt,
                                     size: 26, color: AppColors.primary),
                                 SizedBox(height: 4),
-                                Text('Camera',
+                                Text(t('Camera'),
                                     style: TextStyle(
                                         color: AppColors.primary,
                                         fontSize: 12,
@@ -1369,7 +1369,7 @@ class HomeView extends StatelessWidget {
                                 Icon(Icons.photo_library,
                                     size: 26, color: AppColors.accentBlue),
                                 SizedBox(height: 4),
-                                Text('Gallery',
+                                Text(t('Gallery'),
                                     style: TextStyle(
                                         color: AppColors.accentBlue,
                                         fontSize: 12,
@@ -1394,14 +1394,14 @@ class HomeView extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Customer Digital Signature',
+                      Text(t('Customer Digital Signature'),
                           style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
                               color: textColor)),
                       GestureDetector(
                         onTap: () => signatureController.clear(),
-                        child: const Text('Clear Pad',
+                        child: Text(t('Clear Pad'),
                             style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
@@ -1424,7 +1424,7 @@ class HomeView extends StatelessWidget {
                   ),
                   const SizedBox(height: 14),
 
-                  Text('Delivery Remarks / Notes',
+                  Text(t('Delivery Remarks / Notes'),
                       style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
@@ -1473,7 +1473,7 @@ class HomeView extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14)),
                     ),
-                    child: const Text('Submit POD & Mark Delivered',
+                    child: Text(t('Submit POD & Mark Delivered'),
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -1493,13 +1493,13 @@ class HomeView extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: isDark ? AppColors.cardBg : AppColorsLight.cardBg,
-        title: Text('Sign Out', style: TextStyle(color: isDark ? Colors.white : AppColorsLight.textMain)),
+        title: Text(t('Sign Out'), style: TextStyle(color: isDark ? Colors.white : AppColorsLight.textMain)),
         content: Text('Are you sure you want to sign out of the Driver App?',
             style: TextStyle(color: isDark ? const Color(0xFFd4d4d8) : AppColorsLight.textMuted)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancel', style: TextStyle(color: isDark ? Colors.white70 : AppColorsLight.textMuted)),
+            child: Text(t('Cancel'), style: TextStyle(color: isDark ? Colors.white70 : AppColorsLight.textMuted)),
           ),
           ElevatedButton(
             onPressed: () {
@@ -1507,7 +1507,7 @@ class HomeView extends StatelessWidget {
               authController.logout();
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
-            child: const Text('Sign Out', style: TextStyle(color: Colors.white)),
+            child: Text(t('Sign Out'), style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -1639,7 +1639,7 @@ class HomeView extends StatelessWidget {
                         }
                       },
                       icon: const Icon(Icons.camera_alt, color: Colors.white, size: 18),
-                      label: const Text('Camera'),
+                      label: Text(t('Camera')),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
@@ -1664,7 +1664,7 @@ class HomeView extends StatelessWidget {
                         }
                       },
                       icon: const Icon(Icons.photo_library, color: Colors.white, size: 18),
-                      label: const Text('Gallery'),
+                      label: Text(t('Gallery')),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primaryLight,
                         foregroundColor: Colors.white,
@@ -1799,13 +1799,11 @@ class HomeView extends StatelessWidget {
                 decoration: BoxDecoration(color: borderColor, borderRadius: BorderRadius.circular(2)),
               ),
               const SizedBox(height: 16),
-              Text(
-                'Select App Language',
+              Text(t('Select App Language'),
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor),
               ),
               const SizedBox(height: 6),
-              Text(
-                'Choose your preferred language for the Rider Portal',
+              Text(t('Choose your preferred language for the Rider Portal'),
                 style: TextStyle(fontSize: 12, color: subtextColor),
               ),
               const SizedBox(height: 16),
@@ -2129,7 +2127,7 @@ class HomeView extends StatelessWidget {
                           borderRadius: BorderRadius.circular(14),
                         ),
                       ),
-                      child: Text('Cancel', style: TextStyle(color: subtextColor, fontWeight: FontWeight.bold)),
+                      child: Text(t('Cancel'), style: TextStyle(color: subtextColor, fontWeight: FontWeight.bold)),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -2164,7 +2162,7 @@ class HomeView extends StatelessWidget {
                         ),
                         elevation: 2,
                       ),
-                      child: const Text('Update Password', style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: Text(t('Update Password'), style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                   ),
                 ],
