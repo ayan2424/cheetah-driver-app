@@ -127,6 +127,7 @@ class LocationService {
       WillPopScope(
         onWillPop: () async => false, // Prevent dialog back button dismissal
         child: AlertDialog(
+          insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
           backgroundColor: const Color(0xFF18181B),
           title: const Column(
@@ -159,11 +160,14 @@ class LocationService {
                   }
                 },
                 icon: const Icon(Icons.gps_fixed, color: Colors.white),
-                label: const Text('TURN ON GPS LOCATION NOW', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                label: const FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text('TURN ON GPS LOCATION NOW', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFF4D00),
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                   elevation: 4,
                 ),
@@ -191,6 +195,7 @@ class LocationService {
       WillPopScope(
         onWillPop: () async => false, // Prevent dialog back button dismissal
         child: AlertDialog(
+          insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
           backgroundColor: const Color(0xFF18181B),
           title: const Column(
@@ -228,14 +233,17 @@ class LocationService {
                   }
                 },
                 icon: const Icon(Icons.settings_suggest_rounded, color: Colors.white),
-                label: Text(
-                  isPermanent ? 'OPEN APP SETTINGS' : 'GRANT LOCATION ACCESS',
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                label: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    isPermanent ? 'OPEN APP SETTINGS' : 'GRANT LOCATION ACCESS',
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  ),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFF4D00),
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                   elevation: 4,
                 ),
