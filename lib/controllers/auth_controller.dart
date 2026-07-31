@@ -58,6 +58,7 @@ class AuthController extends GetxController with WidgetsBindingObserver {
     branchName.value = prefs.getString('branch_name') ?? 'Main Hub';
     branchCity.value = prefs.getString('branch_city') ?? 'Headquarters';
     
+    selectedLanguage.value = prefs.getString('selected_language') ?? 'en';
     themePreference.value = prefs.getString('theme_preference') ?? 'system';
     _applyThemePreference(themePreference.value);
 
