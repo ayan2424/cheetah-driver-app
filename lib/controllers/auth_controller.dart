@@ -23,6 +23,7 @@ class AuthController extends GetxController with WidgetsBindingObserver {
   void onInit() {
     super.onInit();
     WidgetsBinding.instance.addObserver(this);
+    LocationService.initGlobalLocationGuard();
     loadUserSession();
   }
 
@@ -43,8 +44,11 @@ class AuthController extends GetxController with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    if (state == AppLifecycleState.resumed && themePreference.value == 'system') {
-      _applyThemePreference('system');
+    if (state == AppLifecycleState.resumed) {
+      LocationService.checkAndEnforceLocationState();
+      if (themePreference.value == 'system') {
+        _applyThemePreference('system');
+      }
     }
   }
 

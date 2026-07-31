@@ -8,23 +8,91 @@ import 'api_service.dart';
 
 class LocationService {
   static Timer? _locationTimer;
+  static Timer? _guardTimer;
+  static StreamSubscription<ServiceStatus>? _serviceStatusSubscription;
   static bool _isTracking = false;
   static bool _isGpsDialogShowing = false;
   static bool _isPermissionDialogShowing = false;
 
+  /// Global mandatory location guard. Call this on app startup.
+  /// Listens to real-time OS hardware events to catch any user attempt to turn OFF GPS.
+  static void initGlobalLocationGuard() {
+    // 1. Initial check
+    checkAndEnforceLocationState();
+
+    // 2. Real-time OS hardware stream listener (Instant <0.1s detection on GPS toggle)
+    _serviceStatusSubscription?.cancel();
+    _serviceStatusSubscription = Geolocator.getServiceStatusStream().listen((ServiceStatus status) {
+      if (status == ServiceStatus.disabled) {
+        if (kDebugMode) print("OS Event: GPS Hardware Turned OFF!");
+        _forceEnableGpsHardware();
+      } else if (status == ServiceStatus.enabled) {
+        if (kDebugMode) print("OS Event: GPS Hardware Turned ON!");
+        if (_isGpsDialogShowing && Get.isDialogOpen == true) {
+          Get.back();
+          _isGpsDialogShowing = false;
+        }
+      }
+    });
+
+    // 3. Fast 2-second periodic polling guard to catch edge cases
+    _guardTimer?.cancel();
+    _guardTimer = Timer.periodic(const Duration(seconds: 2), (_) {
+      checkAndEnforceLocationState();
+    });
+  }
+
+  /// Verifies GPS status & location permissions. Shows blocking modal if OFF.
+  static Future<bool> checkAndEnforceLocationState() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      _forceEnableGpsHardware();
+      return false;
+    } else {
+      if (_isGpsDialogShowing && Get.isDialogOpen == true) {
+        Get.back();
+        _isGpsDialogShowing = false;
+      }
+    }
+
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        _forceGrantLocationPermission(isPermanent: false);
+        return false;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      _forceGrantLocationPermission(isPermanent: true);
+      return false;
+    }
+
+    if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
+      if (_isPermissionDialogShowing && Get.isDialogOpen == true) {
+        Get.back();
+        _isPermissionDialogShowing = false;
+      }
+    }
+
+    return true;
+  }
+
   /// Starts background/foreground periodic live GPS location updates to server.
   static void startLiveLocationTracking(String apiToken) {
     if (apiToken.isEmpty) return;
-    if (_isTracking) return;
+    initGlobalLocationGuard();
 
+    if (_isTracking) return;
     _isTracking = true;
 
     // Force permission & GPS check immediately on start
     _sendCurrentLocation(apiToken);
 
-    // Periodically update GPS every 8 seconds and enforce location state
+    // Periodically update GPS every 6 seconds to server
     _locationTimer?.cancel();
-    _locationTimer = Timer.periodic(const Duration(seconds: 8), (_) {
+    _locationTimer = Timer.periodic(const Duration(seconds: 6), (_) {
       _sendCurrentLocation(apiToken);
     });
   }

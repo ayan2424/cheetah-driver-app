@@ -10,6 +10,7 @@ import '../controllers/auth_controller.dart';
 import '../controllers/parcel_controller.dart';
 import '../models/parcel_model.dart';
 import '../utils/constants.dart';
+import '../utils/app_translations.dart';
 
 class HomeView extends StatelessWidget {
   final AuthController authController = Get.put(AuthController());
@@ -17,6 +18,8 @@ class HomeView extends StatelessWidget {
   final RxInt selectedNavIndex = 0.obs;
 
   HomeView({Key? key}) : super(key: key);
+
+  String t(String text) => text.tr(authController.selectedLanguage.value);
 
   @override
   Widget build(BuildContext context) {
@@ -116,10 +119,10 @@ class HomeView extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _buildNavItem(0, Icons.local_shipping, 'Deliveries', isDark),
-                  _buildNavItem(1, Icons.account_balance_wallet, 'COD Cash', isDark),
-                  _buildNavItem(2, Icons.qr_code_scanner, 'Scan QR', isDark),
-                  _buildNavItem(3, Icons.person, 'Profile', isDark),
+                  _buildNavItem(0, Icons.local_shipping, t('Deliveries'), isDark),
+                  _buildNavItem(1, Icons.account_balance_wallet, t('COD Cash Log'), isDark),
+                  _buildNavItem(2, Icons.qr_code_scanner, t('Scanner'), isDark),
+                  _buildNavItem(3, Icons.person, t('Profile'), isDark),
                 ],
               ),
             ),
@@ -531,7 +534,7 @@ class HomeView extends StatelessWidget {
                 children: [
                   const Icon(Icons.shield_outlined, color: AppColors.primary, size: 22),
                   const SizedBox(width: 8),
-                  Text('Account & Security', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
+                  Text(t('Account & Security'), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
                 ],
               ),
               const SizedBox(height: 16),
@@ -682,7 +685,7 @@ class HomeView extends StatelessWidget {
                 children: [
                   const Icon(Icons.settings_suggest_outlined, color: AppColors.primary, size: 22),
                   const SizedBox(width: 8),
-                  Text('App Settings & Preferences', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
+                  Text(t('App Settings & Preferences'), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
                 ],
               ),
               const SizedBox(height: 14),
