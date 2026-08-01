@@ -96,6 +96,7 @@ class ApiService {
     required String status,
     required String receiverName,
     required String description,
+    String? deliveryOtp,
     File? photoFile,
   }) async {
     try {
@@ -110,6 +111,10 @@ class ApiService {
       request.fields['status'] = status;
       request.fields['receiver_name'] = receiverName;
       request.fields['description'] = description;
+      
+      if (deliveryOtp != null && deliveryOtp.isNotEmpty) {
+        request.fields['delivery_otp'] = deliveryOtp;
+      }
 
       if (photoFile != null) {
         request.files.add(

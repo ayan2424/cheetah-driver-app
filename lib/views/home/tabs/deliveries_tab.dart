@@ -4,6 +4,7 @@ import '../../../controllers/auth_controller.dart';
 import '../../../controllers/parcel_controller.dart';
 import '../../../models/parcel_model.dart';
 import '../../../utils/constants.dart';
+import '../qr_scanner_view.dart';
 
 class DeliveriesTab extends StatelessWidget {
   final AuthController authController = Get.find<AuthController>();
@@ -45,6 +46,16 @@ class DeliveriesTab extends StatelessWidget {
                 hintText: 'Search by tracking # or receiver...',
                 hintStyle: TextStyle(color: subtextColor, fontSize: 13),
                 prefixIcon: const Icon(Icons.search, color: AppColors.primary),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.qr_code_scanner, color: AppColors.primary),
+                  onPressed: () async {
+                    final scannedCode = await Get.to(() => QrScannerView());
+                    if (scannedCode != null && scannedCode is String) {
+                      parcelController.searchQuery.value = scannedCode;
+                      // You might want to update a TextEditingController if you have one attached to the TextField
+                    }
+                  },
+                ),
                 filled: true,
                 fillColor: cardColor,
                 contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),

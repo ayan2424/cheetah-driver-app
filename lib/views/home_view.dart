@@ -1230,6 +1230,7 @@ class HomeView extends StatelessWidget {
     final TextEditingController nameController =
         TextEditingController(text: p.receiverName);
     final TextEditingController descController = TextEditingController();
+    final TextEditingController otpController = TextEditingController();
     final ImagePicker picker = ImagePicker();
 
     final SignatureController signatureController = SignatureController(
@@ -1424,6 +1425,32 @@ class HomeView extends StatelessWidget {
                   ),
                   const SizedBox(height: 14),
 
+                  Text(t('Delivery OTP (If required)'),
+                      style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: textColor)),
+                  const SizedBox(height: 6),
+                  TextField(
+                    controller: otpController,
+                    keyboardType: TextInputType.number,
+                    style: TextStyle(color: textColor),
+                    decoration: InputDecoration(
+                      hintText: 'e.g. 123456',
+                      hintStyle: TextStyle(color: subtextColor),
+                      filled: true,
+                      fillColor: AppColors.background,
+                      contentPadding: const EdgeInsets.all(16),
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: borderColor)),
+                      focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: AppColors.primary)),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+
                   Text(t('Delivery Remarks / Notes'),
                       style: TextStyle(
                           fontSize: 12,
@@ -1463,6 +1490,7 @@ class HomeView extends StatelessWidget {
                         status: 'Delivered',
                         receiverName: nameController.text.trim(),
                         description: descController.text.trim(),
+                        deliveryOtp: otpController.text.trim(),
                         photoFile: selectedPhoto,
                       );
                     },

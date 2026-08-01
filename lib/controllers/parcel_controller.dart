@@ -119,6 +119,7 @@ class ParcelController extends GetxController {
     required String status,
     required String receiverName,
     required String description,
+    String? deliveryOtp,
     File? photoFile,
   }) async {
     isSubmittingPod.value = true;
@@ -131,6 +132,7 @@ class ParcelController extends GetxController {
       status: status,
       receiverName: receiverName,
       description: description,
+      deliveryOtp: deliveryOtp,
       photoFile: photoFile,
     );
 
