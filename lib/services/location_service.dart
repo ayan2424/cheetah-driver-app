@@ -252,7 +252,7 @@ class LocationService {
                 icon: const Icon(Icons.gps_fixed, color: Colors.white),
                 label: const FittedBox(
                   fit: BoxFit.scaleDown,
-                  child: Text('TURN ON GPS'.localize(lang), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                  child: Text('TURN ON GPS', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFF4D00),

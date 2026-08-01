@@ -832,7 +832,7 @@ class HomeView extends StatelessWidget {
           icon: const Icon(Icons.logout, color: Colors.white),
           label: Text(t('Sign Out of Device'), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white)),
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.error,
+            backgroundColor: const Color(0xFFEF4444),
             foregroundColor: Colors.white,
             minimumSize: const Size(double.infinity, 50),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -1327,14 +1327,14 @@ class HomeView extends StatelessWidget {
                               border: Border.all(
                                   color: AppColors.primary.withOpacity(0.4)),
                             ),
-                            child: const Column(
+                            child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.camera_alt,
+                                const Icon(Icons.camera_alt,
                                     size: 26, color: AppColors.primary),
-                                SizedBox(height: 4),
+                                const SizedBox(height: 4),
                                 Text(t('Camera'),
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         color: AppColors.primary,
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold)),
@@ -1363,14 +1363,14 @@ class HomeView extends StatelessWidget {
                               border: Border.all(
                                   color: AppColors.accentBlue.withOpacity(0.4)),
                             ),
-                            child: const Column(
+                            child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.photo_library,
+                                const Icon(Icons.photo_library,
                                     size: 26, color: AppColors.accentBlue),
-                                SizedBox(height: 4),
+                                const SizedBox(height: 4),
                                 Text(t('Gallery'),
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         color: AppColors.accentBlue,
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold)),
