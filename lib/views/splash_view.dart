@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import '../controllers/auth_controller.dart';
-import '../services/permission_service.dart';
+import '../services/session_store.dart';
 import '../utils/constants.dart';
 
 class SplashView extends StatefulWidget {
@@ -20,8 +18,6 @@ class _SplashViewState extends State<SplashView> with SingleTickerProviderStateM
   @override
   void initState() {
     super.initState();
-
-    Get.put(AuthController());
 
     _animationController = AnimationController(
       vsync: this,
@@ -40,11 +36,8 @@ class _SplashViewState extends State<SplashView> with SingleTickerProviderStateM
   }
 
   Future<void> _checkAuthentication() async {
-    // Prompt permissions on startup
-    await PermissionService.requestAllPermissions();
     await Future.delayed(const Duration(milliseconds: 1200));
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('api_token') ?? '';
+    final token = await SessionStore.readToken();
 
     if (token.isNotEmpty) {
       Get.offAllNamed(AppRoutes.HOME);

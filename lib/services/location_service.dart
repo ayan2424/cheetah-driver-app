@@ -11,6 +11,7 @@ class LocationService {
   static Timer? _guardTimer;
   static StreamSubscription<ServiceStatus>? _serviceStatusSubscription;
   static bool _isTracking = false;
+  static bool _isSendingLocation = false;
   static bool _isGpsDialogShowing = false;
   static bool _isPermissionDialogShowing = false;
 
@@ -22,7 +23,9 @@ class LocationService {
 
     // 2. Real-time OS hardware stream listener (Instant <0.1s detection on GPS toggle)
     _serviceStatusSubscription?.cancel();
-    _serviceStatusSubscription = Geolocator.getServiceStatusStream().listen((ServiceStatus status) {
+    _serviceStatusSubscription = Geolocator.getServiceStatusStream().listen((
+      ServiceStatus status,
+    ) {
       if (status == ServiceStatus.disabled) {
         if (kDebugMode) print("OS Event: GPS Hardware Turned OFF!");
         if (Get.isRegistered<AuthController>()) {
@@ -43,9 +46,10 @@ class LocationService {
       }
     });
 
-    // 3. Fast 2-second periodic polling guard to catch edge cases
+    // Re-check at a humane cadence; the platform status stream handles the
+    // immediate changes without burning battery while the app is idle.
     _guardTimer?.cancel();
-    _guardTimer = Timer.periodic(const Duration(seconds: 2), (_) {
+    _guardTimer = Timer.periodic(const Duration(seconds: 30), (_) {
       checkAndEnforceLocationState();
     });
   }
@@ -77,7 +81,8 @@ class LocationService {
       return false;
     }
 
-    if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
+    if (permission == LocationPermission.whileInUse ||
+        permission == LocationPermission.always) {
       if (_isPermissionDialogShowing && Get.isDialogOpen == true) {
         Get.back();
         _isPermissionDialogShowing = false;
@@ -98,9 +103,9 @@ class LocationService {
     // Force permission & GPS check immediately on start
     _sendCurrentLocation(apiToken);
 
-    // Periodically update GPS every 6 seconds to server
+    // Periodically update location while the authenticated rider is on duty.
     _locationTimer?.cancel();
-    _locationTimer = Timer.periodic(const Duration(seconds: 6), (_) {
+    _locationTimer = Timer.periodic(const Duration(seconds: 30), (_) {
       _sendCurrentLocation(apiToken);
     });
   }
@@ -109,12 +114,17 @@ class LocationService {
   static void stopLiveLocationTracking() {
     _locationTimer?.cancel();
     _locationTimer = null;
+    _guardTimer?.cancel();
+    _guardTimer = null;
+    _serviceStatusSubscription?.cancel();
+    _serviceStatusSubscription = null;
     _isTracking = false;
     _dismissDialogs();
   }
 
   static void _dismissDialogs() {
-    if ((_isGpsDialogShowing || _isPermissionDialogShowing) && Get.isDialogOpen == true) {
+    if ((_isGpsDialogShowing || _isPermissionDialogShowing) &&
+        Get.isDialogOpen == true) {
       Get.back();
     }
     _isGpsDialogShowing = false;
@@ -125,10 +135,7 @@ class LocationService {
   static Future<void> _sendGpsOffStatus(String apiToken) async {
     if (apiToken.isEmpty) return;
     try {
-      await ApiService.updateLocation(
-        token: apiToken,
-        gpsEnabled: 0,
-      );
+      await ApiService.updateLocation(token: apiToken, gpsEnabled: 0);
       if (kDebugMode) print("Sent GPS OFF status ping to server.");
     } catch (e) {
       if (kDebugMode) print("Error sending GPS OFF status: $e");
@@ -136,6 +143,8 @@ class LocationService {
   }
 
   static Future<void> _sendCurrentLocation(String apiToken) async {
+    if (apiToken.isEmpty || _isSendingLocation) return;
+    _isSendingLocation = true;
     try {
       // 1. Check if device Location/GPS hardware toggle is turned ON
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -169,7 +178,8 @@ class LocationService {
       }
 
       // If permission granted & GPS enabled, close any remaining blocking dialogs
-      if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
+      if (permission == LocationPermission.whileInUse ||
+          permission == LocationPermission.always) {
         if (_isPermissionDialogShowing && Get.isDialogOpen == true) {
           Get.back();
           _isPermissionDialogShowing = false;
@@ -191,7 +201,9 @@ class LocationService {
 
       if (res['success'] == false) {
         final err = (res['error'] ?? '').toString().toLowerCase();
-        if (err.contains('invalid api token') || err.contains('session expired') || err.contains('token is required')) {
+        if (err.contains('invalid api token') ||
+            err.contains('session expired') ||
+            err.contains('token is required')) {
           if (Get.isRegistered<AuthController>()) {
             Get.find<AuthController>().handleSessionExpired();
           }
@@ -199,12 +211,16 @@ class LocationService {
       }
 
       if (kDebugMode) {
-        print("GPS Update sent successfully: ${position.latitude}, ${position.longitude}");
+        print(
+          "GPS Update sent successfully: ${position.latitude}, ${position.longitude}",
+        );
       }
     } catch (e) {
       if (kDebugMode) {
         print("Error in location tracking ping: $e");
       }
+    } finally {
+      _isSendingLocation = false;
     }
   }
 
@@ -217,24 +233,41 @@ class LocationService {
       WillPopScope(
         onWillPop: () async => false, // Prevent dialog back button dismissal
         child: AlertDialog(
-          insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 24,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
           backgroundColor: const Color(0xFF18181B),
           title: const Column(
             children: [
-              Icon(Icons.location_off_rounded, color: Color(0xFFEF4444), size: 48),
+              Icon(
+                Icons.location_off_rounded,
+                color: Color(0xFFEF4444),
+                size: 48,
+              ),
               SizedBox(height: 12),
               Text(
                 'GPS Location is Turned OFF',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ],
           ),
           content: const Text(
             'Cheetah Express requires active GPS Location to assign delivery orders and broadcast live tracking to dispatchers.\n\nPositioning cannot be bypassed. Please turn ON Location in settings to proceed.',
             textAlign: TextAlign.center,
-            style: TextStyle(color: Color(0xFFA1A1AA), fontSize: 14, height: 1.5),
+            style: TextStyle(
+              color: Color(0xFFA1A1AA),
+              fontSize: 14,
+              height: 1.5,
+            ),
           ),
           actionsAlignment: MainAxisAlignment.center,
           actions: [
@@ -243,7 +276,8 @@ class LocationService {
               child: ElevatedButton.icon(
                 onPressed: () async {
                   await Geolocator.openLocationSettings();
-                  bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+                  bool serviceEnabled =
+                      await Geolocator.isLocationServiceEnabled();
                   if (serviceEnabled) {
                     _isGpsDialogShowing = false;
                     if (Get.isDialogOpen == true) Get.back();
@@ -252,13 +286,21 @@ class LocationService {
                 icon: const Icon(Icons.gps_fixed, color: Colors.white),
                 label: const FittedBox(
                   fit: BoxFit.scaleDown,
-                  child: Text('TURN ON GPS', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                  child: Text(
+                    'TURN ON GPS',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  ),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFF4D00),
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 14,
+                    horizontal: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                   elevation: 4,
                 ),
               ),
@@ -276,7 +318,9 @@ class LocationService {
   }
 
   /// Displays an un-dismissible, persistent modal forcing location permission grant
-  static Future<void> _forceGrantLocationPermission({required bool isPermanent}) async {
+  static Future<void> _forceGrantLocationPermission({
+    required bool isPermanent,
+  }) async {
     if (_isPermissionDialogShowing) return;
     _isPermissionDialogShowing = true;
 
@@ -284,8 +328,13 @@ class LocationService {
       WillPopScope(
         onWillPop: () async => false, // Prevent dialog back button dismissal
         child: AlertDialog(
-          insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 24,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
           backgroundColor: const Color(0xFF18181B),
           title: const Column(
             children: [
@@ -294,7 +343,11 @@ class LocationService {
               Text(
                 'Location Access Mandatory',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ],
           ),
@@ -303,7 +356,11 @@ class LocationService {
                 ? 'Location permission is permanently blocked in device settings.\n\nPlease tap below to open App Settings and grant "Allow while using the app" permission.'
                 : 'Location permission is required for rider duty and route navigation.\n\nPlease allow Location access to continue.',
             textAlign: TextAlign.center,
-            style: const TextStyle(color: Color(0xFFA1A1AA), fontSize: 14, height: 1.5),
+            style: const TextStyle(
+              color: Color(0xFFA1A1AA),
+              fontSize: 14,
+              height: 1.5,
+            ),
           ),
           actionsAlignment: MainAxisAlignment.center,
           actions: [
@@ -315,25 +372,37 @@ class LocationService {
                     await Geolocator.openAppSettings();
                   } else {
                     LocationPermission p = await Geolocator.requestPermission();
-                    if (p == LocationPermission.whileInUse || p == LocationPermission.always) {
+                    if (p == LocationPermission.whileInUse ||
+                        p == LocationPermission.always) {
                       _isPermissionDialogShowing = false;
                       if (Get.isDialogOpen == true) Get.back();
                     }
                   }
                 },
-                icon: const Icon(Icons.settings_suggest_rounded, color: Colors.white),
+                icon: const Icon(
+                  Icons.settings_suggest_rounded,
+                  color: Colors.white,
+                ),
                 label: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
                     isPermanent ? 'OPEN APP SETTINGS' : 'GRANT LOCATION ACCESS',
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFF4D00),
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 14,
+                    horizontal: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                   elevation: 4,
                 ),
               ),

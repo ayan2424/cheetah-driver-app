@@ -13,7 +13,10 @@ import '../utils/constants.dart';
 import '../utils/app_translations.dart';
 
 class HomeView extends StatelessWidget {
-  final AuthController authController = Get.put(AuthController());
+  // AuthController is registered once in main.dart and owns the active token,
+  // theme, and session. Reusing it keeps delivery and cash-log refreshes in
+  // the same authenticated state.
+  final AuthController authController = Get.find<AuthController>();
   final ParcelController parcelController = Get.put(ParcelController());
   final RxInt selectedNavIndex = 0.obs;
 
@@ -27,10 +30,16 @@ class HomeView extends StatelessWidget {
       final isDark = authController.isDark(context);
       final bgColor = isDark ? AppColors.background : AppColorsLight.background;
       final cardColor = isDark ? AppColors.cardBg : AppColorsLight.cardBg;
-      final borderColor = isDark ? AppColors.cardBorder : AppColorsLight.cardBorder;
+      final borderColor = isDark
+          ? AppColors.cardBorder
+          : AppColorsLight.cardBorder;
       final textColor = isDark ? Colors.white : AppColorsLight.textMain;
-      final subtextColor = isDark ? const Color(0xFFd4d4d8) : AppColorsLight.textMuted;
-      final logoAsset = isDark ? 'assets/images/whiteLogo.png' : 'assets/images/logo.png';
+      final subtextColor = isDark
+          ? const Color(0xFFd4d4d8)
+          : AppColorsLight.textMuted;
+      final logoAsset = isDark
+          ? 'assets/images/whiteLogo.png'
+          : 'assets/images/logo.png';
 
       return Scaffold(
         extendBody: false,
@@ -52,7 +61,11 @@ class HomeView extends StatelessWidget {
                     color: AppColors.primary,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(Icons.delivery_dining, size: 20, color: Colors.white),
+                  child: const Icon(
+                    Icons.delivery_dining,
+                    size: 20,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ],
@@ -70,9 +83,12 @@ class HomeView extends StatelessWidget {
               icon: Icon(Icons.refresh, color: subtextColor),
               onPressed: () {
                 parcelController.fetchParcels();
-                Get.snackbar('Refreshing', 'Fetching latest parcels...',
-                    snackPosition: SnackPosition.BOTTOM,
-                    duration: const Duration(seconds: 1));
+                Get.snackbar(
+                  'Refreshing',
+                  'Fetching latest parcels...',
+                  snackPosition: SnackPosition.BOTTOM,
+                  duration: const Duration(seconds: 1),
+                );
               },
             ),
             IconButton(
@@ -82,14 +98,43 @@ class HomeView extends StatelessWidget {
           ],
         ),
         body: parcelController.isLoading.value
-            ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+            ? const Center(
+                child: CircularProgressIndicator(color: AppColors.primary),
+              )
             : IndexedStack(
                 index: selectedNavIndex.value,
                 children: [
-                  _buildDeliveriesTab(context, isDark, cardColor, borderColor, textColor, subtextColor),
-                  _buildCodSettlementTab(isDark, cardColor, borderColor, textColor, subtextColor),
-                  _buildQuickScanTab(context, isDark, cardColor, borderColor, textColor, subtextColor),
-                  _buildProfileTab(context, isDark, cardColor, borderColor, textColor, subtextColor),
+                  _buildDeliveriesTab(
+                    context,
+                    isDark,
+                    cardColor,
+                    borderColor,
+                    textColor,
+                    subtextColor,
+                  ),
+                  _buildCodSettlementTab(
+                    isDark,
+                    cardColor,
+                    borderColor,
+                    textColor,
+                    subtextColor,
+                  ),
+                  _buildQuickScanTab(
+                    context,
+                    isDark,
+                    cardColor,
+                    borderColor,
+                    textColor,
+                    subtextColor,
+                  ),
+                  _buildProfileTab(
+                    context,
+                    isDark,
+                    cardColor,
+                    borderColor,
+                    textColor,
+                    subtextColor,
+                  ),
                 ],
               ),
         // Dynamic Floating Bottom Navigation Bar
@@ -97,7 +142,12 @@ class HomeView extends StatelessWidget {
           color: Colors.transparent,
           child: SafeArea(
             child: Container(
-              margin: const EdgeInsets.only(left: 14, right: 14, bottom: 10, top: 5),
+              margin: const EdgeInsets.only(
+                left: 14,
+                right: 14,
+                bottom: 10,
+                top: 5,
+              ),
               height: 64,
               decoration: BoxDecoration(
                 color: isDark
@@ -105,9 +155,10 @@ class HomeView extends StatelessWidget {
                     : Colors.white.withOpacity(0.96),
                 borderRadius: BorderRadius.circular(30),
                 border: Border.all(
-                    color: isDark
-                        ? Colors.white.withOpacity(0.15)
-                        : Colors.black.withOpacity(0.08)),
+                  color: isDark
+                      ? Colors.white.withOpacity(0.15)
+                      : Colors.black.withOpacity(0.08),
+                ),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(isDark ? 0.6 : 0.08),
@@ -119,8 +170,18 @@ class HomeView extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _buildNavItem(0, Icons.local_shipping, t('Deliveries'), isDark),
-                  _buildNavItem(1, Icons.account_balance_wallet, t('COD Cash Log'), isDark),
+                  _buildNavItem(
+                    0,
+                    Icons.local_shipping,
+                    t('Deliveries'),
+                    isDark,
+                  ),
+                  _buildNavItem(
+                    1,
+                    Icons.account_balance_wallet,
+                    t('COD Cash Log'),
+                    isDark,
+                  ),
                   _buildNavItem(2, Icons.qr_code_scanner, t('Scanner'), isDark),
                   _buildNavItem(3, Icons.person, t('Profile'), isDark),
                 ],
@@ -134,7 +195,9 @@ class HomeView extends StatelessWidget {
 
   Widget _buildNavItem(int index, IconData icon, String label, bool isDark) {
     final isSelected = selectedNavIndex.value == index;
-    final unselectedColor = isDark ? const Color(0xFFd4d4d8) : AppColorsLight.textMuted;
+    final unselectedColor = isDark
+        ? const Color(0xFFd4d4d8)
+        : AppColorsLight.textMuted;
 
     return GestureDetector(
       onTap: () => selectedNavIndex.value = index,
@@ -175,13 +238,24 @@ class HomeView extends StatelessWidget {
   }
 
   // TAB 0: Deliveries View
-  Widget _buildDeliveriesTab(BuildContext context, bool isDark, Color cardColor,
-      Color borderColor, Color textColor, Color subtextColor) {
+  Widget _buildDeliveriesTab(
+    BuildContext context,
+    bool isDark,
+    Color cardColor,
+    Color borderColor,
+    Color textColor,
+    Color subtextColor,
+  ) {
     return RefreshIndicator(
       onRefresh: () => parcelController.fetchParcels(),
       color: AppColors.primary,
       child: ListView(
-        padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0, bottom: 24.0),
+        padding: const EdgeInsets.only(
+          left: 16.0,
+          right: 16.0,
+          top: 16.0,
+          bottom: 24.0,
+        ),
         children: [
           // Search Input Box with Persistent Controller
           Container(
@@ -201,22 +275,35 @@ class HomeView extends StatelessWidget {
                 suffixIcon: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Obx(() => parcelController.searchQuery.value.isNotEmpty
-                        ? IconButton(
-                            icon: Icon(Icons.clear, color: subtextColor, size: 20),
-                            onPressed: () => parcelController.clearSearch(),
-                          )
-                        : const SizedBox.shrink()),
+                    Obx(
+                      () => parcelController.searchQuery.value.isNotEmpty
+                          ? IconButton(
+                              icon: Icon(
+                                Icons.clear,
+                                color: subtextColor,
+                                size: 20,
+                              ),
+                              onPressed: () => parcelController.clearSearch(),
+                            )
+                          : const SizedBox.shrink(),
+                    ),
                     // Built-in QR Scan Icon Button
                     IconButton(
-                      icon: const Icon(Icons.qr_code_scanner, color: AppColors.primary, size: 22),
+                      icon: const Icon(
+                        Icons.qr_code_scanner,
+                        color: AppColors.primary,
+                        size: 22,
+                      ),
                       tooltip: 'Scan Parcel QR Code',
                       onPressed: () => _openCameraQrScanner(context, isDark),
                     ),
                   ],
                 ),
                 border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
               ),
             ),
           ),
@@ -257,10 +344,34 @@ class HomeView extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                _buildFilterPill('All Parcels', 'all', cardColor, borderColor, subtextColor),
-                _buildFilterPill('Out for Delivery', 'Out for Delivery', cardColor, borderColor, subtextColor),
-                _buildFilterPill('In Transit', 'In Transit', cardColor, borderColor, subtextColor),
-                _buildFilterPill('Delivered Today', 'Delivered', cardColor, borderColor, subtextColor),
+                _buildFilterPill(
+                  'All Parcels',
+                  'all',
+                  cardColor,
+                  borderColor,
+                  subtextColor,
+                ),
+                _buildFilterPill(
+                  'Out for Delivery',
+                  'Out for Delivery',
+                  cardColor,
+                  borderColor,
+                  subtextColor,
+                ),
+                _buildFilterPill(
+                  'In Transit',
+                  'In Transit',
+                  cardColor,
+                  borderColor,
+                  subtextColor,
+                ),
+                _buildFilterPill(
+                  'Delivered Today',
+                  'Delivered',
+                  cardColor,
+                  borderColor,
+                  subtextColor,
+                ),
               ],
             ),
           ),
@@ -283,32 +394,56 @@ class HomeView extends StatelessWidget {
             )
           else
             ...parcelController.filteredParcels
-                .map((p) => _buildParcelCard(context, p, isDark, cardColor, borderColor, textColor, subtextColor))
+                .map(
+                  (p) => _buildParcelCard(
+                    context,
+                    p,
+                    isDark,
+                    cardColor,
+                    borderColor,
+                    textColor,
+                    subtextColor,
+                  ),
+                )
                 .toList(),
         ],
       ),
     );
   }
 
-  // TAB 1: COD Cash Settlement View
-  Widget _buildCodSettlementTab(bool isDark, Color cardColor, Color borderColor,
-      Color textColor, Color subtextColor) {
-    final codParcels = parcelController.parcelsList
-        .where((p) => p.paymentStatus == 'COD')
+  // TAB 1: Cash Settlement View
+  Widget _buildCodSettlementTab(
+    bool isDark,
+    Color cardColor,
+    Color borderColor,
+    Color textColor,
+    Color subtextColor,
+  ) {
+    final cashCollectionParcels = parcelController.parcelsList
+        .where((p) => p.isCod)
         .toList();
-    final deliveredCodParcels =
-        codParcels.where((p) => p.status == 'Delivered').toList();
-    final totalCollected = deliveredCodParcels.fold<double>(
-        0.0, (sum, item) => sum + item.amount);
+    final deliveredCashParcels = cashCollectionParcels
+        .where((p) => p.isDelivered)
+        .toList();
+    final unsettledCashParcels = deliveredCashParcels
+        .where((p) => !p.codSettled)
+        .toList();
+    final totalDeliveredCash = deliveredCashParcels.fold<double>(
+      0.0,
+      (sum, item) => sum + item.amount,
+    );
 
     return ListView(
       padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 24),
       children: [
-        Text(t('Cash Collection Summary'),
-            style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: textColor)),
+        Text(
+          t('Cash Collection Summary'),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: textColor,
+          ),
+        ),
         const SizedBox(height: 12),
         Container(
           padding: const EdgeInsets.all(20),
@@ -330,43 +465,69 @@ class HomeView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(t('Collected COD Cash Today'),
-                  style: TextStyle(color: Colors.white70, fontSize: 13)),
+              Text(
+                t('Delivered COD Cash Awaiting Branch Settlement'),
+                style: TextStyle(color: Colors.white70, fontSize: 13),
+              ),
               const SizedBox(height: 4),
-              Text('Rs. ${totalCollected.toStringAsFixed(0)}',
-                  style: const TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white)),
+              Text(
+                'Rs. ${parcelController.stats.value.codTotal.toStringAsFixed(0)}',
+                style: const TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
               const Divider(color: Colors.white24, height: 24),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
                     child: Text(
-                        'Pending: Rs. ${parcelController.stats.value.codTotal.toStringAsFixed(0)}',
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                            color: Colors.white70, fontSize: 12)),
-                  ),
-                  Text('${deliveredCodParcels.length} Delivered',
+                      'Delivered total: Rs. ${totalDeliveredCash.toStringAsFixed(0)}',
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12)),
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    '${unsettledCashParcels.length} Awaiting settlement',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
                 ],
               ),
             ],
           ),
         ),
         const SizedBox(height: 20),
-        Text(t('COD Parcels Log'),
-            style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: textColor)),
+        Text(
+          t('COD Cash Log'),
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: textColor,
+          ),
+        ),
         const SizedBox(height: 10),
-        ...codParcels.map((p) => Container(
+        if (cashCollectionParcels.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 28),
+            child: Center(
+              child: Text(
+                t('No COD deliveries assigned.'),
+                style: TextStyle(color: subtextColor),
+              ),
+            ),
+          )
+        else
+          ...cashCollectionParcels.map(
+            (p) => Container(
               margin: const EdgeInsets.only(bottom: 10),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -381,38 +542,68 @@ class HomeView extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('#${p.trackingNumber}',
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                                color: AppColors.primary)),
+                        Text(
+                          '#${p.trackingNumber}',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: AppColors.primary,
+                          ),
+                        ),
                         const SizedBox(height: 2),
-                        Text(p.receiverName,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                                color: subtextColor, fontSize: 13)),
+                        Text(
+                          p.receiverName,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(color: subtextColor, fontSize: 13),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '${p.paymentInstruction} · ${p.status}${p.codSettled ? ' · Settled' : ''}',
+                          style: TextStyle(
+                            color: p.codSettled
+                                ? AppColors.accentGreen
+                                : subtextColor,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                  Text('Rs. ${p.amount.toStringAsFixed(0)}',
-                      style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: p.status == 'Delivered'
-                              ? AppColors.accentGreen
-                              : AppColors.accentGold)),
+                  Text(
+                    'Rs. ${p.amount.toStringAsFixed(0)}',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: p.status == 'Delivered'
+                          ? AppColors.accentGreen
+                          : AppColors.accentGold,
+                    ),
+                  ),
                 ],
               ),
-            )),
+            ),
+          ),
       ],
     );
   }
 
   // TAB 2: Quick Search & Instant Camera QR Scan View
-  Widget _buildQuickScanTab(BuildContext context, bool isDark, Color cardColor,
-      Color borderColor, Color textColor, Color subtextColor) {
+  Widget _buildQuickScanTab(
+    BuildContext context,
+    bool isDark,
+    Color cardColor,
+    Color borderColor,
+    Color textColor,
+    Color subtextColor,
+  ) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 20.0, bottom: 24.0),
+      padding: const EdgeInsets.only(
+        left: 20.0,
+        right: 20.0,
+        top: 20.0,
+        bottom: 24.0,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -422,14 +613,19 @@ class HomeView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(t('Parcel Search & QR Scanner'),
-                        style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: textColor)),
+                    Text(
+                      t('Parcel Search & QR Scanner'),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: textColor,
+                      ),
+                    ),
                     const SizedBox(height: 2),
-                    Text(t('Type tracking code or tap QR icon to scan'),
-                        style: TextStyle(fontSize: 12, color: subtextColor)),
+                    Text(
+                      t('Type tracking code or tap QR icon to scan'),
+                      style: TextStyle(fontSize: 12, color: subtextColor),
+                    ),
                   ],
                 ),
               ),
@@ -453,7 +649,11 @@ class HomeView extends StatelessWidget {
                 hintStyle: TextStyle(color: subtextColor),
                 prefixIcon: const Icon(Icons.search, color: AppColors.primary),
                 suffixIcon: IconButton(
-                  icon: const Icon(Icons.qr_code_scanner, color: AppColors.primary, size: 24),
+                  icon: const Icon(
+                    Icons.qr_code_scanner,
+                    color: AppColors.primary,
+                    size: 24,
+                  ),
                   tooltip: 'Tap to Scan QR Code',
                   onPressed: () => _openCameraQrScanner(context, isDark),
                 ),
@@ -468,14 +668,17 @@ class HomeView extends StatelessWidget {
           ElevatedButton.icon(
             onPressed: () => _openCameraQrScanner(context, isDark),
             icon: const Icon(Icons.camera_alt, size: 20),
-            label: Text(t('Open Camera Scanner'),
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+            label: Text(
+              t('Open Camera Scanner'),
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            ),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
               minimumSize: const Size(double.infinity, 50),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16)),
+                borderRadius: BorderRadius.circular(16),
+              ),
             ),
           ),
           const SizedBox(height: 24),
@@ -490,12 +693,20 @@ class HomeView extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const Icon(Icons.info_outline, color: AppColors.primary, size: 24),
+                const Icon(
+                  Icons.info_outline,
+                  color: AppColors.primary,
+                  size: 24,
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     'Scanning or typing parcel code automatically filters your delivery list and opens parcel status.',
-                    style: TextStyle(color: subtextColor, fontSize: 12, height: 1.4),
+                    style: TextStyle(
+                      color: subtextColor,
+                      fontSize: 12,
+                      height: 1.4,
+                    ),
                   ),
                 ),
               ],
@@ -507,8 +718,14 @@ class HomeView extends StatelessWidget {
   }
 
   // TAB 3: Rider Profile & System Info (Clean 3-Card Architecture)
-  Widget _buildProfileTab(BuildContext context, bool isDark, Color cardColor,
-      Color borderColor, Color textColor, Color subtextColor) {
+  Widget _buildProfileTab(
+    BuildContext context,
+    bool isDark,
+    Color cardColor,
+    Color borderColor,
+    Color textColor,
+    Color subtextColor,
+  ) {
     return ListView(
       padding: const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 24),
       children: [
@@ -532,9 +749,20 @@ class HomeView extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.shield_outlined, color: AppColors.primary, size: 22),
+                  const Icon(
+                    Icons.shield_outlined,
+                    color: AppColors.primary,
+                    size: 22,
+                  ),
                   const SizedBox(width: 8),
-                  Text(t('Account & Security'), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
+                  Text(
+                    t('Account & Security'),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 16),
@@ -553,12 +781,16 @@ class HomeView extends StatelessWidget {
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 gradient: const LinearGradient(
-                                  colors: [AppColors.primary, AppColors.primaryLight],
+                                  colors: [
+                                    AppColors.primary,
+                                    AppColors.primaryLight,
+                                  ],
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                      color: AppColors.primary.withOpacity(0.35),
-                                      blurRadius: 15),
+                                    color: AppColors.primary.withOpacity(0.35),
+                                    blurRadius: 15,
+                                  ),
                                 ],
                               ),
                               child: ClipRRect(
@@ -567,21 +799,40 @@ class HomeView extends StatelessWidget {
                                     ? Image.network(
                                         avatar,
                                         fit: BoxFit.cover,
-                                        errorBuilder: (ctx, err, stack) => Center(
-                                          child: Text(
-                                            authController.userName.value.isNotEmpty
-                                                ? authController.userName.value[0].toUpperCase()
-                                                : 'R',
-                                            style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
-                                          ),
-                                        ),
+                                        errorBuilder: (ctx, err, stack) =>
+                                            Center(
+                                              child: Text(
+                                                authController
+                                                        .userName
+                                                        .value
+                                                        .isNotEmpty
+                                                    ? authController
+                                                          .userName
+                                                          .value[0]
+                                                          .toUpperCase()
+                                                    : 'R',
+                                                style: const TextStyle(
+                                                  fontSize: 32,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
                                       )
                                     : Center(
                                         child: Text(
-                                          authController.userName.value.isNotEmpty
-                                              ? authController.userName.value[0].toUpperCase()
+                                          authController
+                                                  .userName
+                                                  .value
+                                                  .isNotEmpty
+                                              ? authController.userName.value[0]
+                                                    .toUpperCase()
                                               : 'R',
-                                          style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
+                                          style: const TextStyle(
+                                            fontSize: 32,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
                                         ),
                                       ),
                               ),
@@ -595,7 +846,11 @@ class HomeView extends StatelessWidget {
                                   color: AppColors.primary,
                                   shape: BoxShape.circle,
                                 ),
-                                child: const Icon(Icons.camera_alt, color: Colors.white, size: 12),
+                                child: const Icon(
+                                  Icons.camera_alt,
+                                  color: Colors.white,
+                                  size: 12,
+                                ),
                               ),
                             ),
                           ],
@@ -603,31 +858,52 @@ class HomeView extends StatelessWidget {
                       );
                     }),
                     const SizedBox(height: 12),
-                    Obx(() => Text(
-                          authController.userName.value,
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor),
-                        )),
+                    Obx(
+                      () => Text(
+                        authController.userName.value,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: textColor,
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 3),
-                    Obx(() => Text(
-                          authController.userEmail.value,
-                          style: TextStyle(fontSize: 13, color: subtextColor),
-                        )),
+                    Obx(
+                      () => Text(
+                        authController.userEmail.value,
+                        style: TextStyle(fontSize: 13, color: subtextColor),
+                      ),
+                    ),
                     const SizedBox(height: 10),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.accentGreen.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: AppColors.accentGreen.withOpacity(0.3)),
+                        border: Border.all(
+                          color: AppColors.accentGreen.withOpacity(0.3),
+                        ),
                       ),
                       child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.fiber_manual_record, size: 8, color: AppColors.accentGreen),
+                          Icon(
+                            Icons.fiber_manual_record,
+                            size: 8,
+                            color: AppColors.accentGreen,
+                          ),
                           SizedBox(width: 6),
                           Text(
                             'Rider Account Active',
-                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.accentGreen),
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.accentGreen,
+                            ),
                           ),
                         ],
                       ),
@@ -638,15 +914,18 @@ class HomeView extends StatelessWidget {
               const SizedBox(height: 16),
               const Divider(height: 1),
               const SizedBox(height: 10),
-              Obx(() => _buildProfileTile(
-                icon: Icons.storefront_outlined,
-                title: t('Assigned Branch'),
-                subtitle: '${authController.branchName.value} (${authController.branchCity.value})',
-                cardColor: Colors.transparent,
-                borderColor: Colors.transparent,
-                textColor: textColor,
-                subtextColor: subtextColor,
-              )),
+              Obx(
+                () => _buildProfileTile(
+                  icon: Icons.storefront_outlined,
+                  title: t('Assigned Branch'),
+                  subtitle:
+                      '${authController.branchName.value} (${authController.branchCity.value})',
+                  cardColor: Colors.transparent,
+                  borderColor: Colors.transparent,
+                  textColor: textColor,
+                  subtextColor: subtextColor,
+                ),
+              ),
               _buildProfileTile(
                 icon: Icons.lock_reset_outlined,
                 title: t('Update Password'),
@@ -683,9 +962,20 @@ class HomeView extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.settings_suggest_outlined, color: AppColors.primary, size: 22),
+                  const Icon(
+                    Icons.settings_suggest_outlined,
+                    color: AppColors.primary,
+                    size: 22,
+                  ),
                   const SizedBox(width: 8),
-                  Text(t('App Settings & Preferences'), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
+                  Text(
+                    t('App Settings & Preferences'),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 14),
@@ -716,7 +1006,8 @@ class HomeView extends StatelessWidget {
                   'ja-jp': '日本語 (Japan 🇯🇵)',
                   'ro-ro': 'Română (Romania 🇷🇴)',
                 };
-                final langLabel = langNames[lang] ?? 'English (Global Default 🌐)';
+                final langLabel =
+                    langNames[lang] ?? 'English (Global Default 🌐)';
 
                 return _buildProfileTile(
                   icon: Icons.language_outlined,
@@ -777,9 +1068,20 @@ class HomeView extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.info_outline_rounded, color: AppColors.primary, size: 22),
+                  const Icon(
+                    Icons.info_outline_rounded,
+                    color: AppColors.primary,
+                    size: 22,
+                  ),
                   const SizedBox(width: 8),
-                  Text(t('About & System Policies'), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
+                  Text(
+                    t('About & System Policies'),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 14),
@@ -800,7 +1102,9 @@ class HomeView extends StatelessWidget {
                 borderColor: Colors.transparent,
                 textColor: textColor,
                 subtextColor: subtextColor,
-                onTap: () => _launchExternalUrl('https://cheetah.ayan24.me/terms-and-conditions'),
+                onTap: () => _launchExternalUrl(
+                  'https://cheetah.ayan24.me/terms-and-conditions',
+                ),
               ),
               _buildProfileTile(
                 icon: Icons.privacy_tip_outlined,
@@ -810,7 +1114,9 @@ class HomeView extends StatelessWidget {
                 borderColor: Colors.transparent,
                 textColor: textColor,
                 subtextColor: subtextColor,
-                onTap: () => _launchExternalUrl('https://cheetah.ayan24.me/privacy-policy'),
+                onTap: () => _launchExternalUrl(
+                  'https://cheetah.ayan24.me/privacy-policy',
+                ),
               ),
               _buildProfileTile(
                 icon: Icons.delete_sweep_outlined,
@@ -820,7 +1126,9 @@ class HomeView extends StatelessWidget {
                 borderColor: Colors.transparent,
                 textColor: textColor,
                 subtextColor: subtextColor,
-                onTap: () => _launchExternalUrl('https://cheetah.ayan24.me/data-deletion'),
+                onTap: () => _launchExternalUrl(
+                  'https://cheetah.ayan24.me/data-deletion',
+                ),
               ),
             ],
           ),
@@ -830,12 +1138,21 @@ class HomeView extends StatelessWidget {
         ElevatedButton.icon(
           onPressed: () => authController.logout(),
           icon: const Icon(Icons.logout, color: Colors.white),
-          label: Text(t('Sign Out of Device'), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white)),
+          label: Text(
+            t('Sign Out of Device'),
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFFEF4444),
             foregroundColor: Colors.white,
             minimumSize: const Size(double.infinity, 50),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
           ),
         ),
       ],
@@ -863,12 +1180,16 @@ class HomeView extends StatelessWidget {
                   Text(
                     'Scan Parcel QR / Barcode',
                     style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: isDark ? Colors.white : AppColorsLight.textMain),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? Colors.white : AppColorsLight.textMain,
+                    ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.close, color: isDark ? Colors.white70 : AppColorsLight.textMuted),
+                    icon: Icon(
+                      Icons.close,
+                      color: isDark ? Colors.white70 : AppColorsLight.textMuted,
+                    ),
                     onPressed: () => Navigator.pop(ctx),
                   ),
                 ],
@@ -886,7 +1207,8 @@ class HomeView extends StatelessWidget {
                             final code = barcode.rawValue;
                             if (code != null && code.isNotEmpty) {
                               parcelController.searchParcels(code);
-                              selectedNavIndex.value = 0; // Switch to Deliveries
+                              selectedNavIndex.value =
+                                  0; // Switch to Deliveries
                               Navigator.pop(ctx);
                               Get.snackbar(
                                 'QR Scanned! 📦',
@@ -905,7 +1227,10 @@ class HomeView extends StatelessWidget {
                           width: 180,
                           height: 180,
                           decoration: BoxDecoration(
-                            border: Border.all(color: AppColors.primary, width: 2.5),
+                            border: Border.all(
+                              color: AppColors.primary,
+                              width: 2.5,
+                            ),
                             borderRadius: BorderRadius.circular(16),
                           ),
                         ),
@@ -918,8 +1243,11 @@ class HomeView extends StatelessWidget {
               Text(
                 'Point camera at QR code. Scanned code will auto-fill input & search.',
                 style: TextStyle(
-                    fontSize: 12,
-                    color: isDark ? const Color(0xFFd4d4d8) : AppColorsLight.textMuted),
+                  fontSize: 12,
+                  color: isDark
+                      ? const Color(0xFFd4d4d8)
+                      : AppColorsLight.textMuted,
+                ),
               ),
             ],
           ),
@@ -928,15 +1256,16 @@ class HomeView extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileTile(
-      {required IconData icon,
-      required String title,
-      required String subtitle,
-      required Color cardColor,
-      required Color borderColor,
-      required Color textColor,
-      required Color subtextColor,
-      VoidCallback? onTap}) {
+  Widget _buildProfileTile({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Color cardColor,
+    required Color borderColor,
+    required Color textColor,
+    required Color subtextColor,
+    VoidCallback? onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -955,16 +1284,20 @@ class HomeView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: textColor,
-                          fontSize: 14)),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
+                      fontSize: 14,
+                    ),
+                  ),
                   const SizedBox(height: 2),
-                  Text(subtitle,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                          color: subtextColor, fontSize: 12)),
+                  Text(
+                    subtitle,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(color: subtextColor, fontSize: 12),
+                  ),
                 ],
               ),
             ),
@@ -975,13 +1308,14 @@ class HomeView extends StatelessWidget {
   }
 
   Widget _buildKpiCard(
-      String label,
-      String value,
-      IconData icon,
-      Color color,
-      Color cardColor,
-      Color borderColor,
-      Color subtextColor) {
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+    Color cardColor,
+    Color borderColor,
+    Color subtextColor,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -996,9 +1330,11 @@ class HomeView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                child: Text(label,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 11, color: subtextColor)),
+                child: Text(
+                  label,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 11, color: subtextColor),
+                ),
               ),
               Icon(icon, size: 18, color: color),
             ],
@@ -1007,15 +1343,23 @@ class HomeView extends StatelessWidget {
           Text(
             value,
             style: TextStyle(
-                fontSize: 18, fontWeight: FontWeight.bold, color: color),
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildFilterPill(String title, String value, Color cardColor,
-      Color borderColor, Color subtextColor) {
+  Widget _buildFilterPill(
+    String title,
+    String value,
+    Color cardColor,
+    Color borderColor,
+    Color subtextColor,
+  ) {
     return Obx(() {
       final isSelected = parcelController.activeFilter.value == value;
       return GestureDetector(
@@ -1027,7 +1371,8 @@ class HomeView extends StatelessWidget {
             color: isSelected ? AppColors.primary : cardColor,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-                color: isSelected ? AppColors.primary : borderColor),
+              color: isSelected ? AppColors.primary : borderColor,
+            ),
           ),
           child: Text(
             title,
@@ -1043,13 +1388,14 @@ class HomeView extends StatelessWidget {
   }
 
   Widget _buildParcelCard(
-      BuildContext context,
-      ParcelModel p,
-      bool isDark,
-      Color cardColor,
-      Color borderColor,
-      Color textColor,
-      Color subtextColor) {
+    BuildContext context,
+    ParcelModel p,
+    bool isDark,
+    Color cardColor,
+    Color borderColor,
+    Color textColor,
+    Color subtextColor,
+  ) {
     final bool isDelivered = p.status == 'Delivered';
 
     return Container(
@@ -1073,13 +1419,16 @@ class HomeView extends StatelessWidget {
               Text(
                 '#${p.trackingNumber}',
                 style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
-                    fontSize: 15),
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary,
+                  fontSize: 15,
+                ),
               ),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 5,
+                ),
                 decoration: BoxDecoration(
                   color: isDelivered
                       ? AppColors.accentGreen.withOpacity(0.2)
@@ -1104,9 +1453,10 @@ class HomeView extends StatelessWidget {
           Text(
             p.receiverName,
             style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: textColor),
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: textColor,
+            ),
           ),
           const SizedBox(height: 6),
           Row(
@@ -1129,15 +1479,18 @@ class HomeView extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(t('Payment Mode'),
-                      style: TextStyle(fontSize: 11, color: subtextColor)),
+                  Text(
+                    t('Payment Mode'),
+                    style: TextStyle(fontSize: 11, color: subtextColor),
+                  ),
                   const SizedBox(height: 2),
                   Text(
-                    '${p.paymentStatus} (Rs. ${p.amount.toStringAsFixed(0)})',
+                    '${p.paymentInstruction} (Rs. ${p.amount.toStringAsFixed(0)})',
                     style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.accentGreen),
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.accentGreen,
+                    ),
                   ),
                 ],
               ),
@@ -1174,30 +1527,43 @@ class HomeView extends StatelessWidget {
             ElevatedButton.icon(
               onPressed: null,
               icon: const Icon(Icons.check_circle, size: 18),
-              label: Text(t('Delivered (POD Verified)'),
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+              label: Text(
+                t('Delivered (POD Verified)'),
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.accentGreen.withOpacity(0.18),
                 foregroundColor: AppColors.accentGreen,
                 minimumSize: const Size(double.infinity, 44),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14)),
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
             )
           else
             ElevatedButton.icon(
-              onPressed: () => _showPodBottomSheet(context, p, cardColor, borderColor, textColor, subtextColor),
+              onPressed: () => _showPodBottomSheet(
+                context,
+                p,
+                cardColor,
+                borderColor,
+                textColor,
+                subtextColor,
+              ),
               icon: const Icon(Icons.camera_alt, size: 18),
-              label: Text(t('Mark Delivered & POD'),
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+              label: Text(
+                t('Mark Delivered & POD'),
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
                 minimumSize: const Size(double.infinity, 46),
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14)),
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
             ),
         ],
@@ -1205,10 +1571,11 @@ class HomeView extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButton(
-      {required IconData icon,
-      required Color color,
-      required VoidCallback onTap}) {
+  Widget _buildActionButton({
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -1224,11 +1591,18 @@ class HomeView extends StatelessWidget {
     );
   }
 
-  void _showPodBottomSheet(BuildContext context, ParcelModel p, Color cardColor,
-      Color borderColor, Color textColor, Color subtextColor) {
+  void _showPodBottomSheet(
+    BuildContext context,
+    ParcelModel p,
+    Color cardColor,
+    Color borderColor,
+    Color textColor,
+    Color subtextColor,
+  ) {
     File? selectedPhoto;
-    final TextEditingController nameController =
-        TextEditingController(text: p.receiverName);
+    final TextEditingController nameController = TextEditingController(
+      text: p.receiverName,
+    );
     final TextEditingController descController = TextEditingController();
     final TextEditingController otpController = TextEditingController();
     final ImagePicker picker = ImagePicker();
@@ -1247,271 +1621,333 @@ class HomeView extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
-        return StatefulBuilder(builder: (context, setState) {
-          return Padding(
-            padding: EdgeInsets.only(
-              left: 20,
-              right: 20,
-              top: 20,
-              bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Proof of Delivery (POD)',
-                        style: TextStyle(
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                left: 20,
+                right: 20,
+                top: 20,
+                bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Proof of Delivery (POD)',
+                          style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: textColor),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.close, color: subtextColor),
-                        onPressed: () => Navigator.pop(ctx),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 14),
-
-                  Text(t('Receiver Name *'),
-                      style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: textColor)),
-                  const SizedBox(height: 6),
-                  TextField(
-                    controller: nameController,
-                    style: TextStyle(color: textColor),
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: AppColors.background,
-                      contentPadding: const EdgeInsets.all(16),
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: borderColor)),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: AppColors.primary)),
+                            color: textColor,
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.close, color: subtextColor),
+                          onPressed: () => Navigator.pop(ctx),
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 14),
+                    const SizedBox(height: 14),
 
-                  Text(t('Photo Proof (Camera or Gallery)'),
+                    Text(
+                      t('Receiver Name *'),
                       style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: textColor)),
-                  const SizedBox(height: 6),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () async {
-                            final XFile? photo = await picker.pickImage(
-                                source: ImageSource.camera, imageQuality: 80);
-                            if (photo != null) {
-                              setState(() {
-                                selectedPhoto = File(photo.path);
-                              });
-                            }
-                          },
-                          child: Container(
-                            height: 90,
-                            decoration: BoxDecoration(
-                              color: AppColors.primary.withOpacity(0.08),
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(
-                                  color: AppColors.primary.withOpacity(0.4)),
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.camera_alt,
-                                    size: 26, color: AppColors.primary),
-                                const SizedBox(height: 4),
-                                Text(t('Camera'),
-                                    style: const TextStyle(
-                                        color: AppColors.primary,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold)),
-                              ],
-                            ),
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: textColor,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    TextField(
+                      controller: nameController,
+                      style: TextStyle(color: textColor),
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: AppColors.background,
+                        contentPadding: const EdgeInsets.all(16),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: borderColor),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: AppColors.primary,
                           ),
                         ),
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () async {
-                            final XFile? photo = await picker.pickImage(
-                                source: ImageSource.gallery, imageQuality: 80);
-                            if (photo != null) {
-                              setState(() {
-                                selectedPhoto = File(photo.path);
-                              });
-                            }
-                          },
-                          child: Container(
-                            height: 90,
-                            decoration: BoxDecoration(
-                              color: AppColors.accentBlue.withOpacity(0.08),
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(
-                                  color: AppColors.accentBlue.withOpacity(0.4)),
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.photo_library,
-                                    size: 26, color: AppColors.accentBlue),
-                                const SizedBox(height: 4),
-                                Text(t('Gallery'),
+                    ),
+                    const SizedBox(height: 14),
+
+                    Text(
+                      t('Photo Proof (Camera or Gallery)'),
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: textColor,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () async {
+                              final XFile? photo = await picker.pickImage(
+                                source: ImageSource.camera,
+                                imageQuality: 80,
+                              );
+                              if (photo != null) {
+                                setState(() {
+                                  selectedPhoto = File(photo.path);
+                                });
+                              }
+                            },
+                            child: Container(
+                              height: 90,
+                              decoration: BoxDecoration(
+                                color: AppColors.primary.withOpacity(0.08),
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(
+                                  color: AppColors.primary.withOpacity(0.4),
+                                ),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.camera_alt,
+                                    size: 26,
+                                    color: AppColors.primary,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    t('Camera'),
                                     style: const TextStyle(
-                                        color: AppColors.accentBlue,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold)),
-                              ],
+                                      color: AppColors.primary,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () async {
+                              final XFile? photo = await picker.pickImage(
+                                source: ImageSource.gallery,
+                                imageQuality: 80,
+                              );
+                              if (photo != null) {
+                                setState(() {
+                                  selectedPhoto = File(photo.path);
+                                });
+                              }
+                            },
+                            child: Container(
+                              height: 90,
+                              decoration: BoxDecoration(
+                                color: AppColors.accentBlue.withOpacity(0.08),
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(
+                                  color: AppColors.accentBlue.withOpacity(0.4),
+                                ),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.photo_library,
+                                    size: 26,
+                                    color: AppColors.accentBlue,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    t('Gallery'),
+                                    style: const TextStyle(
+                                      color: AppColors.accentBlue,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (selectedPhoto != null) ...[
+                      const SizedBox(height: 10),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.file(
+                          selectedPhoto!,
+                          height: 120,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ],
-                  ),
-                  if (selectedPhoto != null) ...[
-                    const SizedBox(height: 10),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.file(selectedPhoto!,
-                          height: 120, width: double.infinity, fit: BoxFit.cover),
-                    ),
-                  ],
-                  const SizedBox(height: 14),
+                    const SizedBox(height: 14),
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(t('Customer Digital Signature'),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          t('Customer Digital Signature'),
                           style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: textColor,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () => signatureController.clear(),
+                          child: Text(
+                            t('Clear Pad'),
+                            style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
-                              color: textColor)),
-                      GestureDetector(
-                        onTap: () => signatureController.clear(),
-                        child: Text(t('Clear Pad'),
-                            style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.redAccent)),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(14),
-                    child: Container(
-                      height: 100,
-                      color: Colors.white,
-                      child: Signature(
-                        controller: signatureController,
+                              color: Colors.redAccent,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: Container(
                         height: 100,
-                        backgroundColor: Colors.white,
+                        color: Colors.white,
+                        child: Signature(
+                          controller: signatureController,
+                          height: 100,
+                          backgroundColor: Colors.white,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 14),
+                    const SizedBox(height: 14),
 
-                  Text(t('Delivery OTP (If required)'),
+                    Text(
+                      t('Delivery OTP (If required)'),
                       style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: textColor)),
-                  const SizedBox(height: 6),
-                  TextField(
-                    controller: otpController,
-                    keyboardType: TextInputType.number,
-                    style: TextStyle(color: textColor),
-                    decoration: InputDecoration(
-                      hintText: 'e.g. 123456',
-                      hintStyle: TextStyle(color: subtextColor),
-                      filled: true,
-                      fillColor: AppColors.background,
-                      contentPadding: const EdgeInsets.all(16),
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: borderColor)),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: AppColors.primary)),
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: textColor,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 14),
+                    const SizedBox(height: 6),
+                    TextField(
+                      controller: otpController,
+                      keyboardType: TextInputType.number,
+                      style: TextStyle(color: textColor),
+                      decoration: InputDecoration(
+                        hintText: 'e.g. 123456',
+                        hintStyle: TextStyle(color: subtextColor),
+                        filled: true,
+                        fillColor: AppColors.background,
+                        contentPadding: const EdgeInsets.all(16),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: borderColor),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
 
-                  Text(t('Delivery Remarks / Notes'),
+                    Text(
+                      t('Delivery Remarks / Notes'),
                       style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: textColor)),
-                  const SizedBox(height: 6),
-                  TextField(
-                    controller: descController,
-                    style: TextStyle(color: textColor),
-                    decoration: InputDecoration(
-                      hintText: 'e.g. Handed over to recipient in person',
-                      hintStyle: TextStyle(color: subtextColor),
-                      filled: true,
-                      fillColor: AppColors.background,
-                      contentPadding: const EdgeInsets.all(16),
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: borderColor)),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: AppColors.primary)),
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: textColor,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
+                    const SizedBox(height: 6),
+                    TextField(
+                      controller: descController,
+                      style: TextStyle(color: textColor),
+                      decoration: InputDecoration(
+                        hintText: 'e.g. Handed over to recipient in person',
+                        hintStyle: TextStyle(color: subtextColor),
+                        filled: true,
+                        fillColor: AppColors.background,
+                        contentPadding: const EdgeInsets.all(16),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: borderColor),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
 
-                  ElevatedButton(
-                    onPressed: () async {
-                      if (nameController.text.trim().isEmpty) {
-                        Get.snackbar('Validation', 'Please enter Receiver Name',
-                            snackPosition: SnackPosition.BOTTOM);
-                        return;
-                      }
-                      Navigator.pop(ctx);
-                      await parcelController.submitPod(
-                        parcelId: p.id,
-                        trackingNumber: p.trackingNumber,
-                        status: 'Delivered',
-                        receiverName: nameController.text.trim(),
-                        description: descController.text.trim(),
-                        deliveryOtp: otpController.text.trim(),
-                        photoFile: selectedPhoto,
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14)),
-                    ),
-                    child: Text(t('Submit POD & Mark Delivered'),
+                    ElevatedButton(
+                      onPressed: () async {
+                        if (nameController.text.trim().isEmpty) {
+                          Get.snackbar(
+                            'Validation',
+                            'Please enter Receiver Name',
+                            snackPosition: SnackPosition.BOTTOM,
+                          );
+                          return;
+                        }
+                        Navigator.pop(ctx);
+                        await parcelController.submitPod(
+                          parcelId: p.id,
+                          trackingNumber: p.trackingNumber,
+                          status: 'Delivered',
+                          receiverName: nameController.text.trim(),
+                          description: descController.text.trim(),
+                          deliveryOtp: otpController.text.trim(),
+                          photoFile: selectedPhoto,
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      child: Text(
+                        t('Submit POD & Mark Delivered'),
                         style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white)),
-                  ),
-                ],
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          );
-        });
+            );
+          },
+        );
       },
     );
   }
@@ -1521,13 +1957,27 @@ class HomeView extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: isDark ? AppColors.cardBg : AppColorsLight.cardBg,
-        title: Text(t('Sign Out'), style: TextStyle(color: isDark ? Colors.white : AppColorsLight.textMain)),
-        content: Text('Are you sure you want to sign out of the Driver App?',
-            style: TextStyle(color: isDark ? const Color(0xFFd4d4d8) : AppColorsLight.textMuted)),
+        title: Text(
+          t('Sign Out'),
+          style: TextStyle(
+            color: isDark ? Colors.white : AppColorsLight.textMain,
+          ),
+        ),
+        content: Text(
+          'Are you sure you want to sign out of the Driver App?',
+          style: TextStyle(
+            color: isDark ? const Color(0xFFd4d4d8) : AppColorsLight.textMuted,
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text(t('Cancel'), style: TextStyle(color: isDark ? Colors.white70 : AppColorsLight.textMuted)),
+            child: Text(
+              t('Cancel'),
+              style: TextStyle(
+                color: isDark ? Colors.white70 : AppColorsLight.textMuted,
+              ),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -1549,8 +1999,11 @@ class HomeView extends StatelessWidget {
         await launchUrl(url);
       }
     } catch (e) {
-      Get.snackbar('Link', 'Opening $urlString...',
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Link',
+        'Opening $urlString...',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 
@@ -1559,13 +2012,19 @@ class HomeView extends StatelessWidget {
     if (cleanPhone.isEmpty) return;
     final Uri url = Uri.parse('tel:$cleanPhone');
     try {
-      final launched = await launchUrl(url, mode: LaunchMode.externalApplication);
+      final launched = await launchUrl(
+        url,
+        mode: LaunchMode.externalApplication,
+      );
       if (!launched) {
         await launchUrl(url);
       }
     } catch (e) {
-      Get.snackbar('Dialer', 'Opening phone dialer ($cleanPhone)...',
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Dialer',
+        'Opening phone dialer ($cleanPhone)...',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 
@@ -1574,45 +2033,80 @@ class HomeView extends StatelessWidget {
     if (cleanPhone.isEmpty) return;
     final Uri url = Uri.parse('https://wa.me/$cleanPhone');
     try {
-      final launched = await launchUrl(url, mode: LaunchMode.externalApplication);
+      final launched = await launchUrl(
+        url,
+        mode: LaunchMode.externalApplication,
+      );
       if (!launched) {
         await launchUrl(url);
       }
     } catch (e) {
-      Get.snackbar('WhatsApp', 'Opening WhatsApp chat ($cleanPhone)...',
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'WhatsApp',
+        'Opening WhatsApp chat ($cleanPhone)...',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 
   void _openMap(String address) async {
     if (address.isEmpty) return;
     final Uri url = Uri.parse(
-        'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(address)}');
+      'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(address)}',
+    );
     try {
-      final launched = await launchUrl(url, mode: LaunchMode.externalApplication);
+      final launched = await launchUrl(
+        url,
+        mode: LaunchMode.externalApplication,
+      );
       if (!launched) {
         await launchUrl(url);
       }
     } catch (e) {
-      Get.snackbar('Maps', 'Opening map for $address...',
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Maps',
+        'Opening map for $address...',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 
   void _openAvatarPicker(BuildContext context, bool isDark) {
     final ImagePicker picker = ImagePicker();
     final cardColor = isDark ? AppColors.cardBg : AppColorsLight.cardBg;
-    final borderColor = isDark ? AppColors.cardBorder : AppColorsLight.cardBorder;
+    final borderColor = isDark
+        ? AppColors.cardBorder
+        : AppColorsLight.cardBorder;
     final textColor = isDark ? Colors.white : AppColorsLight.textMain;
-    final subtextColor = isDark ? const Color(0xFFd4d4d8) : AppColorsLight.textMuted;
+    final subtextColor = isDark
+        ? const Color(0xFFd4d4d8)
+        : AppColorsLight.textMuted;
 
     final List<Map<String, String>> presets = [
-      {'name': 'Orbit', 'url': 'https://api.dicebear.com/9.x/bottts-neutral/png?seed=orbit-01'},
-      {'name': 'Nova', 'url': 'https://api.dicebear.com/9.x/bottts-neutral/png?seed=orbit-02'},
-      {'name': 'Pixel', 'url': 'https://api.dicebear.com/9.x/bottts-neutral/png?seed=orbit-03'},
-      {'name': 'Echo', 'url': 'https://api.dicebear.com/9.x/bottts-neutral/png?seed=orbit-04'},
-      {'name': 'Mint', 'url': 'https://api.dicebear.com/9.x/bottts-neutral/png?seed=orbit-05'},
-      {'name': 'Solar', 'url': 'https://api.dicebear.com/9.x/bottts-neutral/png?seed=orbit-06'},
+      {
+        'name': 'Orbit',
+        'url': 'https://api.dicebear.com/9.x/bottts-neutral/png?seed=orbit-01',
+      },
+      {
+        'name': 'Nova',
+        'url': 'https://api.dicebear.com/9.x/bottts-neutral/png?seed=orbit-02',
+      },
+      {
+        'name': 'Pixel',
+        'url': 'https://api.dicebear.com/9.x/bottts-neutral/png?seed=orbit-03',
+      },
+      {
+        'name': 'Echo',
+        'url': 'https://api.dicebear.com/9.x/bottts-neutral/png?seed=orbit-04',
+      },
+      {
+        'name': 'Mint',
+        'url': 'https://api.dicebear.com/9.x/bottts-neutral/png?seed=orbit-05',
+      },
+      {
+        'name': 'Solar',
+        'url': 'https://api.dicebear.com/9.x/bottts-neutral/png?seed=orbit-06',
+      },
     ];
 
     showModalBottomSheet(
@@ -1663,10 +2157,16 @@ class HomeView extends StatelessWidget {
                           maxHeight: 800,
                         );
                         if (photo != null) {
-                          authController.updateAvatar(avatarFile: File(photo.path));
+                          authController.updateAvatar(
+                            avatarFile: File(photo.path),
+                          );
                         }
                       },
-                      icon: const Icon(Icons.camera_alt, color: Colors.white, size: 18),
+                      icon: const Icon(
+                        Icons.camera_alt,
+                        color: Colors.white,
+                        size: 18,
+                      ),
                       label: Text(t('Camera')),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
@@ -1688,10 +2188,16 @@ class HomeView extends StatelessWidget {
                           maxHeight: 800,
                         );
                         if (photo != null) {
-                          authController.updateAvatar(avatarFile: File(photo.path));
+                          authController.updateAvatar(
+                            avatarFile: File(photo.path),
+                          );
                         }
                       },
-                      icon: const Icon(Icons.photo_library, color: Colors.white, size: 18),
+                      icon: const Icon(
+                        Icons.photo_library,
+                        color: Colors.white,
+                        size: 18,
+                      ),
                       label: Text(t('Gallery')),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primaryLight,
@@ -1737,7 +2243,9 @@ class HomeView extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF1E293B) : Colors.grey.shade100,
+                        color: isDark
+                            ? const Color(0xFF1E293B)
+                            : Colors.grey.shade100,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(color: borderColor),
                       ),
@@ -1751,7 +2259,10 @@ class HomeView extends StatelessWidget {
                               width: 48,
                               height: 48,
                               errorBuilder: (context, error, stackTrace) =>
-                                  const Icon(Icons.person, color: AppColors.primary),
+                                  const Icon(
+                                    Icons.person,
+                                    color: AppColors.primary,
+                                  ),
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -1779,9 +2290,13 @@ class HomeView extends StatelessWidget {
 
   void _openLanguageSelectorModal(BuildContext context, bool isDark) {
     final cardColor = isDark ? AppColors.cardBg : AppColorsLight.cardBg;
-    final borderColor = isDark ? AppColors.cardBorder : AppColorsLight.cardBorder;
+    final borderColor = isDark
+        ? AppColors.cardBorder
+        : AppColorsLight.cardBorder;
     final textColor = isDark ? Colors.white : AppColorsLight.textMain;
-    final subtextColor = isDark ? const Color(0xFFd4d4d8) : AppColorsLight.textMuted;
+    final subtextColor = isDark
+        ? const Color(0xFFd4d4d8)
+        : AppColorsLight.textMuted;
 
     final List<Map<String, String>> languages = [
       {'code': 'en', 'name': 'English', 'region': 'Global Default 🌐'},
@@ -1824,14 +2339,23 @@ class HomeView extends StatelessWidget {
               Container(
                 width: 40,
                 height: 4,
-                decoration: BoxDecoration(color: borderColor, borderRadius: BorderRadius.circular(2)),
+                decoration: BoxDecoration(
+                  color: borderColor,
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
               const SizedBox(height: 16),
-              Text(t('Select App Language'),
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor),
+              Text(
+                t('Select App Language'),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: textColor,
+                ),
               ),
               const SizedBox(height: 6),
-              Text(t('Choose your preferred language for the Rider Portal'),
+              Text(
+                t('Choose your preferred language for the Rider Portal'),
                 style: TextStyle(fontSize: 12, color: subtextColor),
               ),
               const SizedBox(height: 16),
@@ -1843,7 +2367,8 @@ class HomeView extends StatelessWidget {
                   itemBuilder: (c, idx) {
                     final item = languages[idx];
                     return Obx(() {
-                      final isSelected = authController.selectedLanguage.value == item['code'];
+                      final isSelected =
+                          authController.selectedLanguage.value == item['code'];
                       return ListTile(
                         onTap: () {
                           authController.setAppLanguage(item['code']!);
@@ -1856,9 +2381,25 @@ class HomeView extends StatelessWidget {
                             colorText: Colors.white,
                           );
                         },
-                        title: Text(item['name']!, style: TextStyle(fontWeight: isSelected ? FontWeight.bold : FontWeight.normal, color: textColor)),
-                        subtitle: Text(item['region']!, style: TextStyle(fontSize: 11, color: subtextColor)),
-                        trailing: isSelected ? const Icon(Icons.check_circle, color: AppColors.primary) : null,
+                        title: Text(
+                          item['name']!,
+                          style: TextStyle(
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                            color: textColor,
+                          ),
+                        ),
+                        subtitle: Text(
+                          item['region']!,
+                          style: TextStyle(fontSize: 11, color: subtextColor),
+                        ),
+                        trailing: isSelected
+                            ? const Icon(
+                                Icons.check_circle,
+                                color: AppColors.primary,
+                              )
+                            : null,
                       );
                     });
                   },
@@ -1873,9 +2414,13 @@ class HomeView extends StatelessWidget {
 
   void _openThemeSelectorModal(BuildContext context, bool isDark) {
     final cardColor = isDark ? AppColors.cardBg : AppColorsLight.cardBg;
-    final borderColor = isDark ? AppColors.cardBorder : AppColorsLight.cardBorder;
+    final borderColor = isDark
+        ? AppColors.cardBorder
+        : AppColorsLight.cardBorder;
     final textColor = isDark ? Colors.white : AppColorsLight.textMain;
-    final subtextColor = isDark ? const Color(0xFFd4d4d8) : AppColorsLight.textMuted;
+    final subtextColor = isDark
+        ? const Color(0xFFd4d4d8)
+        : AppColorsLight.textMuted;
 
     showModalBottomSheet(
       context: context,
@@ -1917,7 +2462,7 @@ class HomeView extends StatelessWidget {
                   style: TextStyle(fontSize: 12, color: subtextColor),
                 ),
                 const SizedBox(height: 20),
-                
+
                 _buildThemeOptionTile(
                   title: 'System Theme (Auto)',
                   subtitle: 'Matches device system light / dark settings',
@@ -2001,7 +2546,11 @@ class HomeView extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, color: isSelected ? AppColors.primary : subtextColor, size: 24),
+            Icon(
+              icon,
+              color: isSelected ? AppColors.primary : subtextColor,
+              size: 24,
+            ),
             const SizedBox(width: 14),
             Expanded(
               child: Column(
@@ -2024,7 +2573,11 @@ class HomeView extends StatelessWidget {
               ),
             ),
             if (isSelected)
-              const Icon(Icons.check_circle, color: AppColors.primary, size: 20),
+              const Icon(
+                Icons.check_circle,
+                color: AppColors.primary,
+                size: 20,
+              ),
           ],
         ),
       ),
@@ -2037,13 +2590,20 @@ class HomeView extends StatelessWidget {
     final confirmPassCtrl = TextEditingController();
 
     final cardColor = isDark ? AppColors.cardBg : AppColorsLight.cardBg;
-    final borderColor = isDark ? AppColors.cardBorder : AppColorsLight.cardBorder;
+    final borderColor = isDark
+        ? AppColors.cardBorder
+        : AppColorsLight.cardBorder;
     final textColor = isDark ? Colors.white : AppColorsLight.textMain;
-    final subtextColor = isDark ? const Color(0xFFd4d4d8) : AppColorsLight.textMuted;
+    final subtextColor = isDark
+        ? const Color(0xFFd4d4d8)
+        : AppColorsLight.textMuted;
 
     Get.dialog(
       Dialog(
-        insetPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+        insetPadding: const EdgeInsets.symmetric(
+          horizontal: 16.0,
+          vertical: 24.0,
+        ),
         backgroundColor: cardColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         child: Container(
@@ -2061,7 +2621,11 @@ class HomeView extends StatelessWidget {
                       color: AppColors.primary.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(Icons.lock_reset_rounded, color: AppColors.primary, size: 26),
+                    child: const Icon(
+                      Icons.lock_reset_rounded,
+                      color: AppColors.primary,
+                      size: 26,
+                    ),
                   ),
                   const SizedBox(width: 14),
                   Expanded(
@@ -2100,7 +2664,10 @@ class HomeView extends StatelessWidget {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                    borderSide: const BorderSide(
+                      color: AppColors.primary,
+                      width: 2,
+                    ),
                   ),
                 ),
               ),
@@ -2119,7 +2686,10 @@ class HomeView extends StatelessWidget {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                    borderSide: const BorderSide(
+                      color: AppColors.primary,
+                      width: 2,
+                    ),
                   ),
                 ),
               ),
@@ -2138,7 +2708,10 @@ class HomeView extends StatelessWidget {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                    borderSide: const BorderSide(
+                      color: AppColors.primary,
+                      width: 2,
+                    ),
                   ),
                 ),
               ),
@@ -2155,31 +2728,57 @@ class HomeView extends StatelessWidget {
                           borderRadius: BorderRadius.circular(14),
                         ),
                       ),
-                      child: Text(t('Cancel'), style: TextStyle(color: subtextColor, fontWeight: FontWeight.bold)),
+                      child: Text(
+                        t('Cancel'),
+                        style: TextStyle(
+                          color: subtextColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () async {
-                        if (currentPassCtrl.text.isEmpty || newPassCtrl.text.isEmpty) {
-                          Get.snackbar('Validation Error', 'Please fill in all password fields',
-                              snackPosition: SnackPosition.BOTTOM);
+                        if (currentPassCtrl.text.isEmpty ||
+                            newPassCtrl.text.isEmpty) {
+                          Get.snackbar(
+                            'Validation Error',
+                            'Please fill in all password fields',
+                            snackPosition: SnackPosition.BOTTOM,
+                          );
                           return;
                         }
                         if (newPassCtrl.text != confirmPassCtrl.text) {
-                          Get.snackbar('Validation Error', 'New passwords do not match',
-                              snackPosition: SnackPosition.BOTTOM);
+                          Get.snackbar(
+                            'Validation Error',
+                            'New passwords do not match',
+                            snackPosition: SnackPosition.BOTTOM,
+                          );
+                          return;
+                        }
+                        if (newPassCtrl.text.length < 8) {
+                          Get.snackbar(
+                            'Validation Error',
+                            'New password must be at least 8 characters long',
+                            snackPosition: SnackPosition.BOTTOM,
+                          );
                           return;
                         }
                         if (newPassCtrl.text.length < 6) {
-                          Get.snackbar('Validation Error', 'Password must be at least 6 characters',
-                              snackPosition: SnackPosition.BOTTOM);
+                          Get.snackbar(
+                            'Validation Error',
+                            'Password must be at least 6 characters',
+                            snackPosition: SnackPosition.BOTTOM,
+                          );
                           return;
                         }
                         Get.back();
                         authController.changePassword(
-                            currentPassCtrl.text, newPassCtrl.text);
+                          currentPassCtrl.text,
+                          newPassCtrl.text,
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
@@ -2190,7 +2789,10 @@ class HomeView extends StatelessWidget {
                         ),
                         elevation: 2,
                       ),
-                      child: Text(t('Update Password'), style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: Text(
+                        t('Update Password'),
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
                 ],

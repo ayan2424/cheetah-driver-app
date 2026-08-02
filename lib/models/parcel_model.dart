@@ -7,6 +7,7 @@ class ParcelModel {
   final String receiverAddress;
   final String status;
   final String paymentStatus;
+  final bool codSettled;
   final double amount;
   final String originBranchName;
   final String createdAt;
@@ -20,6 +21,7 @@ class ParcelModel {
     required this.receiverAddress,
     required this.status,
     required this.paymentStatus,
+    required this.codSettled,
     required this.amount,
     required this.originBranchName,
     required this.createdAt,
@@ -35,11 +37,30 @@ class ParcelModel {
       receiverAddress: json['receiver_address'] ?? 'N/A',
       status: json['status'] ?? 'Pending',
       paymentStatus: json['payment_status'] ?? 'Unpaid',
+      codSettled: json['cod_settled'].toString() == '1',
       amount: double.tryParse(json['amount'].toString()) ?? 0.0,
       originBranchName: json['origin_branch_name'] ?? 'Central Hub',
       createdAt: json['created_at'] ?? '',
     );
   }
+
+  /// COD is the only delivery payment the rider collects from the receiver.
+  /// Unpaid means the sender/account invoice remains outstanding; it is not
+  /// rider cash and must never enter the COD settlement flow.
+  bool get isCod => paymentStatus == 'COD';
+
+  String get paymentInstruction {
+    switch (paymentStatus) {
+      case 'COD':
+        return 'COD — collect from receiver';
+      case 'Paid':
+        return 'Prepaid — do not collect';
+      default:
+        return 'Sender invoice pending — do not collect';
+    }
+  }
+
+  bool get isDelivered => status == 'Delivered';
 }
 
 class ParcelStats {

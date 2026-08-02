@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api_service.dart';
 import '../services/location_service.dart';
+import '../services/session_store.dart';
 import '../utils/constants.dart';
 
 class AuthController extends GetxController with WidgetsBindingObserver {
@@ -17,7 +18,8 @@ class AuthController extends GetxController with WidgetsBindingObserver {
   var branchCity = ''.obs;
   var isDarkMode = true.obs;
   var themePreference = 'system'.obs; // 'system', 'dark', 'light'
-  var selectedLanguage = 'en'.obs; // 'en', 'sw', 'ur', 'ar', 'fr', 'es', 'de', 'tr', 'zh'
+  var selectedLanguage =
+      'en'.obs; // 'en', 'sw', 'ur', 'ar', 'fr', 'es', 'de', 'tr', 'zh'
   RxString get appLanguage => selectedLanguage;
 
   @override
@@ -25,12 +27,6 @@ class AuthController extends GetxController with WidgetsBindingObserver {
     super.onInit();
     WidgetsBinding.instance.addObserver(this);
     loadUserSession();
-  }
-
-  @override
-  void onReady() {
-    super.onReady();
-    LocationService.initGlobalLocationGuard();
   }
 
   @override
@@ -60,14 +56,14 @@ class AuthController extends GetxController with WidgetsBindingObserver {
 
   Future<void> loadUserSession() async {
     final prefs = await SharedPreferences.getInstance();
-    userToken.value = prefs.getString('api_token') ?? '';
+    userToken.value = await SessionStore.readToken();
     userName.value = prefs.getString('user_name') ?? 'Rider';
     userEmail.value = prefs.getString('user_email') ?? '';
     userPhone.value = prefs.getString('user_phone') ?? '';
     userAvatarUrl.value = prefs.getString('user_avatar') ?? '';
     branchName.value = prefs.getString('branch_name') ?? 'Main Hub';
     branchCity.value = prefs.getString('branch_city') ?? 'Headquarters';
-    
+
     selectedLanguage.value = prefs.getString('selected_language') ?? 'en';
     themePreference.value = prefs.getString('theme_preference') ?? 'system';
     _applyThemePreference(themePreference.value);
@@ -99,7 +95,8 @@ class AuthController extends GetxController with WidgetsBindingObserver {
       isDarkMode.value = false;
     } else {
       // System mode: Query actual mobile device platform brightness!
-      final brightness = WidgetsBinding.instance.platformDispatcher.platformBrightness;
+      final brightness =
+          WidgetsBinding.instance.platformDispatcher.platformBrightness;
       isDarkMode.value = (brightness == Brightness.dark);
     }
   }
@@ -113,7 +110,7 @@ class AuthController extends GetxController with WidgetsBindingObserver {
       userEmail.value = u['email'] ?? userEmail.value;
       userPhone.value = u['phone'] ?? '';
       userAvatarUrl.value = u['profile_image'] ?? '';
-      
+
       if (u['branch'] != null) {
         branchName.value = u['branch']['name'] ?? 'Main Hub';
         branchCity.value = u['branch']['city'] ?? 'Headquarters';
@@ -136,15 +133,17 @@ class AuthController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> toggleTheme() async {
-    isDarkMode.value = !isDarkMode.value;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('is_dark_mode', isDarkMode.value);
+    final nextMode = isDarkMode.value ? 'light' : 'dark';
+    await setThemePreference(nextMode);
   }
 
   Future<void> login(String email, String password) async {
     if (email.isEmpty || password.isEmpty) {
-      Get.snackbar('Error', 'Please fill in all fields',
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Error',
+        'Please fill in all fields',
+        snackPosition: SnackPosition.BOTTOM,
+      );
       return;
     }
 
@@ -158,7 +157,7 @@ class AuthController extends GetxController with WidgetsBindingObserver {
       final userEmailVal = res['user']['email'] ?? email;
 
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('api_token', token);
+      await SessionStore.writeToken(token);
       await prefs.setString('user_name', name);
       await prefs.setString('user_email', userEmailVal);
 
@@ -170,20 +169,29 @@ class AuthController extends GetxController with WidgetsBindingObserver {
       LocationService.startLiveLocationTracking(token);
 
       Get.offAllNamed(AppRoutes.HOME);
-      Get.snackbar('Success', 'Welcome back, $name!',
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Success',
+        'Welcome back, $name!',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } else {
-      Get.snackbar('Login Failed', res['error'] ?? 'Invalid credentials',
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Login Failed',
+        res['error'] ?? 'Invalid credentials',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 
   Future<void> requestPasswordReset(String email) async {
     if (email.isEmpty || !email.contains('@')) {
-      Get.snackbar('Error', 'Please enter a valid email address',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.redAccent,
-          colorText: Colors.white);
+      Get.snackbar(
+        'Error',
+        'Please enter a valid email address',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+      );
       return;
     }
 
@@ -192,16 +200,22 @@ class AuthController extends GetxController with WidgetsBindingObserver {
     isLoading.value = false;
 
     if (res['success'] == true) {
-      Get.snackbar('Email Sent', res['message'],
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-          duration: const Duration(seconds: 4));
+      Get.snackbar(
+        'Email Sent',
+        res['message'],
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 4),
+      );
     } else {
-      Get.snackbar('Error', res['message'],
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.redAccent,
-          colorText: Colors.white);
+      Get.snackbar(
+        'Error',
+        res['message'],
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+      );
     }
   }
 
@@ -209,6 +223,7 @@ class AuthController extends GetxController with WidgetsBindingObserver {
     LocationService.stopLiveLocationTracking();
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
+    await SessionStore.clearToken();
     userToken.value = '';
     userName.value = '';
     userAvatarUrl.value = '';
@@ -219,6 +234,7 @@ class AuthController extends GetxController with WidgetsBindingObserver {
     LocationService.stopLiveLocationTracking();
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
+    await SessionStore.clearToken();
     userToken.value = '';
     userName.value = '';
     userAvatarUrl.value = '';
@@ -249,17 +265,26 @@ class AuthController extends GetxController with WidgetsBindingObserver {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('user_avatar', userAvatarUrl.value);
       }
-      Get.snackbar('Profile Updated', 'Your profile picture has been synced with the website!',
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Profile Updated',
+        'Your profile picture has been synced with the website!',
+        snackPosition: SnackPosition.BOTTOM,
+      );
       return true;
     } else {
-      Get.snackbar('Update Failed', res['error'] ?? 'Could not update profile',
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Update Failed',
+        res['error'] ?? 'Could not update profile',
+        snackPosition: SnackPosition.BOTTOM,
+      );
       return false;
     }
   }
 
-  Future<bool> changePassword(String currentPassword, String newPassword) async {
+  Future<bool> changePassword(
+    String currentPassword,
+    String newPassword,
+  ) async {
     if (userToken.value.isEmpty) return false;
     isLoading.value = true;
     final res = await ApiService.changePassword(
@@ -270,12 +295,18 @@ class AuthController extends GetxController with WidgetsBindingObserver {
     isLoading.value = false;
 
     if (res['success'] == true) {
-      Get.snackbar('Success', 'Password updated successfully!',
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Success',
+        'Password updated successfully!',
+        snackPosition: SnackPosition.BOTTOM,
+      );
       return true;
     } else {
-      Get.snackbar('Error', res['error'] ?? 'Could not update password',
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Error',
+        res['error'] ?? 'Could not update password',
+        snackPosition: SnackPosition.BOTTOM,
+      );
       return false;
     }
   }

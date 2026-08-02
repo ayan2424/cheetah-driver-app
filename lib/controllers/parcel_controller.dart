@@ -66,12 +66,17 @@ class ParcelController extends GetxController {
       _applyFilterAndSearch();
     } else {
       final err = (res['error'] ?? '').toString().toLowerCase();
-      if (err.contains('invalid api token') || err.contains('session expired') || err.contains('token is required')) {
+      if (err.contains('invalid api token') ||
+          err.contains('session expired') ||
+          err.contains('token is required')) {
         authController.handleSessionExpired();
         return;
       }
-      Get.snackbar('Error', res['error'] ?? 'Failed to load parcels',
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Error',
+        res['error'] ?? 'Failed to load parcels',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 
@@ -104,11 +109,13 @@ class ParcelController extends GetxController {
     }
     if (searchQuery.value.isNotEmpty) {
       final q = searchQuery.value;
-      result = result.where((p) =>
-          p.trackingNumber.toLowerCase().contains(q) ||
-          p.receiverName.toLowerCase().contains(q) ||
-          p.receiverAddress.toLowerCase().contains(q) ||
-          p.receiverPhone.toLowerCase().contains(q));
+      result = result.where(
+        (p) =>
+            p.trackingNumber.toLowerCase().contains(q) ||
+            p.receiverName.toLowerCase().contains(q) ||
+            p.receiverAddress.toLowerCase().contains(q) ||
+            p.receiverPhone.toLowerCase().contains(q),
+      );
     }
     filteredParcels.value = result.toList();
   }
@@ -139,13 +146,21 @@ class ParcelController extends GetxController {
     isSubmittingPod.value = false;
 
     if (res['success'] == true) {
-      Get.snackbar('Success', 'POD Submitted & Status Updated!',
-          snackPosition: SnackPosition.BOTTOM);
-      fetchParcels(); // Refresh list
+      Get.snackbar(
+        'Success',
+        'POD Submitted & Status Updated!',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      // Wait for the refresh so the cash log includes this delivery before the
+      // POD sheet/success route can return control to the rider.
+      await fetchParcels();
       return true;
     } else {
-      Get.snackbar('Error', res['error'] ?? 'Failed to update status',
-          snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Error',
+        res['error'] ?? 'Failed to update status',
+        snackPosition: SnackPosition.BOTTOM,
+      );
       return false;
     }
   }

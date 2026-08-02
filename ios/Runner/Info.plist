@@ -30,6 +30,10 @@
 	<string>Camera permission is required to scan parcel QR codes and capture Proof of Delivery (POD) photos.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Photo Library access is required to upload POD proof photos.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Location is used while you are on duty to update dispatchers and delivery progress.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Location is used while you are on duty to update dispatchers and delivery progress.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
