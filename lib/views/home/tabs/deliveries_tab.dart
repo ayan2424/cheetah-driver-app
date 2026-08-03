@@ -40,7 +40,8 @@ class DeliveriesTab extends StatelessWidget {
           children: [
             // Search Input
             TextField(
-              onChanged: (val) => parcelController.searchQuery.value = val,
+              controller: parcelController.searchController,
+              onChanged: parcelController.searchParcels,
               style: TextStyle(color: textColor, fontSize: 14),
               decoration: InputDecoration(
                 hintText: 'Search by tracking # or receiver...',
@@ -51,8 +52,7 @@ class DeliveriesTab extends StatelessWidget {
                   onPressed: () async {
                     final scannedCode = await Get.to(() => QrScannerView());
                     if (scannedCode != null && scannedCode is String) {
-                      parcelController.searchQuery.value = scannedCode;
-                      // You might want to update a TextEditingController if you have one attached to the TextField
+                      parcelController.searchParcels(scannedCode);
                     }
                   },
                 ),
@@ -99,8 +99,10 @@ class DeliveriesTab extends StatelessWidget {
                       side: BorderSide(
                         color: isSelected ? AppColors.primary : borderColor,
                       ),
-                      onSelected: (val) {
-                        parcelController.activeFilter.value = st;
+                      onSelected: (selected) {
+                        if (selected) {
+                          parcelController.applyFilter(st);
+                        }
                       },
                     ),
                   );
