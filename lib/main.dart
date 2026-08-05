@@ -5,9 +5,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'controllers/auth_controller.dart';
 import 'routes/app_pages.dart';
 import 'utils/constants.dart';
+import 'services/offline_sync_service.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await OfflineSyncService.init();
   Get.put(AuthController(), permanent: true);
   runApp(const CheetahDriverApp());
 }

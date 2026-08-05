@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import '../utils/constants.dart';
 import '../models/parcel_model.dart';
@@ -137,6 +138,7 @@ class ApiService {
     required String description,
     String? deliveryOtp,
     File? photoFile,
+    Uint8List? signatureBytes,
   }) async {
     try {
       var request = http.MultipartRequest(
@@ -158,6 +160,16 @@ class ApiService {
       if (photoFile != null) {
         request.files.add(
           await http.MultipartFile.fromPath('photo', photoFile.path),
+        );
+      }
+
+      if (signatureBytes != null) {
+        request.files.add(
+          http.MultipartFile.fromBytes(
+            'signature',
+            signatureBytes,
+            filename: 'signature.png',
+          ),
         );
       }
 

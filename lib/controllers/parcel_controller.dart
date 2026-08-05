@@ -1,9 +1,13 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../models/parcel_model.dart';
 import '../services/api_service.dart';
+import '../services/offline_sync_service.dart';
 import 'auth_controller.dart';
+import 'dart:convert';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 class ParcelController extends GetxController {
   var isLoading = false.obs;
@@ -128,9 +132,37 @@ class ParcelController extends GetxController {
     required String description,
     String? deliveryOtp,
     File? photoFile,
+    Uint8List? signatureBytes,
   }) async {
     isSubmittingPod.value = true;
     final token = authController.userToken.value;
+
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    if (!connectivityResult.contains(ConnectivityResult.mobile) && 
+        !connectivityResult.contains(ConnectivityResult.wifi)) {
+      
+      final payload = {
+        'token': token,
+        'parcelId': parcelId.toString(),
+        'trackingNumber': trackingNumber,
+        'status': status,
+        'receiverName': receiverName,
+        'description': description,
+        'deliveryOtp': deliveryOtp,
+        'photo_path': photoFile?.path,
+        'signature_base64': signatureBytes != null ? base64Encode(signatureBytes) : null,
+      };
+
+      await OfflineSyncService.savePodToQueue(payload);
+      
+      Get.snackbar(
+        'Offline Mode',
+        'No internet. POD saved to queue and will sync automatically.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      isSubmittingPod.value = false;
+      return true;
+    }
 
     final res = await ApiService.updateStatusWithPod(
       token: token,
@@ -141,6 +173,7 @@ class ParcelController extends GetxController {
       description: description,
       deliveryOtp: deliveryOtp,
       photoFile: photoFile,
+      signatureBytes: signatureBytes,
     );
 
     isSubmittingPod.value = false;

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -1914,6 +1915,12 @@ class HomeView extends StatelessWidget {
                           );
                           return;
                         }
+
+                        Uint8List? signatureBytes;
+                        if (signatureController.isNotEmpty) {
+                          signatureBytes = await signatureController.toPngBytes();
+                        }
+
                         Navigator.pop(ctx);
                         await parcelController.submitPod(
                           parcelId: p.id,
@@ -1923,6 +1930,7 @@ class HomeView extends StatelessWidget {
                           description: descController.text.trim(),
                           deliveryOtp: otpController.text.trim(),
                           photoFile: selectedPhoto,
+                          signatureBytes: signatureBytes,
                         );
                       },
                       style: ElevatedButton.styleFrom(
@@ -2052,7 +2060,7 @@ class HomeView extends StatelessWidget {
   void _openMap(String address) async {
     if (address.isEmpty) return;
     final Uri url = Uri.parse(
-      'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(address)}',
+      'https://www.google.com/maps/dir/?api=1&destination=${Uri.encodeComponent(address)}',
     );
     try {
       final launched = await launchUrl(
