@@ -66,6 +66,26 @@ class ApiService {
     }
   }
 
+  // Fetch Driver Wallet
+  static Future<Map<String, dynamic>> fetchDriverWallet({
+    required String token,
+  }) async {
+    try {
+      final response = await http
+          .post(
+            Uri.parse('${AppConstants.apiUrl}get_wallet.php'),
+            body: {'token': token},
+          )
+          .timeout(_requestTimeout);
+      return _decodeResponse(response);
+    } catch (_) {
+      return {
+        'success': false,
+        'error': 'Connection failed. Please try again.',
+      };
+    }
+  }
+
   // Request Password Reset Link via Email
   static Future<Map<String, dynamic>> forgotPassword(String email) async {
     try {

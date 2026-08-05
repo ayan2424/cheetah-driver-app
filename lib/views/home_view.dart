@@ -9,6 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../controllers/auth_controller.dart';
 import '../controllers/parcel_controller.dart';
+import '../controllers/wallet_controller.dart';
 import '../models/parcel_model.dart';
 import '../utils/constants.dart';
 import '../utils/app_translations.dart';
@@ -19,6 +20,7 @@ class HomeView extends StatelessWidget {
   // the same authenticated state.
   final AuthController authController = Get.find<AuthController>();
   final ParcelController parcelController = Get.put(ParcelController());
+  final WalletController walletController = Get.put(WalletController());
   final RxInt selectedNavIndex = 0.obs;
 
   HomeView({Key? key}) : super(key: key);
@@ -128,6 +130,14 @@ class HomeView extends StatelessWidget {
                     textColor,
                     subtextColor,
                   ),
+                  _buildWalletTab(
+                    context,
+                    isDark,
+                    cardColor,
+                    borderColor,
+                    textColor,
+                    subtextColor,
+                  ),
                   _buildProfileTab(
                     context,
                     isDark,
@@ -180,11 +190,12 @@ class HomeView extends StatelessWidget {
                   _buildNavItem(
                     1,
                     Icons.account_balance_wallet,
-                    t('COD Cash Log'),
+                    t('COD Log'),
                     isDark,
                   ),
                   _buildNavItem(2, Icons.qr_code_scanner, t('Scanner'), isDark),
-                  _buildNavItem(3, Icons.person, t('Profile'), isDark),
+                  _buildNavItem(3, Icons.account_balance, t('Wallet'), isDark),
+                  _buildNavItem(4, Icons.person, t('Profile'), isDark),
                 ],
               ),
             ),
@@ -719,6 +730,203 @@ class HomeView extends StatelessWidget {
   }
 
   // TAB 3: Rider Profile & System Info (Clean 3-Card Architecture)
+  // ══════════════════════════════════════════════════════════════
+  // 3B. WALLET TAB
+  // ══════════════════════════════════════════════════════════════
+  Widget _buildWalletTab(
+    BuildContext context,
+    bool isDark,
+    Color cardColor,
+    Color borderColor,
+    Color textColor,
+    Color subtextColor,
+  ) {
+    return Obx(() {
+      if (walletController.isLoading.value) {
+        return const Center(child: CircularProgressIndicator());
+      }
+      return RefreshIndicator(
+        onRefresh: () => walletController.fetchWallet(),
+        color: AppColors.primary,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 20, 16, 100),
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [AppColors.primary, Color(0xFF6f42c1)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withOpacity(0.3),
+                    blurRadius: 15,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Pending Balance',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Rs. ${walletController.pendingBalance.value.toStringAsFixed(2)}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Total Earned',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 12,
+                            ),
+                          ),
+                          Text(
+                            'Rs. ${walletController.totalEarned.value.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          const Text(
+                            'Total Paid',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 12,
+                            ),
+                          ),
+                          Text(
+                            'Rs. ${walletController.totalPaid.value.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Recent Payouts',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: textColor,
+              ),
+            ),
+            const SizedBox(height: 12),
+            if (walletController.history.isEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 40),
+                child: Center(
+                  child: Column(
+                    children: [
+                      Icon(Icons.inbox, size: 60, color: subtextColor.withOpacity(0.5)),
+                      const SizedBox(height: 16),
+                      Text('No payouts yet', style: TextStyle(color: subtextColor)),
+                    ],
+                  ),
+                ),
+              )
+            else
+              ...walletController.history.map((tx) {
+                final isPaid = tx['status'] == 'paid';
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: cardColor,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: borderColor),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: isPaid ? Colors.green.withOpacity(0.1) : Colors.orange.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          isPaid ? Icons.check_circle : Icons.hourglass_top,
+                          color: isPaid ? Colors.green : Colors.orange,
+                          size: 24,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              tx['tracking_number'] ?? 'Delivery',
+                              style: TextStyle(
+                                color: textColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              tx['date'] ?? '',
+                              style: TextStyle(
+                                color: subtextColor,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Text(
+                        '+ Rs. ${double.parse(tx['amount'].toString()).toStringAsFixed(2)}',
+                        style: TextStyle(
+                          color: isPaid ? Colors.green : AppColors.primary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+          ],
+        ),
+      );
+    });
+  }
+
   Widget _buildProfileTab(
     BuildContext context,
     bool isDark,
