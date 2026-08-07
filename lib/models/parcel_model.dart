@@ -11,6 +11,7 @@ class ParcelModel {
   final double amount;
   final String originBranchName;
   final String createdAt;
+  final bool requiresOtp;
 
   ParcelModel({
     required this.id,
@@ -25,6 +26,7 @@ class ParcelModel {
     required this.amount,
     required this.originBranchName,
     required this.createdAt,
+    required this.requiresOtp,
   });
 
   factory ParcelModel.fromJson(Map<String, dynamic> json) {
@@ -41,6 +43,7 @@ class ParcelModel {
       amount: double.tryParse(json['amount'].toString()) ?? 0.0,
       originBranchName: json['origin_branch_name'] ?? 'Central Hub',
       createdAt: json['created_at'] ?? '',
+      requiresOtp: json['requires_otp'] == true,
     );
   }
 

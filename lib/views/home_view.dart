@@ -13,7 +13,7 @@ import '../controllers/wallet_controller.dart';
 import '../models/parcel_model.dart';
 import '../utils/constants.dart';
 import '../utils/app_translations.dart';
-
+import 'home/qr_scanner_view.dart';
 class HomeView extends StatelessWidget {
   // AuthController is registered once in main.dart and owns the active token,
   // theme, and session. Reusing it keeps delivery and cash-log refreshes in
@@ -1685,23 +1685,27 @@ class HomeView extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    t('Payment Mode'),
-                    style: TextStyle(fontSize: 11, color: subtextColor),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    '${p.paymentInstruction} (Rs. ${p.amount.toStringAsFixed(0)})',
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.accentGreen,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      t('Payment Mode'),
+                      style: TextStyle(fontSize: 11, color: subtextColor),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 2),
+                    Text(
+                      '${p.paymentInstruction} (Rs. ${p.amount.toStringAsFixed(0)})',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.accentGreen,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               Row(
                 children: [
@@ -2048,38 +2052,71 @@ class HomeView extends StatelessWidget {
                     ),
                     const SizedBox(height: 14),
 
-                    Text(
-                      t('Delivery OTP (If required)'),
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: textColor,
+                    if (p.requiresOtp) ...[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            t('Delivery OTP *'),
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: textColor,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () async {
+                              final scanned = await Get.to(() => QrScannerView());
+                              if (scanned != null) {
+                                String code = scanned.toString().trim();
+                                if (code.startsWith('OTP:')) {
+                                  code = code.replaceFirst('OTP:', '').trim();
+                                }
+                                otpController.text = code;
+                              }
+                            },
+                            child: Row(
+                              children: [
+                                Icon(Icons.qr_code_scanner, size: 16, color: AppColors.primary),
+                                const SizedBox(width: 4),
+                                Text(
+                                  t('Scan QR'),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 6),
-                    TextField(
-                      controller: otpController,
-                      keyboardType: TextInputType.number,
-                      style: TextStyle(color: textColor),
-                      decoration: InputDecoration(
-                        hintText: 'e.g. 123456',
-                        hintStyle: TextStyle(color: subtextColor),
-                        filled: true,
-                        fillColor: AppColors.background,
-                        contentPadding: const EdgeInsets.all(16),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: borderColor),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: AppColors.primary,
+                      const SizedBox(height: 6),
+                      TextField(
+                        controller: otpController,
+                        keyboardType: TextInputType.number,
+                        style: TextStyle(color: textColor),
+                        decoration: InputDecoration(
+                          hintText: 'e.g. 123456',
+                          hintStyle: TextStyle(color: subtextColor),
+                          filled: true,
+                          fillColor: AppColors.background,
+                          contentPadding: const EdgeInsets.all(16),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: borderColor),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: AppColors.primary,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 14),
+                      const SizedBox(height: 14),
+                    ],
 
                     Text(
                       t('Delivery Remarks / Notes'),
