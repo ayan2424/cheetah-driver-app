@@ -295,4 +295,45 @@ class ApiService {
       };
     }
   }
+
+  // Fetch WMS Pick Tasks
+  static Future<Map<String, dynamic>> fetchPickTasks(String token) async {
+    try {
+      final response = await http
+          .post(
+            Uri.parse('${AppConstants.apiUrl}wms_get_pick_tasks.php'),
+            headers: _authHeaders(token),
+          )
+          .timeout(_requestTimeout);
+      return _decodeResponse(response);
+    } catch (_) {
+      return {'success': false, 'error': 'Network error. Please try again.'};
+    }
+  }
+
+  // Update WMS Pick Task Status
+  static Future<Map<String, dynamic>> updatePickTaskStatus({
+    required String token,
+    required int taskId,
+    required String status,
+  }) async {
+    try {
+      final response = await http
+          .post(
+            Uri.parse('${AppConstants.apiUrl}wms_update_task.php'),
+            headers: _authHeaders(token),
+            body: json.encode({
+              'task_id': taskId,
+              'status': status,
+            }),
+          )
+          .timeout(_requestTimeout);
+      return _decodeResponse(response);
+    } catch (_) {
+      return {
+        'success': false,
+        'error': 'Failed to update task. Please try again.',
+      };
+    }
+  }
 }

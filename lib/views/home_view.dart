@@ -14,6 +14,7 @@ import '../models/parcel_model.dart';
 import '../utils/constants.dart';
 import '../utils/app_translations.dart';
 import 'home/qr_scanner_view.dart';
+import 'home/tabs/picking_tab.dart';
 class HomeView extends StatelessWidget {
   // AuthController is registered once in main.dart and owns the active token,
   // theme, and session. Reusing it keeps delivery and cash-log refreshes in
@@ -130,6 +131,7 @@ class HomeView extends StatelessWidget {
                     textColor,
                     subtextColor,
                   ),
+                  PickingTab(),
                   _buildProfileTab(
                     context,
                     isDark,
@@ -186,7 +188,8 @@ class HomeView extends StatelessWidget {
                     isDark,
                   ),
                   _buildNavItem(2, Icons.account_balance, t('Wallet'), isDark),
-                  _buildNavItem(3, Icons.person, t('Profile'), isDark),
+                  _buildNavItem(3, Icons.inventory, t('Picking'), isDark),
+                  _buildNavItem(4, Icons.person, t('Profile'), isDark),
                 ],
               ),
             ),
