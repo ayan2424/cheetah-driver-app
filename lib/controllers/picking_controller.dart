@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../services/api_service.dart';
 import '../controllers/auth_controller.dart';
@@ -15,8 +16,8 @@ class PickingController extends GetxController {
   }
 
   Future<void> fetchTasks() async {
-    final token = authController.token.value;
-    if (token == null || token.isEmpty) return;
+    final token = authController.userToken.value;
+    if (token.isEmpty) return;
     
     isLoading.value = true;
     final res = await ApiService.fetchPickTasks(token);
@@ -28,11 +29,11 @@ class PickingController extends GetxController {
   }
 
   Future<void> updateTaskStatus(int taskId, String status) async {
-    final token = authController.token.value;
-    if (token == null || token.isEmpty) return;
+    final token = authController.userToken.value;
+    if (token.isEmpty) return;
     
     Get.dialog(
-      const Center(child: CircularProgressIndicator()),
+      Center(child: CircularProgressIndicator()),
       barrierDismissible: false,
     );
     

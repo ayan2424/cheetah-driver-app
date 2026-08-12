@@ -107,40 +107,52 @@ class HomeView extends StatelessWidget {
               )
             : IndexedStack(
                 index: selectedNavIndex.value,
-                children: [
-                  _buildDeliveriesTab(
-                    context,
-                    isDark,
-                    cardColor,
-                    borderColor,
-                    textColor,
-                    subtextColor,
-                  ),
-                  _buildCodSettlementTab(
-                    isDark,
-                    cardColor,
-                    borderColor,
-                    textColor,
-                    subtextColor,
-                  ),
-                  _buildWalletTab(
-                    context,
-                    isDark,
-                    cardColor,
-                    borderColor,
-                    textColor,
-                    subtextColor,
-                  ),
-                  PickingTab(),
-                  _buildProfileTab(
-                    context,
-                    isDark,
-                    cardColor,
-                    borderColor,
-                    textColor,
-                    subtextColor,
-                  ),
-                ],
+                children: authController.userRole.value == 'picker'
+                    ? [
+                        PickingTab(),
+                        _buildProfileTab(
+                          context,
+                          isDark,
+                          cardColor,
+                          borderColor,
+                          textColor,
+                          subtextColor,
+                        ),
+                      ]
+                    : [
+                        _buildDeliveriesTab(
+                          context,
+                          isDark,
+                          cardColor,
+                          borderColor,
+                          textColor,
+                          subtextColor,
+                        ),
+                        _buildCodSettlementTab(
+                          isDark,
+                          cardColor,
+                          borderColor,
+                          textColor,
+                          subtextColor,
+                        ),
+                        _buildWalletTab(
+                          context,
+                          isDark,
+                          cardColor,
+                          borderColor,
+                          textColor,
+                          subtextColor,
+                        ),
+                        PickingTab(),
+                        _buildProfileTab(
+                          context,
+                          isDark,
+                          cardColor,
+                          borderColor,
+                          textColor,
+                          subtextColor,
+                        ),
+                      ],
               ),
         // Dynamic Floating Bottom Navigation Bar
         bottomNavigationBar: Container(
@@ -174,23 +186,28 @@ class HomeView extends StatelessWidget {
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildNavItem(
-                    0,
-                    Icons.local_shipping,
-                    t('Deliveries'),
-                    isDark,
-                  ),
-                  _buildNavItem(
-                    1,
-                    Icons.account_balance_wallet,
-                    t('COD Log'),
-                    isDark,
-                  ),
-                  _buildNavItem(2, Icons.account_balance, t('Wallet'), isDark),
-                  _buildNavItem(3, Icons.inventory, t('Picking'), isDark),
-                  _buildNavItem(4, Icons.person, t('Profile'), isDark),
-                ],
+                children: authController.userRole.value == 'picker'
+                    ? [
+                        _buildNavItem(0, Icons.inventory, t('Picking'), isDark),
+                        _buildNavItem(1, Icons.person, t('Profile'), isDark),
+                      ]
+                    : [
+                        _buildNavItem(
+                          0,
+                          Icons.local_shipping,
+                          t('Deliveries'),
+                          isDark,
+                        ),
+                        _buildNavItem(
+                          1,
+                          Icons.account_balance_wallet,
+                          t('COD Log'),
+                          isDark,
+                        ),
+                        _buildNavItem(2, Icons.account_balance, t('Wallet'), isDark),
+                        _buildNavItem(3, Icons.inventory, t('Picking'), isDark),
+                        _buildNavItem(4, Icons.person, t('Profile'), isDark),
+                      ],
               ),
             ),
           ),

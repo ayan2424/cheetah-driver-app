@@ -13,6 +13,7 @@ class AuthController extends GetxController with WidgetsBindingObserver {
   var userName = ''.obs;
   var userEmail = ''.obs;
   var userPhone = ''.obs;
+  var userRole = 'driver'.obs;
   var userAvatarUrl = ''.obs;
   var branchName = ''.obs;
   var branchCity = ''.obs;
@@ -60,6 +61,7 @@ class AuthController extends GetxController with WidgetsBindingObserver {
     userName.value = prefs.getString('user_name') ?? 'Rider';
     userEmail.value = prefs.getString('user_email') ?? '';
     userPhone.value = prefs.getString('user_phone') ?? '';
+    userRole.value = prefs.getString('user_role') ?? 'driver';
     userAvatarUrl.value = prefs.getString('user_avatar') ?? '';
     branchName.value = prefs.getString('branch_name') ?? 'Main Hub';
     branchCity.value = prefs.getString('branch_city') ?? 'Headquarters';
@@ -155,15 +157,18 @@ class AuthController extends GetxController with WidgetsBindingObserver {
       final token = res['token'] ?? res['api_token'] ?? '';
       final name = res['user']['name'] ?? 'Rider';
       final userEmailVal = res['user']['email'] ?? email;
+      final role = res['user']['role'] ?? 'driver';
 
       final prefs = await SharedPreferences.getInstance();
       await SessionStore.writeToken(token);
       await prefs.setString('user_name', name);
       await prefs.setString('user_email', userEmailVal);
+      await prefs.setString('user_role', role);
 
       userToken.value = token;
       userName.value = name;
       userEmail.value = userEmailVal;
+      userRole.value = role;
 
       fetchUserProfile();
       LocationService.startLiveLocationTracking(token);
