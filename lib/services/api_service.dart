@@ -11,6 +11,7 @@ class ApiService {
   static Map<String, String> _authHeaders(String token) => {
     'Authorization': 'Bearer $token',
     'Accept': 'application/json',
+    'Content-Type': 'application/json',
   };
 
   static Map<String, dynamic> _decodeResponse(http.Response response) {
