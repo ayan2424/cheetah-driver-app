@@ -26,15 +26,26 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: Precache Flutter iOS Artifacts
+        run: flutter precache --ios
+
       - name: Install Dependencies
         run: flutter pub get
 
+      - name: Cache CocoaPods Pods
+        uses: actions/cache@v3
+        with:
+          path: ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
       - name: Run Pod Install
         working-directory: ios
-        run: pod install
+        run: pod install --repo-update
 
       - name: Build iOS for Simulator
-        run: flutter build ios --simulator
+        run: flutter build ios --simulator --no-codesign
 
       - name: Build iOS .ipa for Real Devices & Testing
         run: |
