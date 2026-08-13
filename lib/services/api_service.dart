@@ -302,7 +302,7 @@ class ApiService {
     try {
       final response = await http
           .post(
-            Uri.parse('${AppConstants.apiUrl}wms_get_pick_tasks.php'),
+            Uri.parse('${AppConstants.pickerApiUrl}wms_get_pick_tasks.php'),
             headers: _authHeaders(token),
           )
           .timeout(_requestTimeout);
@@ -321,7 +321,7 @@ class ApiService {
     try {
       final response = await http
           .post(
-            Uri.parse('${AppConstants.apiUrl}wms_update_task.php'),
+            Uri.parse('${AppConstants.pickerApiUrl}wms_update_task.php'),
             headers: _authHeaders(token),
             body: json.encode({
               'task_id': taskId,

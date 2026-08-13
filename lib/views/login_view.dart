@@ -8,6 +8,7 @@ class LoginView extends StatelessWidget {
   final AuthController authController = Get.put(AuthController());
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final RxBool isPasswordVisible = false.obs;
 
   LoginView({Key? key}) : super(key: key);
 
@@ -145,12 +146,19 @@ class LoginView extends StatelessWidget {
                   const SizedBox(height: 8),
                   TextField(
                     controller: passwordController,
-                    obscureText: true,
+                    obscureText: !isPasswordVisible.value,
                     style: TextStyle(color: textColor, fontSize: 15),
                     decoration: InputDecoration(
                       hintText: '••••••••',
                       hintStyle: TextStyle(color: subtextColor),
                       prefixIcon: const Icon(Icons.lock_outline, color: AppColors.primary),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          isPasswordVisible.value ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                          color: subtextColor,
+                        ),
+                        onPressed: () => isPasswordVisible.value = !isPasswordVisible.value,
+                      ),
                       filled: true,
                       fillColor: cardColor,
                       contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),

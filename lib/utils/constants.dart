@@ -31,7 +31,8 @@ class AppColorsLight {
 class AppConstants {
   // Live Domain URL for Courier APIs (HTTPS)
   static const String baseUrl = 'https://cheetah.ayan24.me/';
-  static const String apiUrl = '${baseUrl}api/driver/';
+  static const String apiUrl = '${baseUrl}api/v1/driver/';
+  static const String pickerApiUrl = '${baseUrl}api/v1/picker/';
 }
 
 class AppRoutes {
