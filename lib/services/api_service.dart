@@ -11,7 +11,6 @@ class ApiService {
   static Map<String, String> _authHeaders(String token) => {
     'Authorization': 'Bearer $token',
     'Accept': 'application/json',
-    'Content-Type': 'application/json',
   };
 
   static Map<String, dynamic> _decodeResponse(http.Response response) {
@@ -75,7 +74,7 @@ class ApiService {
       final response = await http
           .post(
             Uri.parse('${AppConstants.apiUrl}get_wallet.php'),
-            body: {'token': token},
+            headers: _authHeaders(token),
           )
           .timeout(_requestTimeout);
       return _decodeResponse(response);
@@ -322,11 +321,11 @@ class ApiService {
       final response = await http
           .post(
             Uri.parse('${AppConstants.pickerApiUrl}wms_update_task.php'),
-            headers: _authHeaders(token),
-            body: json.encode({
-              'task_id': taskId,
-              'status': status,
-            }),
+            headers: {
+              ..._authHeaders(token),
+              'Content-Type': 'application/json',
+            },
+            body: json.encode({'task_id': taskId, 'status': status}),
           )
           .timeout(_requestTimeout);
       return _decodeResponse(response);
