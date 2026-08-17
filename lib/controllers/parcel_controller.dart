@@ -142,7 +142,6 @@ class ParcelController extends GetxController {
         !connectivityResult.contains(ConnectivityResult.wifi)) {
       
       final payload = {
-        'token': token,
         'parcelId': parcelId.toString(),
         'trackingNumber': trackingNumber,
         'status': status,
