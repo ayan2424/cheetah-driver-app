@@ -292,7 +292,7 @@ class HomeView extends StatelessWidget {
               onChanged: (val) => parcelController.searchParcels(val),
               style: TextStyle(color: textColor, fontSize: 14),
               decoration: InputDecoration(
-                hintText: 'Search by Tracking #, Name, Address...',
+                hintText: t('Search by Tracking #, Name, Address...'),
                 hintStyle: TextStyle(color: subtextColor, fontSize: 13),
                 prefixIcon: const Icon(Icons.search, color: AppColors.primary),
                 suffixIcon: Row(
@@ -317,7 +317,7 @@ class HomeView extends StatelessWidget {
                         color: AppColors.primary,
                         size: 22,
                       ),
-                      tooltip: 'Scan Parcel QR Code',
+                      tooltip: t('Scan Parcel QR Code'),
                       onPressed: () => _openCameraQrScanner(context, isDark),
                     ),
                   ],
@@ -337,7 +337,7 @@ class HomeView extends StatelessWidget {
             children: [
               Expanded(
                 child: _buildKpiCard(
-                  'Out for Delivery',
+                  t('Out for Delivery'),
                   parcelController.stats.value.outForDelivery.toString(),
                   Icons.local_shipping_outlined,
                   AppColors.accentGold,
@@ -349,7 +349,7 @@ class HomeView extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: _buildKpiCard(
-                  'COD Pending Cash',
+                  t('COD Pending Cash'),
                   'Rs. ${parcelController.stats.value.codTotal.toStringAsFixed(0)}',
                   Icons.payments_outlined,
                   AppColors.accentGreen,
@@ -368,28 +368,28 @@ class HomeView extends StatelessWidget {
             child: Row(
               children: [
                 _buildFilterPill(
-                  'All Parcels',
+                  t('All Parcels'),
                   'all',
                   cardColor,
                   borderColor,
                   subtextColor,
                 ),
                 _buildFilterPill(
-                  'Out for Delivery',
+                  t('Out for Delivery'),
                   'Out for Delivery',
                   cardColor,
                   borderColor,
                   subtextColor,
                 ),
                 _buildFilterPill(
-                  'In Transit',
+                  t('In Transit'),
                   'In Transit',
                   cardColor,
                   borderColor,
                   subtextColor,
                 ),
                 _buildFilterPill(
-                  'Delivered Today',
+                  t('Delivered Today'),
                   'Delivered',
                   cardColor,
                   borderColor,
@@ -409,7 +409,7 @@ class HomeView extends StatelessWidget {
                   Icon(Icons.inbox, size: 52, color: subtextColor),
                   const SizedBox(height: 12),
                   Text(
-                    'No matching parcels found.',
+                    t('No matching parcels found.'),
                     style: TextStyle(color: subtextColor, fontSize: 14),
                   ),
                 ],
@@ -668,7 +668,7 @@ class HomeView extends StatelessWidget {
               onChanged: (val) => parcelController.searchParcels(val),
               style: TextStyle(color: textColor, fontSize: 15),
               decoration: InputDecoration(
-                hintText: 'Enter Tracking # (e.g. PK-1001)',
+                hintText: t('Enter Tracking # (e.g. PK-1001)'),
                 hintStyle: TextStyle(color: subtextColor),
                 prefixIcon: const Icon(Icons.search, color: AppColors.primary),
                 suffixIcon: IconButton(
@@ -677,7 +677,7 @@ class HomeView extends StatelessWidget {
                     color: AppColors.primary,
                     size: 24,
                   ),
-                  tooltip: 'Tap to Scan QR Code',
+                  tooltip: t('Tap to Scan QR Code'),
                   onPressed: () => _openCameraQrScanner(context, isDark),
                 ),
                 border: InputBorder.none,
@@ -724,7 +724,7 @@ class HomeView extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Scanning or typing parcel code automatically filters your delivery list and opens parcel status.',
+                    t('Scanning or typing parcel code automatically filters your delivery list and opens parcel status.'),
                     style: TextStyle(
                       color: subtextColor,
                       fontSize: 12,
@@ -782,8 +782,8 @@ class HomeView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Pending Balance',
+                  Text(
+                    t('Pending Balance'),
                     style: TextStyle(
                       color: Colors.white70,
                       fontSize: 14,
@@ -806,8 +806,8 @@ class HomeView extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Total Earned',
+                          Text(
+                            t('Total Earned'),
                             style: TextStyle(
                               color: Colors.white70,
                               fontSize: 12,
@@ -826,8 +826,8 @@ class HomeView extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          const Text(
-                            'Total Paid',
+                          Text(
+                            t('Total Paid'),
                             style: TextStyle(
                               color: Colors.white70,
                               fontSize: 12,
@@ -850,7 +850,7 @@ class HomeView extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              'Recent Payouts',
+              t('Recent Payouts'),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -866,7 +866,7 @@ class HomeView extends StatelessWidget {
                     children: [
                       Icon(Icons.inbox, size: 60, color: subtextColor.withOpacity(0.5)),
                       const SizedBox(height: 16),
-                      Text('No payouts yet', style: TextStyle(color: subtextColor)),
+                      Text(t('No payouts yet'), style: TextStyle(color: subtextColor)),
                     ],
                   ),
                 ),
@@ -1118,7 +1118,7 @@ class HomeView extends StatelessWidget {
                           ),
                           SizedBox(width: 6),
                           Text(
-                            'Rider Account Active',
+                            authController.userRole.value == 'picker' ? t('Picker Account Active') : t('Rider Account Active'),
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
@@ -1149,7 +1149,7 @@ class HomeView extends StatelessWidget {
               _buildProfileTile(
                 icon: Icons.lock_reset_outlined,
                 title: t('Update Password'),
-                subtitle: 'Update your login password',
+                subtitle: t('Update Password'),
                 cardColor: Colors.transparent,
                 borderColor: Colors.transparent,
                 textColor: textColor,
@@ -1307,7 +1307,7 @@ class HomeView extends StatelessWidget {
               const SizedBox(height: 14),
               _buildProfileTile(
                 icon: Icons.speed_outlined,
-                title: 'App Version',
+                title: t('App Version'),
                 subtitle: 'v1.0.0 (Cheetah Express Systems)',
                 cardColor: Colors.transparent,
                 borderColor: Colors.transparent,
@@ -1317,7 +1317,7 @@ class HomeView extends StatelessWidget {
               _buildProfileTile(
                 icon: Icons.gavel_outlined,
                 title: t('Terms of Service'),
-                subtitle: 'Read driver terms & service policies',
+                subtitle: t('Read driver terms & service policies'),
                 cardColor: Colors.transparent,
                 borderColor: Colors.transparent,
                 textColor: textColor,
@@ -1329,7 +1329,7 @@ class HomeView extends StatelessWidget {
               _buildProfileTile(
                 icon: Icons.privacy_tip_outlined,
                 title: t('Privacy Policy'),
-                subtitle: 'Data usage & privacy standards',
+                subtitle: t('Data usage & privacy standards'),
                 cardColor: Colors.transparent,
                 borderColor: Colors.transparent,
                 textColor: textColor,
@@ -1341,7 +1341,7 @@ class HomeView extends StatelessWidget {
               _buildProfileTile(
                 icon: Icons.delete_sweep_outlined,
                 title: t('Data Deletion'),
-                subtitle: 'Account & data deletion options',
+                subtitle: t('Account & data deletion options'),
                 cardColor: Colors.transparent,
                 borderColor: Colors.transparent,
                 textColor: textColor,
@@ -1398,7 +1398,7 @@ class HomeView extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Scan Parcel QR / Barcode',
+                    t('Scan Parcel QR / Barcode'),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -2228,7 +2228,7 @@ class HomeView extends StatelessWidget {
           ),
         ),
         content: Text(
-          'Are you sure you want to sign out of the Driver App?',
+          t('Are you sure you want to sign out of the Driver App?'),
           style: TextStyle(
             color: isDark ? const Color(0xFFd4d4d8) : AppColorsLight.textMuted,
           ),
@@ -2396,7 +2396,7 @@ class HomeView extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                'Choose Profile Picture',
+                t('Choose Profile Picture'),
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -2405,7 +2405,7 @@ class HomeView extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               Text(
-                'Upload a custom photo or pick an official website avatar',
+                t('Upload a custom photo or pick an official website avatar'),
                 style: TextStyle(fontSize: 12, color: subtextColor),
               ),
               const SizedBox(height: 20),
@@ -2478,7 +2478,7 @@ class HomeView extends StatelessWidget {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Website Preset Avatars',
+                  t('Website Preset Avatars'),
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
@@ -2728,8 +2728,8 @@ class HomeView extends StatelessWidget {
                 const SizedBox(height: 20),
 
                 _buildThemeOptionTile(
-                  title: 'System Theme (Auto)',
-                  subtitle: 'Matches device system light / dark settings',
+                  title: t('System Theme (Auto)'),
+                  subtitle: t('Matches device system light / dark settings'),
                   icon: Icons.brightness_auto,
                   isSelected: currentMode == 'system',
                   onTap: () {
@@ -2744,8 +2744,8 @@ class HomeView extends StatelessWidget {
                 const SizedBox(height: 10),
 
                 _buildThemeOptionTile(
-                  title: 'Dark Mode',
-                  subtitle: 'Sleek dark theme optimized for night duty',
+                  title: t('Dark Mode'),
+                  subtitle: t('Sleek dark theme optimized for night duty'),
                   icon: Icons.dark_mode_outlined,
                   isSelected: currentMode == 'dark',
                   onTap: () {
@@ -2760,8 +2760,8 @@ class HomeView extends StatelessWidget {
                 const SizedBox(height: 10),
 
                 _buildThemeOptionTile(
-                  title: 'Light Mode',
-                  subtitle: 'Clean high-contrast theme for daylight visibility',
+                  title: t('Light Mode'),
+                  subtitle: t('Clean high-contrast theme for daylight visibility'),
                   icon: Icons.light_mode_outlined,
                   isSelected: currentMode == 'light',
                   onTap: () {
@@ -2897,7 +2897,7 @@ class HomeView extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Change Password',
+                          t('Change Password'),
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -2905,7 +2905,7 @@ class HomeView extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          'Update your rider account security password',
+                          t('Update your rider account security password'),
                           style: TextStyle(fontSize: 11, color: subtextColor),
                         ),
                       ],

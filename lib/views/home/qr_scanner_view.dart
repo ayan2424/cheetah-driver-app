@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:get/get.dart';
+import '../../controllers/auth_controller.dart';
+import '../../utils/app_translations.dart';
 
 class QrScannerView extends StatefulWidget {
   @override
@@ -18,9 +20,14 @@ class _QrScannerViewState extends State<QrScannerView> {
 
   @override
   Widget build(BuildContext context) {
+    String lang = 'en';
+    if (Get.isRegistered<AuthController>()) {
+      lang = Get.find<AuthController>().selectedLanguage.value;
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Scan Parcel AWB'),
+        title: Text('Scan Parcel AWB'.localize(lang)),
         backgroundColor: Colors.black,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../controllers/auth_controller.dart';
 import '../../../controllers/parcel_controller.dart';
+import '../../../utils/app_translations.dart';
 import '../../../utils/constants.dart';
 
 class CodTab extends StatelessWidget {
@@ -10,9 +11,12 @@ class CodTab extends StatelessWidget {
 
   CodTab({Key? key}) : super(key: key);
 
+  String t(String text) => text.localize(authController.selectedLanguage.value);
+
   @override
   Widget build(BuildContext context) {
     return Obx(() {
+      final lang = authController.selectedLanguage.value;
       final isDark = authController.isDark(context);
       final cardColor = isDark ? AppColors.cardBg : AppColorsLight.cardBg;
       final borderColor = isDark ? AppColors.cardBorder : AppColorsLight.cardBorder;
@@ -45,13 +49,13 @@ class CodTab extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Row(
+                Row(
                   children: [
-                    Icon(Icons.account_balance_wallet, color: Colors.white, size: 22),
-                    SizedBox(width: 8),
+                    const Icon(Icons.account_balance_wallet, color: Colors.white, size: 22),
+                    const SizedBox(width: 8),
                     Text(
-                      'Pending COD Collection',
-                      style: TextStyle(
+                      'Pending COD Collection'.localize(lang),
+                      style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -69,9 +73,9 @@ class CodTab extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 6),
-                const Text(
-                  'To be collected upon parcel delivery',
-                  style: TextStyle(color: Colors.white60, fontSize: 11),
+                Text(
+                  'To be collected upon parcel delivery'.localize(lang),
+                  style: const TextStyle(color: Colors.white60, fontSize: 11),
                 ),
               ],
             ),
@@ -80,7 +84,7 @@ class CodTab extends StatelessWidget {
 
           // Daily Statistics Grid
           Text(
-            'Daily Performance',
+            'Daily Performance'.localize(lang),
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -93,7 +97,7 @@ class CodTab extends StatelessWidget {
               Expanded(
                 child: _buildStatTile(
                   icon: Icons.check_circle_outline,
-                  label: 'Delivered Today',
+                  label: 'Delivered Today'.localize(lang),
                   value: '${stats.deliveredToday}',
                   color: AppColors.accentGreen,
                   cardColor: cardColor,
@@ -106,7 +110,7 @@ class CodTab extends StatelessWidget {
               Expanded(
                 child: _buildStatTile(
                   icon: Icons.assignment_outlined,
-                  label: 'Out For Delivery',
+                  label: 'Out for Delivery'.localize(lang),
                   value: '${stats.outForDelivery}',
                   color: AppColors.primary,
                   cardColor: cardColor,

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../controllers/auth_controller.dart';
 import '../../../controllers/parcel_controller.dart';
 import '../../../models/parcel_model.dart';
+import '../../../utils/app_translations.dart';
 import '../../../utils/constants.dart';
 import '../qr_scanner_view.dart';
 
@@ -13,9 +14,12 @@ class DeliveriesTab extends StatelessWidget {
 
   DeliveriesTab({Key? key, required this.onParcelTap}) : super(key: key);
 
+  String t(String text) => text.localize(authController.selectedLanguage.value);
+
   @override
   Widget build(BuildContext context) {
     return Obx(() {
+      final lang = authController.selectedLanguage.value;
       final isDark = authController.isDark(context);
       final cardColor = isDark ? AppColors.cardBg : AppColorsLight.cardBg;
       final borderColor = isDark ? AppColors.cardBorder : AppColorsLight.cardBorder;
@@ -44,7 +48,7 @@ class DeliveriesTab extends StatelessWidget {
               onChanged: parcelController.searchParcels,
               style: TextStyle(color: textColor, fontSize: 14),
               decoration: InputDecoration(
-                hintText: 'Search by tracking # or receiver...',
+                hintText: 'Search by tracking # or receiver...'.localize(lang),
                 hintStyle: TextStyle(color: subtextColor, fontSize: 13),
                 prefixIcon: const Icon(Icons.search, color: AppColors.primary),
                 suffixIcon: IconButton(
@@ -84,11 +88,12 @@ class DeliveriesTab extends StatelessWidget {
                   'Returned'
                 ].map((st) {
                   final isSelected = parcelController.activeFilter.value.toLowerCase() == st.toLowerCase();
+                  final labelText = st == 'all' ? 'All'.localize(lang) : st.localize(lang);
                   return Padding(
                     padding: const EdgeInsets.only(right: 8.0),
                     child: FilterChip(
                       selected: isSelected,
-                      label: Text(st == 'all' ? 'All' : st),
+                      label: Text(labelText),
                       labelStyle: TextStyle(
                         color: isSelected ? Colors.white : textColor,
                         fontSize: 12,
@@ -119,7 +124,7 @@ class DeliveriesTab extends StatelessWidget {
                     Icon(Icons.inbox_outlined, size: 54, color: subtextColor),
                     const SizedBox(height: 12),
                     Text(
-                      'No Deliveries Found',
+                      'No Deliveries Found'.localize(lang),
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -128,7 +133,7 @@ class DeliveriesTab extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Pull down to refresh or change filters',
+                      'Pull down to refresh or change filters'.localize(lang),
                       style: TextStyle(fontSize: 12, color: subtextColor),
                     ),
                   ],
@@ -177,7 +182,7 @@ class DeliveriesTab extends StatelessWidget {
                                         color: _getStatusColor(parcel.status).withOpacity(0.3)),
                                   ),
                                   child: Text(
-                                    parcel.status,
+                                    parcel.status.localize(lang),
                                     style: TextStyle(
                                       color: _getStatusColor(parcel.status),
                                       fontWeight: FontWeight.bold,
@@ -189,7 +194,7 @@ class DeliveriesTab extends StatelessWidget {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'To: ${parcel.receiverName}',
+                              '${'To'.localize(lang)}: ${parcel.receiverName}',
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,
