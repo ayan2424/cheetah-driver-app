@@ -102,7 +102,7 @@ class PickingTab extends StatelessWidget {
             style: TextStyle(color: isDark ? Colors.white54 : Colors.black54, fontSize: 13),
           ),
           const SizedBox(height: 16),
-          if (task['status'] == 'Pending')
+          if (task['status'] == 'Pending' || task['status'] == 'Assigned')
             ElevatedButton(
               onPressed: () => controller.updateTaskStatus(task['id'], 'In Progress'),
               style: ElevatedButton.styleFrom(
