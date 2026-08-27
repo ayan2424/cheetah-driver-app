@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cheetah Driver & Picker App — Buyer & Developer Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+:root {
+  --primary: #FF4D00;
+  --primary-hover: #E5390A;
+  --primary-light: #FF7700;
+  --primary-glow: rgba(255, 77, 0, 0.28);
+  --green: #10B981;
+  --blue: #3B82F6;
+  --amber: #F59E0B;
+  --purple: #8B5CF6;
+  
+  --bg: #09090B;
+  --bg-card: #121216;
+  --bg-card-hover: #18181F;
+  --bg-sidebar: #0E0E12;
+  --bg-topbar: rgba(14, 14, 18, 0.85);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-light: rgba(255, 255, 255, 0.14);
+  --text: #F4F4F6;
+  --text-muted: #9CA3AF;
+  --code-bg: #0D0D11;
+  --code-border: rgba(255, 255, 255, 0.06);
+  --badge-bg: rgba(255, 77, 0, 0.12);
+  
+  --radius-lg: 16px;
+  --radius-md: 10px;
+  --radius-sm: 6px;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+  --shadow-md: 0 8px 24px rgba(0,0,0,0.45);
+  --shadow-lg: 0 20px 48px -10px rgba(0,0,0,0.6);
+  --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+html[data-theme="light"] {
+  --bg: #F8FAFC;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #F1F5F9;
+  --bg-sidebar: #FFFFFF;
+  --bg-topbar: rgba(255, 255, 255, 0.9);
+  --border: #E2E8F0;
+  --border-light: #CBD5E1;
+  --text: #0F172A;
+  --text-muted: #64748B;
+  --code-bg: #1E293B;
+  --code-border: #334155;
+  --badge-bg: rgba(255, 77, 0, 0.1);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,0.1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 15px; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-main);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+/* Reading Progress Bar */
+#reading-progress {
+  position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+  background: linear-gradient(90deg, var(--primary), var(--primary-light), #FFB703);
+  z-index: 1000;
+  box-shadow: 0 0 10px var(--primary-glow);
+  transition: width 0.1s ease-out;
+}
+
+/* Header / Topbar */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--bg-topbar);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 28px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.brand-group { display: flex; align-items: center; gap: 14px; }
+.brand-logo-badge {
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  color: #fff; width: 38px; height: 38px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; box-shadow: 0 4px 14px var(--primary-glow);
+}
+.brand-title { font-family: var(--font-heading); font-weight: 700; font-size: 1.25rem; letter-spacing: -0.02em; }
+.brand-subtitle { font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono); }
+.top-actions { display: flex; align-items: center; gap: 12px; }
+
+.search-box {
+  position: relative; width: 260px;
+}
+.search-box input {
+  width: 100%; padding: 8px 12px 8px 34px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-md); color: var(--text);
+  font-family: var(--font-main); font-size: 0.85rem;
+  transition: var(--transition);
+}
+.search-box input:focus {
+  outline: none; border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+.search-box i {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  color: var(--text-muted); font-size: 0.85rem; pointer-events: none;
+}
+
+.btn-icon {
+  width: 38px; height: 38px; border-radius: var(--radius-md);
+  border: 1px solid var(--border); background: var(--bg-card);
+  color: var(--text); display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: var(--transition); font-size: 0.95rem;
+}
+.btn-icon:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-1px); }
+
+.badge-version {
+  font-family: var(--font-mono); font-size: 0.75rem; font-weight: 600;
+  padding: 4px 10px; border-radius: 99px;
+  background: var(--badge-bg); color: var(--primary);
+  border: 1px solid rgba(255,77,0,0.25);
+}
+
+/* Layout */
+.app-container {
+  display: flex; min-height: calc(100vh - 63px);
+  max-width: 1600px; margin: 0 auto;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 290px; flex-shrink: 0;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  padding: 24px 16px;
+  position: sticky; top: 63px; height: calc(100vh - 63px);
+  overflow-y: auto; display: flex; flex-direction: column; gap: 20px;
+}
+.nav-group-title {
+  font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--text-muted); font-weight: 700; margin-bottom: 8px; padding-left: 10px;
+}
+.nav-links { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+.nav-link {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: var(--radius-md);
+  color: var(--text-muted); text-decoration: none; font-size: 0.88rem;
+  font-weight: 500; transition: var(--transition);
+}
+.nav-link i { font-size: 0.9rem; width: 18px; text-align: center; color: var(--text-muted); transition: var(--transition); }
+.nav-link:hover {
+  background: var(--bg-card-hover); color: var(--text);
+  transform: translateX(3px);
+}
+.nav-link:hover i { color: var(--primary); }
+.nav-link.active {
+  background: var(--badge-bg); color: var(--primary);
+  font-weight: 600; border-left: 3px solid var(--primary);
+}
+.nav-link.active i { color: var(--primary); }
+
+/* Main Content */
+.main-content {
+  flex: 1; padding: 40px 48px 80px;
+  max-width: 1060px; overflow-x: hidden;
+}
+
+/* Hero Section */
+.hero-banner {
+  background: linear-gradient(135deg, rgba(255,77,0,0.12), rgba(18,18,22,0.6)), var(--bg-card);
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 36px 36px; margin-bottom: 40px; position: relative; overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+.hero-banner::before {
+  content: ''; position: absolute; top: -60px; right: -60px;
+  width: 220px; height: 220px; background: var(--primary-glow);
+  filter: blur(80px); border-radius: 50%; pointer-events: none;
+}
+.hero-badge-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border-radius: 99px; font-size: 0.78rem; font-weight: 600;
+  background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text);
+}
+.chip.flutter { background: rgba(2,125,253,0.12); color: #38BDF8; border-color: rgba(2,125,253,0.3); }
+.chip.android { background: rgba(16,185,129,0.12); color: #34D399; border-color: rgba(16,185,129,0.3); }
+.chip.ios { background: rgba(168,85,247,0.12); color: #C084FC; border-color: rgba(168,85,247,0.3); }
+
+.hero-title {
+  font-family: var(--font-heading); font-size: 2.3rem; font-weight: 800;
+  line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 12px;
+}
+.hero-title span { color: var(--primary); }
+.hero-desc {
+  font-size: 1.05rem; color: var(--text-muted); max-width: 780px; line-height: 1.6; margin-bottom: 24px;
+}
+.hero-action-row { display: flex; gap: 14px; flex-wrap: wrap; }
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 11px 22px; border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  color: #fff; font-weight: 600; font-size: 0.9rem; text-decoration: none;
+  box-shadow: 0 4px 16px var(--primary-glow); transition: var(--transition); border: none; cursor: pointer;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,77,0,0.4); }
+
+.btn-secondary {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 11px 20px; border-radius: var(--radius-md);
+  background: var(--bg-card); color: var(--text);
+  font-weight: 600; font-size: 0.9rem; text-decoration: none;
+  border: 1px solid var(--border); transition: var(--transition); cursor: pointer;
+}
+.btn-secondary:hover { background: var(--bg-card-hover); border-color: var(--border-light); transform: translateY(-2px); }
+
+/* Typography & Headings */
+h2.section-heading {
+  font-family: var(--font-heading); font-size: 1.65rem; font-weight: 700;
+  letter-spacing: -0.015em; margin: 48px 0 16px; padding-bottom: 12px;
+  border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px;
+}
+h2.section-heading i { color: var(--primary); font-size: 1.25rem; }
+h3.sub-heading {
+  font-family: var(--font-heading); font-size: 1.25rem; font-weight: 600;
+  margin: 28px 0 12px; color: var(--text); display: flex; align-items: center; gap: 8px;
+}
+
+p { color: var(--text-muted); margin-bottom: 16px; font-size: 0.96rem; }
+p strong { color: var(--text); }
+
+/* Feature Cards Grid */
+.features-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px; margin: 24px 0;
+}
+.feature-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 22px;
+  transition: var(--transition); position: relative; overflow: hidden;
+}
+.feature-card:hover {
+  transform: translateY(-4px); border-color: var(--border-light);
+  box-shadow: var(--shadow-md);
+}
+.feature-icon-wrap {
+  width: 44px; height: 44px; border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.15rem; margin-bottom: 14px;
+}
+.feature-icon-wrap.orange { background: rgba(255,77,0,0.12); color: var(--primary); }
+.feature-icon-wrap.green { background: rgba(16,185,129,0.12); color: var(--green); }
+.feature-icon-wrap.blue { background: rgba(59,130,246,0.12); color: var(--blue); }
+.feature-icon-wrap.amber { background: rgba(245,158,11,0.12); color: var(--amber); }
+.feature-icon-wrap.purple { background: rgba(139,92,246,0.12); color: var(--purple); }
+
+.feature-title { font-family: var(--font-heading); font-weight: 600; font-size: 1.05rem; margin-bottom: 6px; }
+.feature-desc { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0; line-height: 1.5; }
+
+/* Callout Boxes */
+.callout {
+  border-radius: var(--radius-md); padding: 16px 20px;
+  margin: 20px 0; display: flex; gap: 14px; align-items: flex-start;
+  border-left: 4px solid; font-size: 0.92rem;
+}
+.callout i { font-size: 1.15rem; margin-top: 2px; flex-shrink: 0; }
+.callout-content { flex: 1; color: var(--text-muted); }
+.callout-content strong { color: var(--text); }
+.callout.tip { background: rgba(16,185,129,0.08); border-color: var(--green); color: var(--green); }
+.callout.info { background: rgba(59,130,246,0.08); border-color: var(--blue); color: var(--blue); }
+.callout.warning { background: rgba(245,158,11,0.08); border-color: var(--amber); color: var(--amber); }
+.callout.danger { background: rgba(239,68,68,0.08); border-color: #EF4444; color: #EF4444; }
+
+/* Code Blocks */
+.code-container {
+  background: var(--code-bg); border: 1px solid var(--code-border);
+  border-radius: var(--radius-md); margin: 18px 0; overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.code-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px; background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid var(--code-border); font-family: var(--font-mono); font-size: 0.78rem;
+  color: var(--text-muted);
+}
+.code-lang-tag { display: flex; align-items: center; gap: 6px; }
+.btn-copy {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--text-muted); padding: 4px 10px; border-radius: var(--radius-sm);
+  font-size: 0.75rem; font-family: var(--font-mono); cursor: pointer;
+  display: flex; align-items: center; gap: 5px; transition: var(--transition);
+}
+.btn-copy:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+.btn-copy.copied { background: rgba(16,185,129,0.2); border-color: var(--green); color: var(--green); }
+
+pre {
+  padding: 16px 18px; overflow-x: auto; font-family: var(--font-mono);
+  font-size: 0.85rem; line-height: 1.55; color: #E2E8F0;
+}
+code { font-family: var(--font-mono); }
+p code, li code, td code {
+  background: rgba(255,255,255,0.08); color: var(--primary-light);
+  padding: 2px 6px; border-radius: 4px; font-size: 0.85em;
+}
+
+/* Tabs System */
+.tab-container { margin: 24px 0; }
+.tab-nav {
+  display: flex; gap: 8px; border-bottom: 1px solid var(--border);
+  margin-bottom: 16px; overflow-x: auto;
+}
+.tab-btn {
+  padding: 10px 18px; border: none; background: transparent;
+  color: var(--text-muted); font-family: var(--font-heading); font-weight: 600;
+  font-size: 0.9rem; cursor: pointer; border-bottom: 2px solid transparent;
+  transition: var(--transition); display: flex; align-items: center; gap: 8px;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+.tab-pane { display: none; animation: fadeIn 0.3s ease; }
+.tab-pane.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Tables */
+.table-wrapper {
+  border: 1px solid var(--border); border-radius: var(--radius-md);
+  overflow-x: auto; margin: 20px 0; background: var(--bg-card);
+}
+table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem; }
+th {
+  background: rgba(255,255,255,0.03); padding: 12px 16px;
+  font-weight: 600; color: var(--text); border-bottom: 1px solid var(--border);
+  font-family: var(--font-heading);
+}
+td { padding: 12px 16px; border-bottom: 1px solid var(--border); color: var(--text-muted); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg-card-hover); }
+
+/* Interactive API Accordion */
+.api-accordion { display: flex; flex-direction: column; gap: 12px; margin: 20px 0; }
+.api-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-md); overflow: hidden; transition: var(--transition);
+}
+.api-card:hover { border-color: var(--border-light); }
+.api-card-header {
+  padding: 14px 18px; display: flex; align-items: center; justify-content: space-between;
+  cursor: pointer; user-select: none;
+}
+.api-badge-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.http-method {
+  padding: 3px 8px; border-radius: 4px; font-family: var(--font-mono);
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+}
+.http-method.post { background: rgba(16,185,129,0.2); color: var(--green); border: 1px solid var(--green); }
+.http-method.get { background: rgba(59,130,246,0.2); color: var(--blue); border: 1px solid var(--blue); }
+
+.api-endpoint-path { font-family: var(--font-mono); font-size: 0.88rem; color: var(--text); font-weight: 500; }
+.api-desc-short { font-size: 0.85rem; color: var(--text-muted); }
+.api-chevron { color: var(--text-muted); transition: var(--transition); }
+.api-card.open .api-chevron { transform: rotate(180deg); color: var(--primary); }
+
+.api-card-body {
+  display: none; padding: 18px; border-top: 1px solid var(--border);
+  background: rgba(0,0,0,0.15);
+}
+.api-card.open .api-card-body { display: block; }
+
+/* Interactive Checklist */
+.checklist-container {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 22px; margin: 20px 0;
+}
+.checklist-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+.checklist-item:last-child { border-bottom: none; }
+.checklist-item input[type="checkbox"] {
+  accent-color: var(--primary); width: 18px; height: 18px; margin-top: 3px; cursor: pointer;
+}
+.checklist-label { font-size: 0.92rem; color: var(--text); cursor: pointer; flex: 1; }
+.checklist-label small { display: block; color: var(--text-muted); font-size: 0.82rem; margin-top: 2px; }
+
+/* FAQ Accordion */
+.faq-accordion { display: flex; flex-direction: column; gap: 10px; margin: 20px 0; }
+.faq-item {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-md); overflow: hidden;
+}
+.faq-question {
+  padding: 16px 20px; display: flex; align-items: center; justify-content: space-between;
+  cursor: pointer; font-family: var(--font-heading); font-weight: 600; font-size: 1rem;
+}
+.faq-answer {
+  display: none; padding: 0 20px 18px; color: var(--text-muted); font-size: 0.92rem;
+  line-height: 1.6; border-top: 1px solid transparent;
+}
+.faq-item.open .faq-question { color: var(--primary); }
+.faq-item.open .faq-answer { display: block; }
+.faq-item.open .faq-icon { transform: rotate(180deg); color: var(--primary); }
+.faq-icon { transition: var(--transition); font-size: 0.85rem; color: var(--text-muted); }
+
+/* Footer */
+.doc-footer {
+  margin-top: 60px; padding-top: 30px; border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 16px; font-size: 0.85rem; color: var(--text-muted);
+}
+
+/* Mobile Toggle */
+.mobile-menu-btn {
+  display: none; background: transparent; border: none;
+  color: var(--text); font-size: 1.25rem; cursor: pointer;
+}
+
+@media (max-width: 960px) {
+  .sidebar {
+    position: fixed; left: -320px; top: 0; bottom: 0; z-index: 200;
+    width: 280px; height: 100vh; background: var(--bg-card);
+    transition: left 0.3s ease; box-shadow: var(--shadow-lg);
+  }
+  .sidebar.open { left: 0; }
+  .mobile-menu-btn { display: block; }
+  .main-content { padding: 24px 20px 60px; }
+  .search-box { width: 180px; }
+}
+</style>
+</head>
+<body>
+
+<div id="reading-progress"></div>
+
+<!-- Topbar Navigation -->
+<header class="topbar">
+  <div class="brand-group">
+    <button class="mobile-menu-btn" id="mobileNavToggle" aria-label="Toggle Navigation">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <div class="brand-logo-badge">
+      <i class="fa-solid fa-motorcycle"></i>
+    </div>
+    <div>
+      <div class="brand-title">Cheetah Driver & Picker App</div>
+      <div class="brand-subtitle">Buyer & Developer Technical Guide</div>
+    </div>
+    <span class="badge-version">v1.0.0+1</span>
+  </div>
+
+  <div class="top-actions">
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="docSearch" placeholder="Search documentation...">
+    </div>
+    <button class="btn-icon" id="themeToggle" title="Toggle Dark / Light Theme" aria-label="Toggle Theme">
+      <i class="fa-solid fa-moon"></i>
+    </button>
+  </div>
+</header>
+
+<!-- Main App Wrapper -->
+<div class="app-container">
+
+  <!-- Sticky Sidebar -->
+  <aside class="sidebar" id="docSidebar">
+    <div>
+      <div class="nav-group-title">Getting Started</div>
+      <ul class="nav-links">
+        <li><a href="#overview" class="nav-link active"><i class="fa-solid fa-compass"></i> Product Overview</a></li>
+        <li><a href="#features" class="nav-link"><i class="fa-solid fa-star"></i> Key Features</a></li>
+        <li><a href="#architecture" class="nav-link"><i class="fa-solid fa-folder-tree"></i> Architecture & Files</a></li>
+        <li><a href="#requirements" class="nav-link"><i class="fa-solid fa-laptop-code"></i> Requirements</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <div class="nav-group-title">Setup & Integration</div>
+      <ul class="nav-links">
+        <li><a href="#quickstart" class="nav-link"><i class="fa-solid fa-bolt"></i> Quickstart Guide</a></li>
+        <li><a href="#configuration" class="nav-link"><i class="fa-solid fa-sliders"></i> API Configuration</a></li>
+        <li><a href="#whitelabel" class="nav-link"><i class="fa-solid fa-palette"></i> White-Labeling & Branding</a></li>
+        <li><a href="#languages" class="nav-link"><i class="fa-solid fa-language"></i> Multi-Language</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <div class="nav-group-title">API & Offline Sync</div>
+      <ul class="nav-links">
+        <li><a href="#api-reference" class="nav-link"><i class="fa-solid fa-network-wired"></i> REST API Explorer</a></li>
+        <li><a href="#offline-sync" class="nav-link"><i class="fa-solid fa-shield-halved"></i> Offline AES Hive Queue</a></li>
+        <li><a href="#gps-guard" class="nav-link"><i class="fa-solid fa-location-crosshairs"></i> Live GPS Telemetry</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <div class="nav-group-title">Production & Release</div>
+      <ul class="nav-links">
+        <li><a href="#publishing" class="nav-link"><i class="fa-solid fa-cloud-arrow-up"></i> Google Play & App Store</a></li>
+        <li><a href="#checklist" class="nav-link"><i class="fa-solid fa-list-check"></i> Release Checklist</a></li>
+        <li><a href="#faq" class="nav-link"><i class="fa-solid fa-circle-question"></i> Troubleshooting & FAQ</a></li>
+        <li><a href="#support" class="nav-link"><i class="fa-solid fa-headset"></i> Buyer Support</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- Main Content Body -->
+  <main class="main-content">
+
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+      <div class="hero-badge-row">
+        <span class="chip flutter"><i class="fa-brands fa-flutter"></i> Flutter 3.x / Dart 3.x</span>
+        <span class="chip android"><i class="fa-brands fa-android"></i> Android 5.0+ (API 21-35)</span>
+        <span class="chip ios"><i class="fa-brands fa-apple"></i> iOS 14.0+ (iPhone & iPad)</span>
+        <span class="chip"><i class="fa-solid fa-cube"></i> GetX Reactive Architecture</span>
+      </div>
+      <h1 class="hero-title">Cheetah Driver & Warehouse Picker <span>Mobile Suite</span></h1>
+      <p class="hero-desc">
+        Complete commercial setup and development documentation for the standalone Cheetah Driver & Picker Mobile App. Everything you need to customize, brand, test, and release on Google Play and Apple App Store.
+      </p>
+      <div class="hero-action-row">
+        <a href="#quickstart" class="btn-primary"><i class="fa-solid fa-rocket"></i> Get Started</a>
+        <a href="#api-reference" class="btn-secondary"><i class="fa-solid fa-code"></i> API Endpoints</a>
+      </div>
+    </div>
+
+    <!-- Product Overview -->
+    <section id="overview">
+      <h2 class="section-heading"><i class="fa-solid fa-compass"></i> Product Overview</h2>
+      <p>
+        The <strong>Cheetah Driver & Warehouse Picker Mobile App</strong> is an enterprise-grade cross-platform solution developed with <strong>Flutter 3.x</strong> and <strong>Dart 3.x</strong>. It connects natively with the Cheetah Courier Management System or any modern logistics REST API backend to provide real-time fulfillment, live driver tracking, barcode item verification, and contactless proof-of-delivery (POD).
+      </p>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon-wrap orange"><i class="fa-solid fa-truck-fast"></i></div>
+          <div class="feature-title">Driver Delivery Engine</div>
+          <div class="feature-desc">Smart parcel routing, live navigation, one-tap phone calls, OTP delivery verification, and digital signature capture.</div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrap green"><i class="fa-solid fa-barcode"></i></div>
+          <div class="feature-title">WMS Warehouse Picker</div>
+          <div class="feature-desc">Real-time pick task queue, zone/aisle/shelf routing, and instant camera barcode scanning.</div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrap blue"><i class="fa-solid fa-satellite-dish"></i></div>
+          <div class="feature-title">Real-Time Telemetry</div>
+          <div class="feature-desc">Continuous background GPS broadcasting with anti-tampering hardware enforcement and battery optimization.</div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrap amber"><i class="fa-solid fa-wallet"></i></div>
+          <div class="feature-title">COD Ledger & Wallet</div>
+          <div class="feature-desc">Live calculation of collected cash, pending branch vault deposits, and driver financial transaction records.</div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrap purple"><i class="fa-solid fa-database"></i></div>
+          <div class="feature-title">AES Encrypted Offline Queue</div>
+          <div class="feature-desc">Delivers zero-data-loss in basements or remote areas. Syncs queued PODs automatically upon network recovery.</div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrap orange"><i class="fa-solid fa-globe"></i></div>
+          <div class="feature-title">Multi-Language Ready</div>
+          <div class="feature-desc">10+ pre-translated languages including English, Spanish, Arabic (RTL support), French, German, and Urdu.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Key Features -->
+    <section id="features">
+      <h2 class="section-heading"><i class="fa-solid fa-star"></i> Key Features Matrix</h2>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Feature Area</th>
+              <th>Courier Driver Role</th>
+              <th>Warehouse Picker Role</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Primary View</strong></td>
+              <td>Assigned deliveries & pickups sorted by proximity</td>
+              <td>WMS Sales order picking list grouped by shelf location</td>
+            </tr>
+            <tr>
+              <td><strong>Scanning & Verification</strong></td>
+              <td>QR tracking lookup & delivery OTP entry</td>
+              <td>High-speed camera SKU barcode verification</td>
+            </tr>
+            <tr>
+              <td><strong>Proof of Delivery (POD)</strong></td>
+              <td>Digital Signature + Camera Photo + Handover Notes</td>
+              <td>N/A (Status: Completed / Missing Item)</td>
+            </tr>
+            <tr>
+              <td><strong>Financial Tracking</strong></td>
+              <td>Real-time COD collected & branch settlement balance</td>
+              <td>N/A</td>
+            </tr>
+            <tr>
+              <td><strong>GPS Telemetry</strong></td>
+              <td>Live coordinates sent to central dispatch map</td>
+              <td>Optional indoor zone tracking</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Architecture & Files -->
+    <section id="architecture">
+      <h2 class="section-heading"><i class="fa-solid fa-folder-tree"></i> Architecture & Folder Structure</h2>
+      <p>
+        The project strictly follows the <strong>GetX MVC-S (Model, View, Controller, Service)</strong> architectural pattern, ensuring loose coupling, fast compilation, and simple customization.
+      </p>
+
+      <div class="code-container">
+        <div class="code-header">
+          <div class="code-lang-tag"><i class="fa-regular fa-folder"></i> Project File Tree</div>
+          <button class="btn-copy" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+        </div>
+        <pre><code>cheetah_driver_app/
+├── android/                    # Android Native Gradle Project (API 21-35)
+├── ios/                        # iOS Native Xcode Workspace (iOS 14.0+)
+├── assets/                     # App Logos, Icons, and Audio Effects
+├── lib/
+│   ├── controllers/            # GetX Reactive Business Logic
+│   │   ├── auth_controller.dart       # User authentication, token, & profile
+│   │   ├── parcel_controller.dart     # Parcels list, filters, & POD upload
+│   │   ├── picking_controller.dart    # Warehouse pick tasks & barcode verification
+│   │   └── wallet_controller.dart     # Driver COD balance & wallet statistics
+│   ├── models/                 # Strongly-typed JSON Serializable Models
+│   │   └── parcel_model.dart          # Parcel, Stats, and PickTask data entities
+│   ├── routes/                 # Navigation & Route Bindings
+│   │   └── app_pages.dart             # GetPage route configurations
+│   ├── services/               # Hardware & Networking Services
+│   │   ├── api_service.dart           # HTTP Client & REST API endpoints
+│   │   ├── location_service.dart      # Real-time GPS tracking & telemetry guard
+│   │   ├── offline_sync_service.dart  # AES-encrypted Hive offline queue & sync
+│   │   ├── permission_service.dart    # Camera & location OS permission handling
+│   │   └── session_store.dart         # Secure credential storage
+│   ├── utils/                  # App Constants, Colors, & Translations
+│   │   ├── app_translations.dart      # 10+ Language translations map
+│   │   └── constants.dart             # API Base URLs, Color palettes, & Routes
+│   ├── views/                  # UI Screens & Components
+│   │   ├── home/
+│   │   │   ├── qr_scanner_view.dart   # Camera barcode/QR scanning view
+│   │   │   └── tabs/
+│   │   │       ├── cod_tab.dart       # COD ledger & wallet summary
+│   │   │       ├── deliveries_tab.dart# Assigned deliveries & POD triggers
+│   │   │       └── picking_tab.dart   # WMS warehouse picking interface
+│   │   ├── home_view.dart             # Main scaffold with bottom navigation
+│   │   ├── login_view.dart            # Driver & Picker login screen
+│   │   └── splash_view.dart           # Animated splash screen
+│   └── main.dart               # App entrypoint, Theme configuration, & Init
+└── pubspec.yaml                # Dependencies & Assets</code></pre>
+      </div>
+    </section>
+
+    <!-- Requirements -->
+    <section id="requirements">
+      <h2 class="section-heading"><i class="fa-solid fa-laptop-code"></i> Prerequisites & System Requirements</h2>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Requirement</th>
+              <th>Minimum Version</th>
+              <th>Recommended Version</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Flutter SDK</strong></td>
+              <td>3.12.0</td>
+              <td>3.24.x+</td>
+              <td>Dart 3.x compatible</td>
+            </tr>
+            <tr>
+              <td><strong>Android Studio</strong></td>
+              <td>Hedgehog (2023.1)</td>
+              <td>Ladybug (2024.2+)</td>
+              <td>With Flutter & Dart plugins</td>
+            </tr>
+            <tr>
+              <td><strong>Java JDK</strong></td>
+              <td>OpenJDK 17</td>
+              <td>OpenJDK 17</td>
+              <td>Bundled with Android Studio</td>
+            </tr>
+            <tr>
+              <td><strong>Android SDK</strong></td>
+              <td>API 21 (Android 5.0)</td>
+              <td>API 34 / 35 (Android 14/15)</td>
+              <td>Google Play 2026 Target Standard</td>
+            </tr>
+            <tr>
+              <td><strong>Xcode (iOS)</strong></td>
+              <td>Xcode 14.3</td>
+              <td>Xcode 15.4 / 16.x</td>
+              <td>macOS Sonoma / Sequoia</td>
+            </tr>
+            <tr>
+              <td><strong>CocoaPods</strong></td>
+              <td>1.12.0</td>
+              <td>1.15.2+</td>
+              <td>Required for iOS Native Pods</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Quickstart -->
+    <section id="quickstart">
+      <h2 class="section-heading"><i class="fa-solid fa-bolt"></i> Quickstart & Installation Guide</h2>
+
+      <div class="tab-container">
+        <div class="tab-nav">
+          <button class="tab-btn active" onclick="switchTab(this, 'tab-vscode')"><i class="fa-solid fa-code"></i> VS Code</button>
+          <button class="tab-btn" onclick="switchTab(this, 'tab-studio')"><i class="fa-brands fa-android"></i> Android Studio</button>
+          <button class="tab-btn" onclick="switchTab(this, 'tab-cli')"><i class="fa-solid fa-terminal"></i> Terminal / CLI</button>
+        </div>
+
+        <div class="tab-pane active" id="tab-vscode">
+          <ol style="padding-left: 20px; color: var(--text-muted); line-height: 1.8;">
+            <li>Extract the downloaded package and open the <code>cheetah_driver_app</code> folder in <strong>Visual Studio Code</strong>.</li>
+            <li>Make sure the official <strong>Flutter</strong> and <strong>Dart</strong> extensions are installed in VS Code.</li>
+            <li>Press <kbd style="background:var(--bg-card); padding:2px 6px; border:1px solid var(--border); border-radius:4px;">Ctrl+Shift+P</kbd> (or <kbd>Cmd+Shift+P</kbd> on macOS) and run <code>Flutter: Get Packages</code>.</li>
+            <li>Select a connected Android device, iOS Simulator, or Android Emulator from the bottom status bar.</li>
+            <li>Press <kbd>F5</kbd> to launch the application in debug mode with Hot Reload enabled.</li>
+          </ol>
+        </div>
+
+        <div class="tab-pane" id="tab-studio">
+          <ol style="padding-left: 20px; color: var(--text-muted); line-height: 1.8;">
+            <li>Launch <strong>Android Studio</strong> and select <strong>Open</strong>.</li>
+            <li>Navigate to and choose the <code>cheetah_driver_app</code> directory.</li>
+            <li>When prompted, click <strong>Get Dependencies</strong> in the top action bar.</li>
+            <li>Select your target Android Device / AVD from the device selector dropdown.</li>
+            <li>Click the green <strong>Run (Play)</strong> icon to build and start the app.</li>
+          </ol>
+        </div>
+
+        <div class="tab-pane" id="tab-cli">
+          <div class="code-container">
+            <div class="code-header">
+              <div class="code-lang-tag"><i class="fa-solid fa-terminal"></i> Bash / Terminal</div>
+              <button class="btn-copy" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+            </div>
+            <pre><code># 1. Navigate to project root
+cd cheetah_driver_app
+
+# 2. Get dependencies
+flutter pub get
+
+# 3. Check environment health
+flutter doctor -v
+
+# 4. Run on Android device/emulator
+flutter run
+
+# 5. Run on iOS (macOS required)
+cd ios && pod install --repo-update && cd ..
+flutter run</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Configuration -->
+    <section id="configuration">
+      <h2 class="section-heading"><i class="fa-solid fa-sliders"></i> Configuring API Endpoints</h2>
+      <p>
+        Connecting the mobile app to your live Cheetah Courier Management System backend takes less than 30 seconds.
+      </p>
+
+      <div class="callout tip">
+        <i class="fa-solid fa-circle-check"></i>
+        <div class="callout-content">
+          <strong>Single File Config:</strong> All network endpoints are centralized inside <code>lib/utils/constants.dart</code>.
+        </div>
+      </div>
+
+      <div class="code-container">
+        <div class="code-header">
+          <div class="code-lang-tag"><i class="fa-regular fa-file-code"></i> lib/utils/constants.dart</div>
+          <button class="btn-copy" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+        </div>
+        <pre><code>class AppConstants {
+  // 1. Replace with your live backend domain (Must include trailing slash and HTTPS)
+  static const String baseUrl = 'https://your-domain.com/';
+  
+  // 2. Standard REST API endpoints for Driver and Picker
+  static const String apiUrl = '${baseUrl}api/v1/driver/';
+  static const String pickerApiUrl = '${baseUrl}api/v1/picker/';
+}</code></pre>
+      </div>
+
+      <div class="callout warning">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <div class="callout-content">
+          <strong>SSL Requirement:</strong> Modern Android and iOS systems reject cleartext (<code>http://</code>) requests. Ensure your backend has an active SSL certificate (<code>https://</code>).
+        </div>
+      </div>
+    </section>
+
+    <!-- White-Labeling -->
+    <section id="whitelabel">
+      <h2 class="section-heading"><i class="fa-solid fa-palette"></i> White-Labeling & Branding Guide</h2>
+      
+      <h3 class="sub-heading"><i class="fa-solid fa-signature"></i> 1. Change App Name & Package Identifier</h3>
+      
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Platform</th>
+              <th>Target File</th>
+              <th>Configuration Key</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Android Name</strong></td>
+              <td><code>android/app/src/main/AndroidManifest.xml</code></td>
+              <td><code>android:label="Your Brand Driver"</code></td>
+            </tr>
+            <tr>
+              <td><strong>Android Package ID</strong></td>
+              <td><code>android/app/build.gradle</code></td>
+              <td><code>applicationId "com.yourcompany.courierdriver"</code></td>
+            </tr>
+            <tr>
+              <td><strong>iOS Name</strong></td>
+              <td><code>ios/Runner/Info.plist</code></td>
+              <td><code>&lt;key&gt;CFBundleDisplayName&lt;/key&gt;&lt;string&gt;Your Brand&lt;/string&gt;</code></td>
+            </tr>
+            <tr>
+              <td><strong>iOS Bundle ID</strong></td>
+              <td>Xcode &rarr; Runner &rarr; Signing & Capabilities</td>
+              <td><code>Bundle Identifier: com.yourcompany.courierdriver</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="sub-heading"><i class="fa-solid fa-icons"></i> 2. Automated App Icons Generation</h3>
+      <p>
+        The package includes <code>flutter_launcher_icons</code> for one-command icon generation across all Android mipmap densities and iOS Asset catalogs.
+      </p>
+
+      <div class="code-container">
+        <div class="code-header">
+          <div class="code-lang-tag"><i class="fa-solid fa-terminal"></i> Terminal</div>
+          <button class="btn-copy" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+        </div>
+        <pre><code># 1. Place your 1024x1024 PNG logo at assets/images/app_icon.png
+# 2. Run the icon generator
+dart run flutter_launcher_icons</code></pre>
+      </div>
+
+      <h3 class="sub-heading"><i class="fa-solid fa-brush"></i> 3. Customize Colors & Themes</h3>
+      <p>
+        Modify primary accents, cards, and status colors inside <code>lib/utils/constants.dart</code>:
+      </p>
+
+      <div class="code-container">
+        <div class="code-header">
+          <div class="code-lang-tag"><i class="fa-regular fa-file-code"></i> lib/utils/constants.dart</div>
+          <button class="btn-copy" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+        </div>
+        <pre><code>class AppColors {
+  // Dark Theme Palette
+  static const Color background = Color(0xFF09090b);
+  static const Color cardBg = Color(0xFF121216);
+  static const Color primary = Color(0xFFFF4D00);      // Brand Orange
+  static const Color accentGreen = Color(0xFF10b981);   // Delivered / Active
+  static const Color accentBlue = Color(0xFF3b82f6);    // In-Transit
+  static const Color accentGold = Color(0xFFf59e0b);    // COD / Pending
+}</code></pre>
+      </div>
+    </section>
+
+    <!-- Multi-Language -->
+    <section id="languages">
+      <h2 class="section-heading"><i class="fa-solid fa-language"></i> Multi-Language & Internationalization</h2>
+      <p>
+        The app includes built-in multi-language localization via <code>lib/utils/app_translations.dart</code>. Adding a new language or updating existing strings is straightforward.
+      </p>
+
+      <div class="code-container">
+        <div class="code-header">
+          <div class="code-lang-tag"><i class="fa-regular fa-file-code"></i> lib/utils/app_translations.dart</div>
+          <button class="btn-copy" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+        </div>
+        <pre><code>class AppTranslations extends Translations {
+  @override
+  Map<String, Map<String, String>> get keys => {
+    'en_US': {
+      'app_title': 'Cheetah Driver',
+      'assigned_parcels': 'Assigned Parcels',
+      'complete_delivery': 'Complete Delivery',
+      'collect_cod': 'Collect COD Amount',
+    },
+    'es_ES': {
+      'app_title': 'Conductor Cheetah',
+      'assigned_parcels': 'Paquetes Asignados',
+      'complete_delivery': 'Completar Entrega',
+      'collect_cod': 'Cobrar Contra Reembolso',
+    },
+    // Also includes: ar_SA (Arabic), fr_FR (French), de_DE (German), ur_PK (Urdu), etc.
+  };
+}</code></pre>
+      </div>
+    </section>
+
+    <!-- REST API Explorer -->
+    <section id="api-reference">
+      <h2 class="section-heading"><i class="fa-solid fa-network-wired"></i> REST API Endpoint Explorer</h2>
+      <p>
+        All endpoints require <code>Authorization: Bearer &lt;TOKEN&gt;</code> (except login/forgot password) and communicate over HTTPS.
+      </p>
+
+      <div class="api-accordion">
+        
+        <!-- Endpoint 1 -->
+        <div class="api-card">
+          <div class="api-card-header" onclick="toggleApiCard(this)">
+            <div class="api-badge-row">
+              <span class="http-method post">POST</span>
+              <span class="api-endpoint-path">/api/v1/driver/login.php</span>
+              <span class="api-desc-short">Driver & Picker Authentication</span>
+            </div>
+            <i class="fa-solid fa-chevron-down api-chevron"></i>
+          </div>
+          <div class="api-card-body">
+            <p>Authenticates driver/picker credentials and returns JWT bearer token and profile details.</p>
+            <div class="code-container">
+              <div class="code-header"><span>Request Body (Form / JSON)</span></div>
+              <pre><code>{
+  "email": "driver@example.com",
+  "password": "Password123"
+}</code></pre>
+            </div>
+            <div class="code-container">
+              <div class="code-header"><span>Response (200 OK)</span></div>
+              <pre><code>{
+  "success": true,
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6...",
+  "driver": {
+    "id": 14,
+    "name": "Ahmed Ali",
+    "email": "driver@example.com",
+    "phone": "+971501234567",
+    "role": "driver",
+    "branch_id": 2,
+    "vehicle_type": "Motorcycle"
+  }
+}</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- Endpoint 2 -->
+        <div class="api-card">
+          <div class="api-card-header" onclick="toggleApiCard(this)">
+            <div class="api-badge-row">
+              <span class="http-method post">POST</span>
+              <span class="api-endpoint-path">/api/v1/driver/get_parcels.php</span>
+              <span class="api-desc-short">Fetch Assigned Deliveries & Stats</span>
+            </div>
+            <i class="fa-solid fa-chevron-down api-chevron"></i>
+          </div>
+          <div class="api-card-body">
+            <p>Returns real-time list of assigned parcels, delivery addresses, recipient contacts, and counters.</p>
+            <div class="code-container">
+              <div class="code-header"><span>Response (200 OK)</span></div>
+              <pre><code>{
+  "success": true,
+  "stats": { "total": 18, "pending": 6, "delivered": 11, "returned": 1, "cod_total": 2450.00 },
+  "parcels": [
+    {
+      "id": 1082,
+      "tracking_number": "CH-89217340",
+      "sender_name": "Dubai Electronics Hub",
+      "receiver_name": "Sarah Connor",
+      "receiver_phone": "+971509876543",
+      "receiver_address": "Villa 42, Al Barsha 2, Dubai",
+      "cod_amount": 350.00,
+      "status": "Out for Delivery"
+    }
+  ]
+}</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- Endpoint 3 -->
+        <div class="api-card">
+          <div class="api-card-header" onclick="toggleApiCard(this)">
+            <div class="api-badge-row">
+              <span class="http-method post">POST</span>
+              <span class="api-endpoint-path">/api/v1/driver/update_status.php</span>
+              <span class="api-desc-short">Submit Status & Proof of Delivery (POD)</span>
+            </div>
+            <i class="fa-solid fa-chevron-down api-chevron"></i>
+          </div>
+          <div class="api-card-body">
+            <p>Uploads multipart form data with signature image, camera photo, recipient name, and OTP.</p>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>parcel_id</code></td><td>Integer</td><td>Parcel database ID</td></tr>
+                  <tr><td><code>tracking_number</code></td><td>String</td><td>Tracking code</td></tr>
+                  <tr><td><code>status</code></td><td>String</td><td><code>Delivered</code>, <code>Failed</code>, <code>Out for Delivery</code></td></tr>
+                  <tr><td><code>receiver_name</code></td><td>String</td><td>Name of receiver</td></tr>
+                  <tr><td><code>signature</code></td><td>File (PNG)</td><td>Captured signature canvas bytes</td></tr>
+                  <tr><td><code>photo</code></td><td>File (JPEG)</td><td>Drop-off proof photo</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Endpoint 4 -->
+        <div class="api-card">
+          <div class="api-card-header" onclick="toggleApiCard(this)">
+            <div class="api-badge-row">
+              <span class="http-method post">POST</span>
+              <span class="api-endpoint-path">/api/v1/driver/update_location.php</span>
+              <span class="api-desc-short">Driver GPS Telemetry Ping</span>
+            </div>
+            <i class="fa-solid fa-chevron-down api-chevron"></i>
+          </div>
+          <div class="api-card-body">
+            <p>Transmits live coordinates and hardware status to the central dispatcher map.</p>
+            <div class="code-container">
+              <div class="code-header"><span>Request Body</span></div>
+              <pre><code>{
+  "latitude": 25.112450,
+  "longitude": 55.201820,
+  "gps_enabled": 1
+}</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- Endpoint 5 -->
+        <div class="api-card">
+          <div class="api-card-header" onclick="toggleApiCard(this)">
+            <div class="api-badge-row">
+              <span class="http-method post">POST</span>
+              <span class="api-endpoint-path">/api/v1/picker/wms_get_pick_tasks.php</span>
+              <span class="api-desc-short">Warehouse WMS Pick Tasks</span>
+            </div>
+            <i class="fa-solid fa-chevron-down api-chevron"></i>
+          </div>
+          <div class="api-card-body">
+            <p>Fetches pending picking orders with warehouse aisle, rack, shelf, and SKU barcode details.</p>
+            <div class="code-container">
+              <div class="code-header"><span>Response (200 OK)</span></div>
+              <pre><code>{
+  "success": true,
+  "tasks": [
+    {
+      "task_id": 402,
+      "order_number": "ORD-2026-9901",
+      "product_name": "Wireless Noise-Cancelling Headphones",
+      "sku": "TECH-HD-001",
+      "barcode": "8901234567890",
+      "quantity_to_pick": 2,
+      "location": { "zone": "Zone A", "aisle": "04", "shelf": "Shelf B", "bin": "Bin 03" },
+      "status": "pending"
+    }
+  ]
+}</code></pre>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Offline Sync -->
+    <section id="offline-sync">
+      <h2 class="section-heading"><i class="fa-solid fa-shield-halved"></i> Offline-First Architecture & AES Hive Queue</h2>
+      <p>
+        Drivers frequently operate in basements, high-rise elevators, and remote areas with zero cell signal. The app features a resilient offline queue system:
+      </p>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-title"><i class="fa-solid fa-lock" style="color:var(--green)"></i> 1. AES-256 Encryption</div>
+          <div class="feature-desc">When offline, complete POD records (photos, signatures, customer info) are encrypted with AES-256 before being written to disk via Hive.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-title"><i class="fa-solid fa-wifi" style="color:var(--blue)"></i> 2. Auto Connectivity Listener</div>
+          <div class="feature-desc">The app monitors real-time network states using <code>connectivity_plus</code>.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-title"><i class="fa-solid fa-rotate" style="color:var(--primary)"></i> 3. Background Sync & Flush</div>
+          <div class="feature-desc">Upon internet reconnection, queued tasks are flushed sequentially with automatic retries and deleted only after server 200 OK response.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GPS Telemetry -->
+    <section id="gps-guard">
+      <h2 class="section-heading"><i class="fa-solid fa-location-crosshairs"></i> Live GPS Telemetry & Hardware Guard</h2>
+      <p>
+        To prevent drivers from faking location or turning off GPS during shifts, the app implements hardware-level event listeners:
+      </p>
+      
+      <div class="callout warning">
+        <i class="fa-solid fa-shield-cat"></i>
+        <div class="callout-content">
+          <strong>Anti-Tampering Guard:</strong> If a rider disables GPS in OS quick settings, the app instantly catches the hardware event, transmits a <code>gps_enabled: 0</code> alert to the admin dispatch map, and locks the screen with a mandatory prompt to re-enable location.
+        </div>
+      </div>
+    </section>
+
+    <!-- Publishing -->
+    <section id="publishing">
+      <h2 class="section-heading"><i class="fa-solid fa-cloud-arrow-up"></i> Building & Publishing for Production</h2>
+
+      <h3 class="sub-heading"><i class="fa-brands fa-android"></i> 1. Android Release (Google Play Store)</h3>
+      
+      <div class="code-container">
+        <div class="code-header">
+          <div class="code-lang-tag"><i class="fa-solid fa-terminal"></i> Terminal Commands</div>
+          <button class="btn-copy" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+        </div>
+        <pre><code># Generate Upload Keystore
+keytool -genkey -v -keystore android/app/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+
+# Build Google Play Android App Bundle (.aab)
+flutter build appbundle --release
+
+# Build Universal Standalone APK (.apk)
+flutter build apk --release</code></pre>
+      </div>
+
+      <h3 class="sub-heading"><i class="fa-brands fa-apple"></i> 2. iOS Release (Apple App Store / TestFlight)</h3>
+      
+      <div class="code-container">
+        <div class="code-header">
+          <div class="code-lang-tag"><i class="fa-solid fa-terminal"></i> Terminal Commands</div>
+          <button class="btn-copy" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+        </div>
+        <pre><code># Install iOS CocoaPods
+cd ios
+pod install --repo-update
+cd ..
+
+# Build Release IPA
+flutter build ipa --release</code></pre>
+      </div>
+    </section>
+
+    <!-- Checklist -->
+    <section id="checklist">
+      <h2 class="section-heading"><i class="fa-solid fa-list-check"></i> Release Readiness Checklist</h2>
+      
+      <div class="checklist-container">
+        <div class="checklist-item">
+          <input type="checkbox" id="chk1">
+          <label class="checklist-label" for="chk1">
+            Configure Base API URL in <code>lib/utils/constants.dart</code>
+            <small>Point to your live backend domain with HTTPS</small>
+          </label>
+        </div>
+        <div class="checklist-item">
+          <input type="checkbox" id="chk2">
+          <label class="checklist-label" for="chk2">
+            Update Android Package Name & Application ID
+            <small>Inside <code>android/app/build.gradle</code></small>
+          </label>
+        </div>
+        <div class="checklist-item">
+          <input type="checkbox" id="chk3">
+          <label class="checklist-label" for="chk3">
+            Update iOS Bundle Identifier & Team Signing
+            <small>Inside Xcode Signing & Capabilities</small>
+          </label>
+        </div>
+        <div class="checklist-item">
+          <input type="checkbox" id="chk4">
+          <label class="checklist-label" for="chk4">
+            Generate App Launcher Icons
+            <small>Run <code>dart run flutter_launcher_icons</code> with your brand logo</small>
+          </label>
+        </div>
+        <div class="checklist-item">
+          <input type="checkbox" id="chk5">
+          <label class="checklist-label" for="chk5">
+            Test Camera & Barcode Scanner on Physical Hardware
+            <small>Verify camera permissions and physical barcode detection</small>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq">
+      <h2 class="section-heading"><i class="fa-solid fa-circle-question"></i> Troubleshooting & FAQ</h2>
+
+      <div class="faq-accordion">
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            <span>How do I test the app on a local computer without a domain?</span>
+            <i class="fa-solid fa-chevron-down faq-icon"></i>
+          </div>
+          <div class="faq-answer">
+            Use your computer's local Wi-Fi IP address (e.g. <code>https://192.168.1.50/</code>) in <code>lib/utils/constants.dart</code>. Ensure your phone and computer are on the same Wi-Fi network. Do not use <code>localhost</code> or <code>127.0.0.1</code> as physical mobile devices refer to themselves with localhost.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            <span>Why does the camera barcode scanner show a black screen in the simulator?</span>
+            <i class="fa-solid fa-chevron-down faq-icon"></i>
+          </div>
+          <div class="faq-answer">
+            Emulators and simulators do not have physical camera sensors. Barcode scanning and photo capturing must always be tested on a physical Android or iOS device.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            <span>How do I fix CocoaPods version errors on macOS?</span>
+            <i class="fa-solid fa-chevron-down faq-icon"></i>
+          </div>
+          <div class="faq-answer">
+            Open terminal in project root, run <code>cd ios && rm -rf Pods Podfile.lock && pod cache clean --all && pod install --repo-update && cd ..</code> and restart Xcode.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Support -->
+    <section id="support">
+      <h2 class="section-heading"><i class="fa-solid fa-headset"></i> Buyer Support & Community</h2>
+      <p>
+        Thank you for purchasing the <strong>Cheetah Driver & Warehouse Picker Mobile App</strong> on Codester!
+      </p>
+      
+      <div class="callout tip">
+        <i class="fa-solid fa-comments"></i>
+        <div class="callout-content">
+          <strong>Need Help or Custom Development?</strong> Contact us directly via your Codester buyer dashboard. We are happy to assist with initial setup, server configuration, and custom feature additions!
+        </div>
+      </div>
+
+      <footer class="doc-footer">
+        <div>&copy; 2026 Cheetah Logistics SaaS. All Rights Reserved.</div>
+        <div>Built with Flutter 3.x &bull; Codester Commercial Edition</div>
+      </footer>
+    </section>
+
+  </main>
+</div>
+
+<script>
+// Reading Progress
+window.addEventListener('scroll', () => {
+  const winScroll = document.documentElement.scrollTop;
+  const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  const scrolled = (winScroll / height) * 100;
+  document.getElementById('reading-progress').style.width = scrolled + '%';
+});
+
+// Theme Toggle
+const themeToggle = document.getElementById('themeToggle');
+const htmlTag = document.documentElement;
+
+themeToggle.addEventListener('click', () => {
+  const currentTheme = htmlTag.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  htmlTag.setAttribute('data-theme', newTheme);
+  themeToggle.querySelector('i').className = newTheme === 'dark' ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+  localStorage.setItem('cheetah_doc_theme', newTheme);
+});
+
+// Restore saved theme
+const savedTheme = localStorage.getItem('cheetah_doc_theme');
+if (savedTheme) {
+  htmlTag.setAttribute('data-theme', savedTheme);
+  themeToggle.querySelector('i').className = savedTheme === 'dark' ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+}
+
+// Mobile Nav Toggle
+const mobileNavToggle = document.getElementById('mobileNavToggle');
+const docSidebar = document.getElementById('docSidebar');
+
+mobileNavToggle.addEventListener('click', () => {
+  docSidebar.classList.toggle('open');
+});
+
+// Close sidebar on link click (mobile)
+document.querySelectorAll('.nav-link').forEach(link => {
+  link.addEventListener('click', () => {
+    if (window.innerWidth <= 960) {
+      docSidebar.classList.remove('open');
+    }
+  });
+});
+
+// Scrollspy for active nav link
+window.addEventListener('scroll', () => {
+  const sections = document.querySelectorAll('section[id]');
+  const scrollPos = window.scrollY + 100;
+
+  sections.forEach(section => {
+    const top = section.offsetTop;
+    const height = section.offsetHeight;
+    const id = section.getAttribute('id');
+    const link = document.querySelector(`.nav-link[href="#${id}"]`);
+
+    if (link && scrollPos >= top && scrollPos < top + height) {
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+    }
+  });
+});
+
+// Tab Switching
+function switchTab(btn, paneId) {
+  const container = btn.closest('.tab-container');
+  container.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  container.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  
+  btn.classList.add('active');
+  document.getElementById(paneId).classList.add('active');
+}
+
+// Copy Code Button
+function copyCode(button) {
+  const pre = button.closest('.code-container').querySelector('pre code');
+  const text = pre.innerText;
+
+  navigator.clipboard.writeText(text).then(() => {
+    button.classList.add('copied');
+    button.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+    setTimeout(() => {
+      button.classList.remove('copied');
+      button.innerHTML = '<i class="fa-regular fa-copy"></i> Copy';
+    }, 2000);
+  });
+}
+
+// Accordion Toggle
+function toggleApiCard(header) {
+  const card = header.closest('.api-card');
+  card.classList.toggle('open');
+}
+
+function toggleFaq(header) {
+  const item = header.closest('.faq-item');
+  item.classList.toggle('open');
+}
+
+// Live Documentation Search
+const searchInput = document.getElementById('docSearch');
+searchInput.addEventListener('input', (e) => {
+  const query = e.target.value.toLowerCase().trim();
+  const sections = document.querySelectorAll('main section');
+
+  sections.forEach(section => {
+    const text = section.innerText.toLowerCase();
+    if (query === '' || text.includes(query)) {
+      section.style.display = 'block';
+    } else {
+      section.style.display = 'none';
+    }
+  });
+});
+</script>
+</body>
+</html>
