@@ -1108,15 +1108,15 @@ class HomeView extends StatelessWidget {
                           color: AppColors.accentGreen.withOpacity(0.3),
                         ),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.fiber_manual_record,
                             size: 8,
                             color: AppColors.accentGreen,
                           ),
-                          SizedBox(width: 6),
+                          const SizedBox(width: 6),
                           Text(
                             authController.userRole.value == 'picker' ? t('Picker Account Active') : t('Rider Account Active'),
                             style: TextStyle(
