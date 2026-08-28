@@ -122,10 +122,10 @@ class FirebaseService {
     }
 
     try {
-      final token = explicitApiToken ?? await SessionStore.getToken();
-      if (token == null || token.isEmpty) return;
+      final token = explicitApiToken ?? await SessionStore.readToken();
+      if (token.isEmpty) return;
 
-      final url = Uri.parse('${AppConfig.apiBaseUrl}/driver/update_fcm_token.php');
+      final url = Uri.parse('${AppConstants.apiUrl}update_fcm_token.php');
       final response = await http.post(
         url,
         headers: {
