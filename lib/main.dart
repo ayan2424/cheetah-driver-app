@@ -6,10 +6,12 @@ import 'controllers/auth_controller.dart';
 import 'routes/app_pages.dart';
 import 'utils/constants.dart';
 import 'services/offline_sync_service.dart';
+import 'services/firebase_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await OfflineSyncService.init();
+  await FirebaseService.init();
   Get.put(AuthController(), permanent: true);
   runApp(const CheetahDriverApp());
 }

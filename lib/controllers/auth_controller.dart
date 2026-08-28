@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api_service.dart';
 import '../services/location_service.dart';
 import '../services/session_store.dart';
+import '../services/firebase_service.dart';
 import '../utils/constants.dart';
 
 class AuthController extends GetxController with WidgetsBindingObserver {
@@ -73,6 +74,7 @@ class AuthController extends GetxController with WidgetsBindingObserver {
     if (userToken.value.isNotEmpty) {
       fetchUserProfile();
       LocationService.startLiveLocationTracking(userToken.value);
+      FirebaseService.syncTokenWithBackend(userToken.value);
     }
   }
 
@@ -172,6 +174,7 @@ class AuthController extends GetxController with WidgetsBindingObserver {
 
       fetchUserProfile();
       LocationService.startLiveLocationTracking(token);
+      FirebaseService.syncTokenWithBackend(token);
 
       Get.offAllNamed(AppRoutes.HOME);
       Get.snackbar(
