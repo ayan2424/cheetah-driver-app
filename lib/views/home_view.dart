@@ -1,16 +1,19 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:signature/signature.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import '../controllers/auth_controller.dart';
 import '../controllers/parcel_controller.dart';
 import '../controllers/wallet_controller.dart';
 import '../models/parcel_model.dart';
+import '../services/offline_sync_service.dart';
 import '../utils/constants.dart';
 import '../utils/app_translations.dart';
 import 'home/qr_scanner_view.dart';
@@ -24,7 +27,7 @@ class HomeView extends StatelessWidget {
   final WalletController walletController = Get.put(WalletController());
   final RxInt selectedNavIndex = 0.obs;
 
-  HomeView({Key? key}) : super(key: key);
+  HomeView({super.key});
 
   String t(String text) => text.localize(authController.selectedLanguage.value);
 
@@ -102,57 +105,99 @@ class HomeView extends StatelessWidget {
           ],
         ),
         body: parcelController.isLoading.value
-            ? const Center(
-                child: CircularProgressIndicator(color: AppColors.primary),
-              )
-            : IndexedStack(
-                index: selectedNavIndex.value,
-                children: authController.userRole.value == 'picker'
-                    ? [
-                        PickingTab(),
-                        _buildProfileTab(
-                          context,
-                          isDark,
-                          cardColor,
-                          borderColor,
-                          textColor,
-                          subtextColor,
+            ? _buildShimmerLoadingList(isDark, cardColor, borderColor)
+            : Column(
+                children: [
+                  // Real-Time Live Network State HUD Banner
+                  _buildNetworkStatusHud(context, isDark),
+                  // Reactive Offline Queue Sync Banner
+                  ValueListenableBuilder(
+                    valueListenable: OfflineSyncService.box.listenable(),
+                    builder: (context, Box box, _) {
+                      final count = box.length;
+                      if (count == 0) return const SizedBox.shrink();
+                      return Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        color: AppColors.accentGold.withValues(alpha: 0.18),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.cloud_off, size: 18, color: AppColors.accentGold),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                '$count ${t('offline deliveries queued (will auto-sync when online)')}',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.accentGold,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 12,
+                              height: 12,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppColors.accentGold,
+                              ),
+                            ),
+                          ],
                         ),
-                      ]
-                    : [
-                        _buildDeliveriesTab(
-                          context,
-                          isDark,
-                          cardColor,
-                          borderColor,
-                          textColor,
-                          subtextColor,
-                        ),
-                        _buildCodSettlementTab(
-                          isDark,
-                          cardColor,
-                          borderColor,
-                          textColor,
-                          subtextColor,
-                        ),
-                        _buildWalletTab(
-                          context,
-                          isDark,
-                          cardColor,
-                          borderColor,
-                          textColor,
-                          subtextColor,
-                        ),
-                        PickingTab(),
-                        _buildProfileTab(
-                          context,
-                          isDark,
-                          cardColor,
-                          borderColor,
-                          textColor,
-                          subtextColor,
-                        ),
-                      ],
+                      );
+                    },
+                  ),
+                  Expanded(
+                    child: IndexedStack(
+                      index: selectedNavIndex.value,
+                      children: authController.userRole.value == 'picker'
+                          ? [
+                              PickingTab(),
+                              _buildProfileTab(
+                                context,
+                                isDark,
+                                cardColor,
+                                borderColor,
+                                textColor,
+                                subtextColor,
+                              ),
+                            ]
+                          : [
+                              _buildDeliveriesTab(
+                                context,
+                                isDark,
+                                cardColor,
+                                borderColor,
+                                textColor,
+                                subtextColor,
+                              ),
+                              _buildCodSettlementTab(
+                                isDark,
+                                cardColor,
+                                borderColor,
+                                textColor,
+                                subtextColor,
+                              ),
+                              _buildWalletTab(
+                                context,
+                                isDark,
+                                cardColor,
+                                borderColor,
+                                textColor,
+                                subtextColor,
+                              ),
+                              PickingTab(),
+                              _buildProfileTab(
+                                context,
+                                isDark,
+                                cardColor,
+                                borderColor,
+                                textColor,
+                                subtextColor,
+                              ),
+                            ],
+                    ),
+                  ),
+                ],
               ),
         // Dynamic Floating Bottom Navigation Bar
         bottomNavigationBar: Container(
@@ -416,19 +461,17 @@ class HomeView extends StatelessWidget {
               ),
             )
           else
-            ...parcelController.filteredParcels
-                .map(
-                  (p) => _buildParcelCard(
-                    context,
-                    p,
-                    isDark,
-                    cardColor,
-                    borderColor,
-                    textColor,
-                    subtextColor,
-                  ),
-                )
-                .toList(),
+            ...parcelController.filteredParcels.map(
+              (p) => _buildParcelCard(
+                context,
+                p,
+                isDark,
+                cardColor,
+                borderColor,
+                textColor,
+                subtextColor,
+              ),
+            ),
         ],
       ),
     );
@@ -528,6 +571,27 @@ class HomeView extends StatelessWidget {
             ],
           ),
         ),
+        const SizedBox(height: 12),
+
+        // 1-Tap WhatsApp Shift Handover Share Button
+        ElevatedButton.icon(
+          onPressed: () => _shareCodShiftSummary(
+            totalDeliveredCash,
+            deliveredCashParcels.length,
+            unsettledCashParcels.length,
+          ),
+          icon: const Icon(Icons.share_rounded, size: 18),
+          label: Text(
+            t('Share Shift Handover on WhatsApp'),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF059669),
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          ),
+        ),
         const SizedBox(height: 20),
         Text(
           t('COD Cash Log'),
@@ -611,134 +675,7 @@ class HomeView extends StatelessWidget {
     );
   }
 
-  // TAB 2: Quick Search & Instant Camera QR Scan View
-  Widget _buildQuickScanTab(
-    BuildContext context,
-    bool isDark,
-    Color cardColor,
-    Color borderColor,
-    Color textColor,
-    Color subtextColor,
-  ) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.only(
-        left: 20.0,
-        right: 20.0,
-        top: 20.0,
-        bottom: 24.0,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      t('Parcel Search & QR Scanner'),
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: textColor,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      t('Type tracking code or tap QR icon to scan'),
-                      style: TextStyle(fontSize: 12, color: subtextColor),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
 
-          // Search Field with Corner QR Scan Icon Button
-          Container(
-            decoration: BoxDecoration(
-              color: cardColor,
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: borderColor),
-            ),
-            child: TextField(
-              controller: parcelController.searchController,
-              onChanged: (val) => parcelController.searchParcels(val),
-              style: TextStyle(color: textColor, fontSize: 15),
-              decoration: InputDecoration(
-                hintText: t('Enter Tracking # (e.g. PK-1001)'),
-                hintStyle: TextStyle(color: subtextColor),
-                prefixIcon: const Icon(Icons.search, color: AppColors.primary),
-                suffixIcon: IconButton(
-                  icon: const Icon(
-                    Icons.qr_code_scanner,
-                    color: AppColors.primary,
-                    size: 24,
-                  ),
-                  tooltip: t('Tap to Scan QR Code'),
-                  onPressed: () => _openCameraQrScanner(context, isDark),
-                ),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.all(16),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // Big Quick Camera Launch Button
-          ElevatedButton.icon(
-            onPressed: () => _openCameraQrScanner(context, isDark),
-            icon: const Icon(Icons.camera_alt, size: 20),
-            label: Text(
-              t('Open Camera Scanner'),
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-              minimumSize: const Size(double.infinity, 50),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // Helpful Instructions Card
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: cardColor,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: borderColor),
-            ),
-            child: Row(
-              children: [
-                const Icon(
-                  Icons.info_outline,
-                  color: AppColors.primary,
-                  size: 24,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    t('Scanning or typing parcel code automatically filters your delivery list and opens parcel status.'),
-                    style: TextStyle(
-                      color: subtextColor,
-                      fontSize: 12,
-                      height: 1.4,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   // TAB 3: Rider Profile & System Info (Clean 3-Card Architecture)
   // ══════════════════════════════════════════════════════════════
@@ -931,7 +868,7 @@ class HomeView extends StatelessWidget {
                     ],
                   ),
                 );
-              }).toList(),
+              }),
           ],
         ),
       );
@@ -1727,11 +1664,16 @@ class HomeView extends StatelessWidget {
                     onTap: () => _makePhoneCall(p.receiverPhone),
                   ),
                   const SizedBox(width: 8),
-                  // WhatsApp Chat
+                  // WhatsApp Direct Chat with Pre-filled Courier Template
                   _buildActionButton(
                     icon: Icons.chat_bubble_outline,
                     color: Colors.lightGreenAccent,
-                    onTap: () => _openWhatsApp(p.receiverPhone),
+                    onTap: () => _openWhatsApp(
+                      p.receiverPhone,
+                      customerName: p.receiverName,
+                      trackingNumber: p.trackingNumber,
+                      codAmount: p.isCod ? p.amount : null,
+                    ),
                   ),
                   const SizedBox(width: 8),
                   // Navigation
@@ -1815,6 +1757,13 @@ class HomeView extends StatelessWidget {
     );
   }
 
+  /// Displays the interactive Proof of Delivery (POD) modal bottom sheet.
+  ///
+  /// Capture Components:
+  /// 1. Recipient Name: Verifies physical consignee identity.
+  /// 2. Delivery OTP: One-time PIN verification required if package is flagged with `requiresOtp`.
+  /// 3. Photo Proof: High-resolution camera or gallery image; server watermarks tracking # and UTC timestamp.
+  /// 4. Digital Signature: Interactive vector touch pad exporting non-repudiation PNG bytes.
   void _showPodBottomSheet(
     BuildContext context,
     ParcelModel p,
@@ -2075,31 +2024,51 @@ class HomeView extends StatelessWidget {
                               color: textColor,
                             ),
                           ),
-                          GestureDetector(
-                            onTap: () async {
-                              final scanned = await Get.to(() => QrScannerView());
-                              if (scanned != null) {
-                                String code = scanned.toString().trim();
-                                if (code.startsWith('OTP:')) {
-                                  code = code.replaceFirst('OTP:', '').trim();
-                                }
-                                otpController.text = code;
-                              }
-                            },
-                            child: Row(
-                              children: [
-                                Icon(Icons.qr_code_scanner, size: 16, color: AppColors.primary),
-                                const SizedBox(width: 4),
-                                Text(
-                                  t('Scan QR'),
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.primary,
-                                  ),
+                          Row(
+                            children: [
+                              GestureDetector(
+                                onTap: () async {
+                                  final data = await Clipboard.getData(Clipboard.kTextPlain);
+                                  if (data != null && data.text != null && data.text!.isNotEmpty) {
+                                    otpController.text = data.text!.trim();
+                                    Get.snackbar('OTP', 'Pasted OTP from clipboard', snackPosition: SnackPosition.BOTTOM, duration: const Duration(seconds: 1));
+                                  }
+                                },
+                                child: Row(
+                                  children: [
+                                    const Icon(Icons.paste_rounded, size: 15, color: AppColors.accentBlue),
+                                    const SizedBox(width: 3),
+                                    Text(
+                                      t('Paste'),
+                                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.accentBlue),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              ),
+                              const SizedBox(width: 12),
+                              GestureDetector(
+                                onTap: () async {
+                                  final scanned = await Get.to(() => const QrScannerView());
+                                  if (scanned != null) {
+                                    String code = scanned.toString().trim();
+                                    if (code.startsWith('OTP:')) {
+                                      code = code.replaceFirst('OTP:', '').trim();
+                                    }
+                                    otpController.text = code;
+                                  }
+                                },
+                                child: Row(
+                                  children: [
+                                    const Icon(Icons.qr_code_scanner, size: 15, color: AppColors.primary),
+                                    const SizedBox(width: 3),
+                                    Text(
+                                      t('Scan QR'),
+                                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.primary),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -2107,22 +2076,27 @@ class HomeView extends StatelessWidget {
                       TextField(
                         controller: otpController,
                         keyboardType: TextInputType.number,
-                        style: TextStyle(color: textColor),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: textColor,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 6,
+                          fontFamily: 'monospace',
+                        ),
                         decoration: InputDecoration(
-                          hintText: 'e.g. 123456',
-                          hintStyle: TextStyle(color: subtextColor),
+                          hintText: '• • • •',
+                          hintStyle: TextStyle(color: subtextColor, letterSpacing: 6),
                           filled: true,
                           fillColor: AppColors.background,
-                          contentPadding: const EdgeInsets.all(16),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide(color: borderColor),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                              color: AppColors.primary,
-                            ),
+                            borderSide: const BorderSide(color: AppColors.primary, width: 2),
                           ),
                         ),
                       ),
@@ -2177,6 +2151,7 @@ class HomeView extends StatelessWidget {
                           signatureBytes = await signatureController.toPngBytes();
                         }
 
+                        if (!ctx.mounted) return;
                         Navigator.pop(ctx);
                         await parcelController.submitPod(
                           parcelId: p.id,
@@ -2292,10 +2267,28 @@ class HomeView extends StatelessWidget {
     }
   }
 
-  void _openWhatsApp(String phone) async {
+  void _openWhatsApp(
+    String phone, {
+    String? customerName,
+    String? trackingNumber,
+    double? codAmount,
+  }) async {
     final cleanPhone = phone.replaceAll(RegExp(r'[^\d]'), '');
     if (cleanPhone.isEmpty) return;
-    final Uri url = Uri.parse('https://wa.me/$cleanPhone');
+
+    String query = '';
+    if (trackingNumber != null && trackingNumber.isNotEmpty) {
+      final nameGreeting = (customerName != null && customerName.isNotEmpty && customerName != 'N/A')
+          ? 'Hello $customerName! '
+          : 'Hello! ';
+      final codNote = (codAmount != null && codAmount > 0)
+          ? ' Cash to collect (COD): Rs. ${codAmount.toStringAsFixed(0)}.'
+          : '';
+      final msg = '$nameGreeting This is your Cheetah Courier rider regarding package #$trackingNumber.$codNote I will be arriving at your delivery address shortly.';
+      query = '?text=${Uri.encodeComponent(msg)}';
+    }
+
+    final Uri url = Uri.parse('https://wa.me/$cleanPhone$query');
     try {
       final launched = await launchUrl(
         url,
@@ -2310,6 +2303,38 @@ class HomeView extends StatelessWidget {
         'Opening WhatsApp chat ($cleanPhone)...',
         snackPosition: SnackPosition.BOTTOM,
       );
+    }
+  }
+
+  void _shareCodShiftSummary(
+    double totalCash,
+    int deliveredCount,
+    int pendingSettlementCount,
+  ) async {
+    final rider = authController.userName.value;
+    final branch = authController.branchName.value;
+    final date = DateTime.now().toLocal().toString().split(' ')[0];
+    final codSum = parcelController.stats.value.codTotal.toStringAsFixed(0);
+
+    final summary = '''
+📦 *Cheetah Courier — Driver Shift Handover*
+👤 *Driver:* $rider
+🏢 *Branch:* $branch
+📅 *Date:* $date
+━━━━━━━━━━━━━━━━━
+✅ *Delivered Parcels:* $deliveredCount
+💵 *Total COD Collected:* Rs. $codSum
+⏳ *Pending Settlement:* $pendingSettlementCount parcels
+━━━━━━━━━━━━━━━━━
+_Handover report generated via Cheetah Driver Mobile App_''';
+
+    final Uri url = Uri.parse('https://wa.me/?text=${Uri.encodeComponent(summary)}');
+    try {
+      if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+        await launchUrl(url);
+      }
+    } catch (e) {
+      Get.snackbar('Shift Summary', 'Ready to share shift handover report.');
     }
   }
 
@@ -3065,6 +3090,173 @@ class HomeView extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  /// Renders a real-time reactive HUD banner alerting the rider to network offline/online status.
+  Widget _buildNetworkStatusHud(BuildContext context, bool isDark) {
+    return Obx(() {
+      if (authController.isOffline.value) {
+        return Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+          decoration: BoxDecoration(
+            color: const Color(0xFFD97706).withValues(alpha: 0.95),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.15),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.wifi_off_rounded, color: Colors.white, size: 18),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  t('Offline Mode Active — Deliveries will be encrypted & queued locally'),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+
+      if (authController.showReconnectedBanner.value) {
+        return Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+          decoration: BoxDecoration(
+            color: const Color(0xFF059669).withValues(alpha: 0.95),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.15),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.cloud_done_rounded, color: Colors.white, size: 18),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  t('Internet Restored — Syncing queued deliveries with Cheetah server...'),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+
+      return const SizedBox.shrink();
+    });
+  }
+
+  /// Renders a fluid shimmer skeleton loading list for modern visual feedback.
+  Widget _buildShimmerLoadingList(bool isDark, Color cardColor, Color borderColor) {
+    final baseColor = isDark ? const Color(0xFF1B1B22) : const Color(0xFFE2E8F0);
+    final highlightColor = isDark ? const Color(0xFF282834) : const Color(0xFFF8FAFC);
+
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      itemCount: 4,
+      itemBuilder: (context, index) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: borderColor),
+          ),
+          child: Shimmer.fromColors(
+            baseColor: baseColor,
+            highlightColor: highlightColor,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      width: 120,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                    ),
+                    Container(
+                      width: 75,
+                      height: 22,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  width: double.infinity,
+                  height: 14,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  width: 180,
+                  height: 12,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 38,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Container(
+                        height: 38,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

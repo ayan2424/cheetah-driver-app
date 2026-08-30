@@ -8,6 +8,13 @@ import 'utils/constants.dart';
 import 'services/offline_sync_service.dart';
 import 'services/firebase_service.dart';
 
+/// Entry point of the Cheetah Driver & Warehouse Picker Mobile Application.
+///
+/// Boot Sequence:
+/// 1. Widgets Flutter Binding: Ensures platform channels are ready for Keystore/Keychain access.
+/// 2. Offline Sync Service: Opens hardware-encrypted Hive box (`offline_pod_queue`) and starts network watcher.
+/// 3. Firebase Push Service: Initializes FCM with safe fallback if optional marketplace config is absent.
+/// 4. Permanent Auth Controller: Injects reactive identity and theme state into GetX dependency graph.
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await OfflineSyncService.init();
@@ -16,13 +23,14 @@ void main() async {
   runApp(const CheetahDriverApp());
 }
 
+/// Root widget configuring reactive dual-theme support (Dark/Light/System) and GetX routing.
 class CheetahDriverApp extends StatelessWidget {
-  const CheetahDriverApp({Key? key}) : super(key: key);
+  const CheetahDriverApp({super.key});
 
   ThemeMode _getThemeMode(String pref) {
     if (pref == 'light') return ThemeMode.light;
     if (pref == 'dark') return ThemeMode.dark;
-    return ThemeMode.system; // Real-time OS System theme!
+    return ThemeMode.system; // Follows real-time mobile OS platform brightness
   }
 
   @override

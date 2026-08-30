@@ -7,12 +7,19 @@ import '../../../utils/app_translations.dart';
 import '../../../utils/constants.dart';
 import '../qr_scanner_view.dart';
 
+/// [DeliveriesTab] renders the active delivery manifest assigned to the logged-in courier rider.
+///
+/// Core Capabilities:
+/// - Real-time Manifest List: Grouped and sorted parcels dispatched for the driver's current shift.
+/// - Instant Barcode Search: Allows scanning physical package labels (AWB) or typing to filter list.
+/// - Dynamic Status Filter Chips: Rapidly isolate 'Out for Delivery', 'In Transit', or 'Delivered' parcels.
+/// - Pull-to-Refresh: Re-synchronizes manifest data with the central Cheetah dispatch database.
 class DeliveriesTab extends StatelessWidget {
   final AuthController authController = Get.find<AuthController>();
   final ParcelController parcelController = Get.find<ParcelController>();
   final Function(ParcelModel) onParcelTap;
 
-  DeliveriesTab({Key? key, required this.onParcelTap}) : super(key: key);
+  DeliveriesTab({super.key, required this.onParcelTap});
 
   String t(String text) => text.localize(authController.selectedLanguage.value);
 
@@ -42,7 +49,7 @@ class DeliveriesTab extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
           children: [
-            // Search Input
+            // Search Input with integrated AWB Barcode Scanner
             TextField(
               controller: parcelController.searchController,
               onChanged: parcelController.searchParcels,
@@ -54,7 +61,7 @@ class DeliveriesTab extends StatelessWidget {
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.qr_code_scanner, color: AppColors.primary),
                   onPressed: () async {
-                    final scannedCode = await Get.to(() => QrScannerView());
+                    final scannedCode = await Get.to(() => const QrScannerView());
                     if (scannedCode != null && scannedCode is String) {
                       parcelController.searchParcels(scannedCode);
                     }
@@ -176,10 +183,10 @@ class DeliveriesTab extends StatelessWidget {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 10, vertical: 4),
                                   decoration: BoxDecoration(
-                                    color: _getStatusColor(parcel.status).withOpacity(0.15),
+                                    color: _getStatusColor(parcel.status).withValues(alpha: 0.15),
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
-                                        color: _getStatusColor(parcel.status).withOpacity(0.3)),
+                                        color: _getStatusColor(parcel.status).withValues(alpha: 0.3)),
                                   ),
                                   child: Text(
                                     parcel.status.localize(lang),

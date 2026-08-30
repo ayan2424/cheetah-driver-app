@@ -9,6 +9,15 @@ import 'auth_controller.dart';
 import 'dart:convert';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
+/// [ParcelController] manages the courier's assigned delivery manifest, multi-status filtering,
+/// real-time search queries, summary statistics, and online/offline Proof of Delivery (POD) submissions.
+///
+/// Core Capabilities:
+/// 1. Manifest Isolation & Sync: Fetches parcels assigned strictly to the authenticated driver.
+/// 2. Instant Substring Search: Evaluates tracking numbers, recipient names, addresses, and phone numbers in-memory.
+/// 3. Resilient POD Flow: Seamlessly catches offline network states and redirects delivery submissions
+///    to the encrypted [OfflineSyncService] queue without interrupting courier workflow.
+/// 4. Post-Delivery Ledger Reconciliation: Automatically refreshes parcel lists and COD totals upon successful POD.
 class ParcelController extends GetxController {
   var isLoading = false.obs;
   var isSubmittingPod = false.obs;
@@ -32,7 +41,7 @@ class ParcelController extends GetxController {
   void onInit() {
     super.onInit();
     fetchParcels();
-    // Auto-fetch whenever userToken becomes available
+    // Auto-fetch whenever userToken becomes available (e.g. after login or session restore)
     ever(authController.userToken, (String token) {
       if (token.isNotEmpty) {
         fetchParcels();
@@ -46,6 +55,7 @@ class ParcelController extends GetxController {
     super.onClose();
   }
 
+  /// Synchronizes assigned delivery manifest and performance metrics from the server.
   Future<void> fetchParcels() async {
     isLoading.value = true;
     var token = authController.userToken.value;
@@ -84,6 +94,7 @@ class ParcelController extends GetxController {
     }
   }
 
+  /// Filters parcels by tracking number, recipient name, delivery street, or phone number.
   void searchParcels(String query) {
     searchQuery.value = query.toLowerCase().trim();
     if (searchController.text != query) {
@@ -95,12 +106,14 @@ class ParcelController extends GetxController {
     _applyFilterAndSearch();
   }
 
+  /// Clears active search field and resets filtered list view.
   void clearSearch() {
     searchController.clear();
     searchQuery.value = '';
     _applyFilterAndSearch();
   }
 
+  /// Applies status tab filter ('all', 'Out for Delivery', 'In Transit', 'Delivered', etc.).
   void applyFilter(String filter) {
     activeFilter.value = filter;
     _applyFilterAndSearch();
@@ -124,6 +137,17 @@ class ParcelController extends GetxController {
     filteredParcels.value = result.toList();
   }
 
+  /// Submits Proof of Delivery (POD) package to the server or stores it in local encrypted queue.
+  ///
+  /// Offline Fallback Logic:
+  /// - Inspects active network interfaces via [Connectivity].
+  /// - If no cellular or Wi-Fi connectivity is detected, immediately serializes the payload
+  ///   (including local photo path and base64 signature) and saves it to [OfflineSyncService].
+  /// - Returns `true` so UI flow smoothly advances without blocking the courier on the road.
+  ///
+  /// Online Flow:
+  /// - Sends multipart HTTP request to Cheetah API with token authorization.
+  /// - Awaits list refresh so COD cash collection and delivered count reflect immediately in the UI.
   Future<bool> submitPod({
     required int parcelId,
     required String trackingNumber,
@@ -137,6 +161,7 @@ class ParcelController extends GetxController {
     isSubmittingPod.value = true;
     final token = authController.userToken.value;
 
+    // Check connectivity before initiating network upload
     final connectivityResult = await (Connectivity().checkConnectivity());
     if (!connectivityResult.contains(ConnectivityResult.mobile) && 
         !connectivityResult.contains(ConnectivityResult.wifi)) {
@@ -155,8 +180,8 @@ class ParcelController extends GetxController {
       await OfflineSyncService.savePodToQueue(payload);
       
       Get.snackbar(
-        'Offline Mode',
-        'No internet. POD saved to queue and will sync automatically.',
+        'Offline Mode 📦',
+        'No internet connection. Delivery saved locally and will auto-sync when online.',
         snackPosition: SnackPosition.BOTTOM,
       );
       isSubmittingPod.value = false;
@@ -179,12 +204,11 @@ class ParcelController extends GetxController {
 
     if (res['success'] == true) {
       Get.snackbar(
-        'Success',
-        'POD Submitted & Status Updated!',
+        'Success 🎉',
+        'Proof of Delivery Submitted & Status Updated!',
         snackPosition: SnackPosition.BOTTOM,
       );
-      // Wait for the refresh so the cash log includes this delivery before the
-      // POD sheet/success route can return control to the rider.
+      // Synchronize manifest and COD totals so UI updates before bottom sheet dismisses
       await fetchParcels();
       return true;
     } else {

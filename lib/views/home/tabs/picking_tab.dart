@@ -5,11 +5,17 @@ import '../../../controllers/picking_controller.dart';
 import '../../../utils/app_translations.dart';
 import '../../../utils/constants.dart';
 
+/// [PickingTab] renders active Warehouse Management System (WMS) batch pick tasks for warehouse personnel.
+///
+/// Warehouse Fulfillment Flow:
+/// - Ingests sales orders requiring physical stock gathering from warehouse bin locations.
+/// - Enables status progression: 'Pending' -> 'In Progress' (traversing aisles) -> 'Completed' (packed & ready).
+/// - Once marked 'Completed', the Cheetah backend flags the order as 'Prepared' for courier dispatch manifest creation.
 class PickingTab extends StatelessWidget {
   final PickingController controller = Get.put(PickingController());
   final AuthController authController = Get.find<AuthController>();
 
-  PickingTab({Key? key}) : super(key: key);
+  PickingTab({super.key});
 
   String t(String text) => text.localize(authController.selectedLanguage.value);
 
@@ -51,7 +57,7 @@ class PickingTab extends StatelessWidget {
                 ),
               )
             else
-              ...controller.tasks.map((task) => _buildTaskCard(task, lang)).toList(),
+              ...controller.tasks.map((task) => _buildTaskCard(task, lang)),
           ],
         ),
       );
@@ -86,7 +92,11 @@ class PickingTab extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: rawStatus == 'Completed' ? Colors.green.withOpacity(0.2) : (rawStatus == 'In Progress' ? Colors.orange.withOpacity(0.2) : Colors.grey.withOpacity(0.2)),
+                  color: rawStatus == 'Completed' 
+                      ? Colors.green.withValues(alpha: 0.2) 
+                      : (rawStatus == 'In Progress' 
+                          ? Colors.orange.withValues(alpha: 0.2) 
+                          : Colors.grey.withValues(alpha: 0.2)),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -94,7 +104,9 @@ class PickingTab extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: rawStatus == 'Completed' ? Colors.green : (rawStatus == 'In Progress' ? Colors.orange : (isDark ? Colors.white70 : Colors.black87)),
+                    color: rawStatus == 'Completed' 
+                        ? Colors.green 
+                        : (rawStatus == 'In Progress' ? Colors.orange : (isDark ? Colors.white70 : Colors.black87)),
                   ),
                 ),
               ),

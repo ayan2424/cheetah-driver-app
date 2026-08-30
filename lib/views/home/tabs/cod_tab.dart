@@ -5,11 +5,17 @@ import '../../../controllers/parcel_controller.dart';
 import '../../../utils/app_translations.dart';
 import '../../../utils/constants.dart';
 
+/// [CodTab] displays real-time Cash on Delivery (COD) accounting metrics and shift performance summaries.
+///
+/// Logistics Context:
+/// In cash-on-delivery logistics, couriers act as physical payment collectors. This tab provides
+/// unambiguous visibility into outstanding cash to be collected from consignees, parcels delivered today,
+/// and ongoing active routes, preventing balance discrepancies during shift handover at the branch hub.
 class CodTab extends StatelessWidget {
   final AuthController authController = Get.find<AuthController>();
   final ParcelController parcelController = Get.find<ParcelController>();
 
-  CodTab({Key? key}) : super(key: key);
+  CodTab({super.key});
 
   String t(String text) => text.localize(authController.selectedLanguage.value);
 
@@ -40,7 +46,7 @@ class CodTab extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primary.withOpacity(0.3),
+                  color: AppColors.primary.withValues(alpha: 0.3),
                   blurRadius: 15,
                   offset: const Offset(0, 6),
                 ),

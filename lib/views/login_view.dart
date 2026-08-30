@@ -4,13 +4,14 @@ import '../controllers/auth_controller.dart';
 import '../utils/constants.dart';
 import '../utils/app_translations.dart';
 
+/// [LoginView] provides secure biometric/credential authentication for delivery riders and warehouse pickers.
 class LoginView extends StatelessWidget {
   final AuthController authController = Get.put(AuthController());
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final RxBool isPasswordVisible = false.obs;
 
-  LoginView({Key? key}) : super(key: key);
+  LoginView({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -67,6 +67,7 @@ Cross-platform Flutter app for delivery drivers & warehouse pickers — Live GPS
 <h3>🛡️ Enterprise Features & Reliability</h3>
 
 <ul>
+  <li><strong>🔔 Firebase Cloud Messaging (FCM) Ready:</strong> Real-time background wake-on-lock push notifications alerting drivers to newly assigned parcels and warehouse pickers to fresh sales order fulfillment batches. Works in standalone mode or connected to Firebase.</li>
   <li><strong>🔒 AES-256 Encrypted Offline Queue:</strong> In underground parking lots, basements, or remote delivery routes with zero cell reception, POD records and status updates are encrypted with AES-256 and stored locally in Hive. The app automatically retries and flushes queued uploads the moment internet connectivity returns.</li>
   <li><strong>🛰️ Hardware GPS Anti-Tampering Guard:</strong> Active OS hardware listeners detect any attempt to disable location services, notifying dispatchers instantly with a <code>gps_enabled: 0</code> alert and locking the screen with a mandatory prompt to re-enable GPS.</li>
   <li><strong>🌐 Multi-Language Ready:</strong> Pre-configured with translations for English, Spanish, Arabic (with native RTL support), French, German, Hindi, Urdu, Portuguese, Russian, and Chinese.</li>
@@ -95,6 +96,7 @@ Cross-platform Flutter app for delivery drivers & warehouse pickers — Live GPS
   <li>iOS Xcode Workspace (CocoaPods, iOS 14.0 to 18.x compatible).</li>
   <li>Interactive Buyer Documentation HTML Webpage (<code>Documentation.html</code>) with live search and copy-code snippets.</li>
   <li>Full Developer Technical Markdown Documentation (<code>DOCUMENTATION.md</code>).</li>
+  <li>Dedicated Firebase Push Notifications Setup Guide (<code>FIREBASE_SETUP.md</code>).</li>
   <li>Step-by-step App Store & Google Play publishing guide.</li>
 </ul>
 
@@ -108,6 +110,7 @@ Cross-platform Flutter app for delivery drivers & warehouse pickers — Live GPS
 ```text
 • Complete cross-platform Flutter 3.x source code for Android & iOS
 • Dual-role operational interface: Delivery Driver & Warehouse Picker in one single app
+• Firebase Cloud Messaging (FCM) push notification engine for instant dispatch alerts
 • Live turn-by-turn navigation with Google Maps, Apple Maps, and Waze
 • Proof of Delivery (POD) suite: Digital signature capture pad + photo drop-off attachment
 • Customer delivery OTP (One-Time Password) verification engine
@@ -120,7 +123,7 @@ Cross-platform Flutter app for delivery drivers & warehouse pickers — Live GPS
 • Premium Dark and Light glassmorphic themes with system auto-detection
 • Token-based Bearer authentication with secure credential storage
 • Clean GetX (MVC-S) architecture with reactive controllers and decoupled services
-• Interactive standalone HTML buyer documentation & technical Markdown guide
+• Dedicated Firebase FCM setup guide (FIREBASE_SETUP.md) & interactive HTML docs (Documentation.html)
 • Ready for Google Play Store (.aab bundle) and Apple App Store (.ipa) publishing
 ```
 
@@ -174,7 +177,7 @@ Cross-platform Flutter app for delivery drivers & warehouse pickers — Live GPS
   - [x] Swift / Objective-C iOS Files
   - [x] HTML & CSS (Documentation)
   - [x] JSON / Assets / Icons
-- **Frameworks / Libraries:** `Flutter`, `Dart`, `GetX`, `Hive`, `Geolocator`, `Mobile Scanner`, `Signature`
+- **Frameworks / Libraries:** `Flutter`, `Dart`, `GetX`, `Firebase (FCM)`, `Hive`, `Geolocator`, `Mobile Scanner`, `Signature`
 - **Operating Systems / Compatible With:** `Android 5.0+ (API 21 - 35)`, `iOS 14.0 - 18.x`, `iPhone`, `iPad`
 
 ---
@@ -191,7 +194,7 @@ Cross-platform Flutter app for delivery drivers & warehouse pickers — Live GPS
 *(Copy & paste into the **Tags** input box)*
 
 ```text
-flutter app, delivery driver app, courier app, warehouse picker, wms app, proof of delivery, pod signature, gps tracking, live telemetry, barcode scanner, qr scanner, cod wallet, offline sync, logistics app, courier driver, flutter 3, android app, ios app, dispatch app, delivery tracking
+flutter app, delivery driver app, courier app, warehouse picker, wms app, firebase fcm, push notifications, proof of delivery, pod signature, gps tracking, live telemetry, barcode scanner, qr scanner, cod wallet, offline sync, logistics app, courier driver, flutter 3, android app, ios app, dispatch app, delivery tracking
 ```
 
 ---
