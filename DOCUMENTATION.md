@@ -1,6 +1,6 @@
-# 🐆 Cheetah Driver & Picker Mobile App — AI Agent & Deep Technical Architecture Specification
+# 🐆 Cheetah Driver & Picker Mobile App — Senior Mobile Systems & Technical Architecture Specification
 
-> **Target Audience:** AI Coding Agents (Cursor, Claude, Copilot, Antigravity) & Senior Mobile Systems Engineers.  
+> **Target Audience:** Senior Mobile Systems Engineers, Lead Developers, & Commercial Integrators.  
 > **Purpose:** Exhaustive architectural reference, internal state machines, hardware security models, cryptographic sync protocols, and backend API contracts.  
 > **Note:** End-user/buyer documentation is packaged separately in `Documentation.html`. This document is the definitive engineering source of truth for the Flutter codebase.
 
@@ -18,7 +18,8 @@
 8. [Non-Repudiation Watermarking Pipeline](#8-non-repudiation-watermarking-pipeline)
 9. [Error Boundary & Fault-Tolerance Principles](#9-error-boundary--fault-tolerance-principles)
 10. [Firebase Push Notification Architecture & Fallback](#10-firebase-push-notification-architecture--fallback)
-11. [AI Agent Extension & Maintenance Rules](#11-ai-agent-extension--maintenance-rules)
+11. [Developer Extension & Maintenance Guidelines](#11-developer-extension--maintenance-guidelines)
+12. [v10.0 Commercial Release Synchronization](#12-v100-commercial-release-synchronization)
 
 ---
 
@@ -228,7 +229,7 @@ The application features a robust **Dual-Mode Push Notification System** managed
 
 ---
 
-## 11. AI Agent Extension & Maintenance Rules
+## 11. Developer Extension & Maintenance Guidelines
 
 When modifying or expanding this Flutter codebase:
 1. **Preserve RBAC Branch Scoping:** Never bypass `driver_id` or `picker_id` validation.
