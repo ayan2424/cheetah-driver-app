@@ -471,7 +471,7 @@ tr:hover td { background: var(--bg-card-hover); }
       <div class="brand-title">Cheetah Driver & Picker App</div>
       <div class="brand-subtitle">Buyer & Developer Technical Guide</div>
     </div>
-    <span class="badge-version">v1.0.0+1</span>
+    <span class="badge-version">v10.0 Suite (v1.0.0+1)</span>
   </div>
 
   <div class="top-actions">
@@ -613,28 +613,33 @@ tr:hover td { background: var(--bg-card-hover); }
           <tbody>
             <tr>
               <td><strong>Primary View</strong></td>
-              <td>Assigned deliveries & pickups sorted by proximity</td>
-              <td>WMS Sales order picking list grouped by shelf location</td>
+              <td>Assigned deliveries & linehaul manifest parcels sorted by proximity</td>
+              <td>WMS Sales order picking list organized by 5-tier spatial bin coordinates</td>
             </tr>
             <tr>
-              <td><strong>Scanning & Verification</strong></td>
-              <td>QR tracking lookup & delivery OTP entry</td>
-              <td>High-speed camera SKU barcode verification</td>
+              <td><strong>Tracking & Scanning</strong></td>
+              <td>Branded CHT- tracking numbers (<code>CHT-KHI-000001</code>) & OTP verification</td>
+              <td>High-speed camera SKU barcode & QR code verification</td>
             </tr>
             <tr>
               <td><strong>Proof of Delivery (POD)</strong></td>
-              <td>Digital Signature + Camera Photo + Handover Notes</td>
-              <td>N/A (Status: Completed / Missing Item)</td>
+              <td>Digital Signature + Camera Photo + Handover Notes + Server GD Watermark</td>
+              <td>Pick completion & auto-transition to <code>Prepared</code></td>
             </tr>
             <tr>
               <td><strong>Financial Tracking</strong></td>
-              <td>Real-time COD collected & branch settlement balance</td>
-              <td>N/A</td>
+              <td>Real-time COD collected, payout history & idempotency key vault deposits</td>
+              <td>Item pick status & fulfillment batch metrics</td>
             </tr>
             <tr>
               <td><strong>GPS Telemetry</strong></td>
-              <td>Live coordinates sent to central dispatch map</td>
-              <td>Optional indoor zone tracking</td>
+              <td>Live 30s background coordinates sent to central dispatcher fleet map</td>
+              <td>Battery-saving stationary mode inside fulfillment warehouse</td>
+            </tr>
+            <tr>
+              <td><strong>Security & Auth</strong></td>
+              <td>Hardware Keystore/Keychain, SHA-256 tokens & 5-attempt rate-limiting</td>
+              <td>Hardware Keystore/Keychain, SHA-256 tokens & 5-attempt rate-limiting</td>
             </tr>
           </tbody>
         </table>
@@ -920,9 +925,9 @@ dart run flutter_launcher_icons</code></pre>
 
     <!-- Multi-Language -->
     <section id="languages">
-      <h2 class="section-heading"><i class="fa-solid fa-language"></i> Multi-Language & Internationalization</h2>
+      <h2 class="section-heading"><i class="fa-solid fa-language"></i> Multi-Language & Internationalization (23 Languages + RTL)</h2>
       <p>
-        The app includes built-in multi-language localization via <code>lib/utils/app_translations.dart</code>. Adding a new language or updating existing strings is straightforward.
+        The app includes built-in multi-language localization via <code>lib/utils/app_translations.dart</code> (218KB+ translation dictionary), matching all 23 languages available on the Cheetah SaaS web platform. Right-to-left (RTL) languages like Arabic (<code>ar_SA</code>) and Urdu (<code>ur_PK</code>) automatically mirror the entire UI layout.
       </p>
 
       <div class="code-container">
@@ -932,7 +937,7 @@ dart run flutter_launcher_icons</code></pre>
         </div>
         <pre><code>class AppTranslations extends Translations {
   @override
-  Map<String, Map<String, String>> get keys => {
+  Map&lt;String, Map&lt;String, String&gt;&gt; get keys =&gt; {
     'en_US': {
       'app_title': 'Cheetah Driver',
       'assigned_parcels': 'Assigned Parcels',
@@ -945,7 +950,19 @@ dart run flutter_launcher_icons</code></pre>
       'complete_delivery': 'Completar Entrega',
       'collect_cod': 'Cobrar Contra Reembolso',
     },
-    // Also includes: ar_SA (Arabic), fr_FR (French), de_DE (German), ur_PK (Urdu), etc.
+    'ar_SA': {
+      'app_title': 'سائق شيتا',
+      'assigned_parcels': 'الطرود المعينة',
+      'complete_delivery': 'إتمام التسليم',
+      'collect_cod': 'تحصيل مبلغ الدفع عند الاستلام',
+    },
+    'ur_PK': {
+      'app_title': 'چیتا ڈرائیور',
+      'assigned_parcels': 'تفویض کردہ پارسلز',
+      'complete_delivery': 'ڈیلیوری مکمل کریں',
+      'collect_cod': 'سی او ڈی رقم وصول کریں',
+    },
+    // Also includes: fr_FR, de_DE, hi_IN, pt_BR, ru_RU, zh_CN, tr_TR, id_ID, etc.
   };
 }</code></pre>
       </div>
@@ -966,12 +983,12 @@ dart run flutter_launcher_icons</code></pre>
             <div class="api-badge-row">
               <span class="http-method post">POST</span>
               <span class="api-endpoint-path">/api/v1/driver/login.php</span>
-              <span class="api-desc-short">Driver & Picker Authentication</span>
+              <span class="api-desc-short">Driver & Picker Authentication (Rate-Limited)</span>
             </div>
             <i class="fa-solid fa-chevron-down api-chevron"></i>
           </div>
           <div class="api-card-body">
-            <p>Authenticates driver/picker credentials and returns JWT bearer token and profile details.</p>
+            <p>Authenticates driver/picker credentials and returns JWT bearer token and profile details. Protected by a 5-attempt / 5-minute brute-force lockout sliding window.</p>
             <div class="code-container">
               <div class="code-header"><span>Request Body (Form / JSON)</span></div>
               <pre><code>{
@@ -1004,12 +1021,12 @@ dart run flutter_launcher_icons</code></pre>
             <div class="api-badge-row">
               <span class="http-method post">POST</span>
               <span class="api-endpoint-path">/api/v1/driver/get_parcels.php</span>
-              <span class="api-desc-short">Fetch Assigned Deliveries & Stats</span>
+              <span class="api-desc-short">Fetch Assigned Deliveries & Branded Tracking</span>
             </div>
             <i class="fa-solid fa-chevron-down api-chevron"></i>
           </div>
           <div class="api-card-body">
-            <p>Returns real-time list of assigned parcels, delivery addresses, recipient contacts, and counters.</p>
+            <p>Returns real-time list of assigned parcels, delivery addresses, recipient contacts, and counters. Supports branded <code>CHT-{ORIGIN_CODE}-{SERIAL}</code> tracking codes.</p>
             <div class="code-container">
               <div class="code-header"><span>Response (200 OK)</span></div>
               <pre><code>{
@@ -1018,7 +1035,7 @@ dart run flutter_launcher_icons</code></pre>
   "parcels": [
     {
       "id": 1082,
-      "tracking_number": "CH-89217340",
+      "tracking_number": "CHT-KHI-000001",
       "sender_name": "Dubai Electronics Hub",
       "receiver_name": "Sarah Connor",
       "receiver_phone": "+971509876543",
@@ -1043,7 +1060,7 @@ dart run flutter_launcher_icons</code></pre>
             <i class="fa-solid fa-chevron-down api-chevron"></i>
           </div>
           <div class="api-card-body">
-            <p>Uploads multipart form data with signature image, camera photo, recipient name, and OTP.</p>
+            <p>Uploads multipart form data with signature image, camera photo, recipient name, and OTP. Automatically burns a server-side GD non-repudiation watermark onto the proof photo.</p>
             <div class="table-wrapper">
               <table>
                 <thead>
@@ -1073,7 +1090,7 @@ dart run flutter_launcher_icons</code></pre>
             <i class="fa-solid fa-chevron-down api-chevron"></i>
           </div>
           <div class="api-card-body">
-            <p>Transmits live coordinates and hardware status to the central dispatcher map.</p>
+            <p>Transmits live coordinates and hardware status to the central dispatcher map with anti-tampering alerts.</p>
             <div class="code-container">
               <div class="code-header"><span>Request Body</span></div>
               <pre><code>{
@@ -1091,12 +1108,12 @@ dart run flutter_launcher_icons</code></pre>
             <div class="api-badge-row">
               <span class="http-method post">POST</span>
               <span class="api-endpoint-path">/api/v1/picker/wms_get_pick_tasks.php</span>
-              <span class="api-desc-short">Warehouse WMS Pick Tasks</span>
+              <span class="api-desc-short">Warehouse WMS 5-Tier Spatial Pick Tasks</span>
             </div>
             <i class="fa-solid fa-chevron-down api-chevron"></i>
           </div>
           <div class="api-card-body">
-            <p>Fetches pending picking orders with warehouse aisle, rack, shelf, and SKU barcode details.</p>
+            <p>Fetches pending picking orders with 5-tier spatial bin coordinates (Warehouse, Zone, Aisle, Shelf, Bin) and SKU barcode details.</p>
             <div class="code-container">
               <div class="code-header"><span>Response (200 OK)</span></div>
               <pre><code>{
@@ -1109,9 +1126,39 @@ dart run flutter_launcher_icons</code></pre>
       "sku": "TECH-HD-001",
       "barcode": "8901234567890",
       "quantity_to_pick": 2,
-      "location": { "zone": "Zone A", "aisle": "04", "shelf": "Shelf B", "bin": "Bin 03" },
+      "location": { "warehouse": "Central Hub", "zone": "Zone A", "aisle": "04", "shelf": "Shelf B", "bin": "Bin 03" },
       "status": "pending"
     }
+  ]
+}</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- Endpoint 6 -->
+        <div class="api-card">
+          <div class="api-card-header" onclick="toggleApiCard(this)">
+            <div class="api-badge-row">
+              <span class="http-method post">POST</span>
+              <span class="api-endpoint-path">/api/v1/driver/get_wallet.php</span>
+              <span class="api-desc-short">Driver COD Wallet & Idempotent Settlements</span>
+            </div>
+            <i class="fa-solid fa-chevron-down api-chevron"></i>
+          </div>
+          <div class="api-card-body">
+            <p>Returns driver collected cash totals, pending vault settlements, commissions, and transaction ledger. Protected by double-spend idempotency keys.</p>
+            <div class="code-container">
+              <div class="code-header"><span>Response (200 OK)</span></div>
+              <pre><code>{
+  "success": true,
+  "wallet": {
+    "cod_collected": 3450.00,
+    "vault_pending": 1200.00,
+    "commissions_earned": 280.00,
+    "currency": "USD"
+  },
+  "settlements": [
+    { "id": 89, "amount": 2250.00, "status": "deposited", "date": "2026-09-02" }
   ]
 }</code></pre>
             </div>

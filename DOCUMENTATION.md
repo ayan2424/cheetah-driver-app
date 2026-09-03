@@ -170,15 +170,16 @@ All endpoints communicate over HTTPS with `Accept: application/json` and `Author
 
 ### Key Endpoints Matrix
 
-| Endpoint Route | Method | Payload / Headers | Description |
+| Endpoint Route | Method | Payload / Headers | Description & Security Controls |
 | :--- | :---: | :--- | :--- |
-| `api/v1/driver/login.php` | `POST` | `email`, `password` | Authenticates user; returns bearer token, role, and branch info. |
-| `api/v1/driver/get_parcels.php` | `POST` | Bearer Token | Fetches driver-scoped manifest and aggregated shift metrics. |
-| `api/v1/driver/update_status.php` | `POST` (Multipart) | `tracking_number`, `status`, `photo`, `signature`, `delivery_otp` | Submits POD evidence, checks transitions, burns watermark. |
-| `api/v1/driver/update_location.php` | `POST` | `latitude`, `longitude`, `gps_enabled` | Telemetry ping updating central operations fleet map. |
-| `api/v1/driver/get_wallet.php` | `POST` | Bearer Token | Returns pending commissions, paid totals, and transaction log. |
-| `api/v1/picker/wms_get_pick_tasks.php`| `POST`| Bearer Token | Ingests active warehouse picking waves and item SKU lists. |
-| `api/v1/picker/wms_update_task.php` | `POST` | `task_id`, `status` | Advances WMS task to `In Progress` or `Completed`. |
+| `api/v1/driver/login.php` | `POST` | `email`, `password` | Authenticates user; returns bearer token, role, and branch info. Enforces 5-attempt / 5-min brute-force lockout window. |
+| `api/v1/driver/get_parcels.php` | `POST` | Bearer Token | Fetches driver-scoped manifest and aggregated shift metrics. Supports branded `CHT-{ORIGIN_CODE}-{SERIAL}` tracking numbers. |
+| `api/v1/driver/update_status.php` | `POST` (Multipart) | `tracking_number`, `status`, `photo`, `signature`, `delivery_otp` | Submits POD evidence, verifies state transitions, burns server-side non-repudiation watermark. |
+| `api/v1/driver/update_location.php` | `POST` | `latitude`, `longitude`, `gps_enabled` | Telemetry ping updating central operations fleet map. Auto-alerts on hardware GPS disable. |
+| `api/v1/driver/get_wallet.php` | `POST` | Bearer Token | Returns pending commissions, paid totals, and transaction log. Reconciles with backend double-spend idempotency engine. |
+| `api/v1/driver/forgot_password.php` | `POST` | `email` | Initiates secure split-token password reset link via PHPMailer SMTP. |
+| `api/v1/picker/wms_get_pick_tasks.php`| `POST`| Bearer Token | Ingests active warehouse picking waves and item SKU lists with 5-tier spatial bin coordinates (Zone, Aisle, Shelf, Bin). |
+| `api/v1/picker/wms_update_task.php` | `POST` | `task_id`, `status` | Advances WMS task to `In Progress` or `Completed` (auto-transitions linked sales order to `Prepared`). |
 
 ---
 
@@ -234,3 +235,18 @@ When modifying or expanding this Flutter codebase:
 2. **Synchronize Database Dumps:** If new API fields are added, ensure corresponding migrations and schema modifications are reflected in `database/cheetah.sql` and `database/cheetah_demo.sql`.
 3. **No Unencrypted Queues:** Never store unencrypted sensitive payloads in local files or preferences. Always use `SessionStore` and `OfflineSyncService`.
 4. **Maintain Static Analysis Standards:** Ensure `flutter analyze` passes with zero errors and zero warnings on all PRs.
+
+---
+
+## 12. v10.0 Commercial Release Synchronization
+
+The Flutter mobile suite is fully synchronized with **Cheetah Courier & WMS SaaS v10.0 Commercial Release**:
+
+| Feature Subsystem | Mobile Client Implementation | Backend Alignment |
+| :--- | :--- | :--- |
+| **Branded CHT- Tracking** | `QrScannerView` & `ParcelController` natively parse and display `CHT-{ORIGIN_CODE}-{SERIAL}` format. | Generated via `generate_tracking_number()` with row-locking concurrency in `system_settings`. |
+| **WMS 5-Tier Spatial Routing** | `PickingTab` displays structured hierarchy: `Warehouse -> Zone -> Aisle -> Shelf -> Bin`. | Fed directly from `wms_bins`, `wms_shelves`, and `wms_aisles` tables in `admin/wms_spatial.php`. |
+| **Double-Spend Idempotency** | Driver COD collections are recorded with unique UUID idempotency keys before vault handover. | Reconciled against `idempotency_keys` table to eliminate duplicate vouchers. |
+| **19-Layer Defense-in-Depth** | Hardware-backed token storage in Android Keystore / iOS Keychain; unhashed tokens never saved locally. | SHA-256 hashed bearer tokens at rest (`users.api_token_hash`) with 30-day expiration windows. |
+| **23-Language Internationalization** | Complete dictionary mappings with native RTL layout flipping (`Directionality` / RTL widgets) for Arabic and Urdu. | 1:1 match with SaaS web translations in `languages/*.json`. |
+| **Target Platforms** | Android 15 (Target SDK 35, Min SDK 21), iOS 18 (Xcode 16 / CocoaPods 1.15+), and industrial rugged Android scanners. | Google Play 2026 & Apple App Store compliance verified. |
