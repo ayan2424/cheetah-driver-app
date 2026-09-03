@@ -42,10 +42,17 @@ class WalletController extends GetxController {
     final res = await ApiService.fetchDriverWallet(token: token);
     
     if (res['success'] == true && res['wallet'] != null) {
-      pendingBalance.value = (res['wallet']['pending_balance'] as num).toDouble();
-      totalEarned.value = (res['wallet']['total_earned'] as num).toDouble();
-      totalPaid.value = (res['wallet']['total_paid'] as num).toDouble();
-      history.value = res['wallet']['history'] ?? [];
+      final w = res['wallet'];
+      pendingBalance.value = (w['pending_balance'] is num)
+          ? (w['pending_balance'] as num).toDouble()
+          : (double.tryParse(w['pending_balance']?.toString() ?? '0') ?? 0.0);
+      totalEarned.value = (w['total_earned'] is num)
+          ? (w['total_earned'] as num).toDouble()
+          : (double.tryParse(w['total_earned']?.toString() ?? '0') ?? 0.0);
+      totalPaid.value = (w['total_paid'] is num)
+          ? (w['total_paid'] as num).toDouble()
+          : (double.tryParse(w['total_paid']?.toString() ?? '0') ?? 0.0);
+      history.value = w['history'] ?? [];
     }
     
     isLoading.value = false;
