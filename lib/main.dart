@@ -33,16 +33,28 @@ class CheetahDriverApp extends StatelessWidget {
     return ThemeMode.system; // Follows real-time mobile OS platform brightness
   }
 
+  Locale _getLocale(String lang) {
+    if (lang.isEmpty) return const Locale('en');
+    if (lang.contains('-')) {
+      final parts = lang.split('-');
+      return Locale(parts[0], parts[1].toUpperCase());
+    }
+    return Locale(lang);
+  }
+
   @override
   Widget build(BuildContext context) {
     final authController = Get.find<AuthController>();
 
     return Obx(() {
       final currentPref = authController.themePreference.value;
+      final currentLang = authController.appLanguage.value;
 
       return GetMaterialApp(
         title: 'Cheetah Driver App',
         debugShowCheckedModeBanner: false,
+        locale: _getLocale(currentLang),
+        fallbackLocale: const Locale('en'),
         themeMode: _getThemeMode(currentPref),
         theme: ThemeData.light().copyWith(
           scaffoldBackgroundColor: AppColorsLight.background,

@@ -177,9 +177,19 @@ class OfflineSyncService {
             signatureBytes: signatureBytes,
           );
 
-          // Only evict from queue when server confirms successful status update and POD ingestion
+          // Evict from queue when server confirms successful status update and POD ingestion,
+          // or when server returns a permanent terminal error (e.g. already delivered or transition invalid)
           if (res['success'] == true) {
             await box.delete(key);
+          } else if (res['error'] != null) {
+            final err = res['error'].toString().toLowerCase();
+            if (err.contains('transition is not allowed') ||
+                err.contains('not found') ||
+                err.contains('unauthorized')) {
+              // Terminal state: parcel cannot be transitioned or was already updated.
+              // Evict to prevent dead-looping on future connectivity triggers.
+              await box.delete(key);
+            }
           }
         } catch (_) {
           // Leave item in the queue for next synchronization cycle

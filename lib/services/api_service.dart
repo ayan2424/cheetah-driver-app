@@ -412,4 +412,22 @@ class ApiService {
       };
     }
   }
+
+  /// Invalidates active Bearer token on the server upon driver or picker logout.
+  static Future<Map<String, dynamic>> logout(String token) async {
+    try {
+      final response = await http
+          .post(
+            Uri.parse('${AppConstants.apiUrl}logout.php'),
+            headers: _authHeaders(token),
+          )
+          .timeout(_requestTimeout);
+      return _decodeResponse(response);
+    } catch (_) {
+      return {
+        'success': false,
+        'error': 'Failed to reach server for logout.',
+      };
+    }
+  }
 }

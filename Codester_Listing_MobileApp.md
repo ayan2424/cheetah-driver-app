@@ -1,32 +1,29 @@
 # 📦 Codester Product Submission Guide — Cheetah Driver & Warehouse Picker App (Flutter)
 
-> **Instructions for Seller:** This document is formatted to match the **Codester Product Upload Form** field-by-field. Simply copy and paste the contents of each section directly into the corresponding box on Codester.
+> **Instructions for Seller:** This document is formatted to perfectly match the **Codester Product Upload Form** sections as shown in your screenshot. Every section you need to copy is placed inside a code block. Hover over the code block to click the **Copy** button, then paste it directly into Codester.
 
 ---
 
-## 1️⃣ PRODUCT NAME
-*(Copy & paste into the **Name** input box)*
+## 1️⃣ ITEM & DESCRIPTION
+
+### Title
+*(Copy & paste into the **Title** input box)*
 
 ```text
 Cheetah - Delivery Driver & Warehouse Picker Mobile App (Flutter | Android & iOS)
 ```
 
----
-
-## 2️⃣ SHORT DESCRIPTION
+### Short description
 *(Copy & paste into the **Short description** input box — Max 150-160 characters)*
 
 ```text
 Cross-platform Flutter app for delivery drivers & warehouse pickers — Live GPS tracking, digital signature POD, barcode scanning & offline sync.
 ```
 
----
+### Description
+*(Copy & paste this HTML into the **Description** box)*
 
-## 3️⃣ DESCRIPTION (Main Product Overview)
-*(Copy & paste everything between `--- START DESCRIPTION ---` and `--- END DESCRIPTION ---` into the **Description** box. HTML formatting is supported)*
-
---- START DESCRIPTION ---
-
+```html
 <h3>🛵 Cheetah Driver & Warehouse Picker App — Enterprise Cross-Platform Mobile Suite (Flutter 3.x)</h3>
 
 <p>The <strong>Cheetah Driver & Warehouse Picker Mobile App</strong> is an enterprise-grade, high-performance cross-platform application developed with <strong>Flutter 3.x</strong> and <strong>Dart 3.x</strong>. Engineered as the official mobile companion for the <strong>Cheetah Courier Management & WMS SaaS (v10.0 Commercial Release)</strong>, it provides a specialized, role-isolated operational client for both <strong>Courier Delivery Drivers / Riders</strong> and <strong>WMS Warehouse Pickers</strong>.</p>
@@ -102,11 +99,20 @@ Cross-platform Flutter app for delivery drivers & warehouse pickers — Live GPS
   <li>Step-by-step App Store & Google Play publishing guide.</li>
 </ul>
 
---- END DESCRIPTION ---
+<hr>
 
----
+<h3>⚙️ Technical Requirements</h3>
+<ul>
+  <li>Flutter SDK 3.12.0 or higher (Dart 3.x compatible)</li>
+  <li>Android Studio (Hedgehog / Ladybug or newer) or Visual Studio Code</li>
+  <li>Java JDK 17 (bundled with Android Studio)</li>
+  <li>Android SDK with Minimum API Level 21 (Android 5.0) and Target API Level 34/35 (Android 14/15)</li>
+  <li>macOS with Xcode 15+ & CocoaPods 1.12+ (Only required for compiling iOS builds)</li>
+  <li>A live Cheetah Courier & WMS backend OR your custom REST API server with HTTPS</li>
+</ul>
+```
 
-## 4️⃣ FEATURES (Bullet Points)
+### Features
 *(Copy & paste into the **Features** box)*
 
 ```text
@@ -133,23 +139,7 @@ Cross-platform Flutter app for delivery drivers & warehouse pickers — Live GPS
 • Ready for Google Play Store (.aab bundle, Target SDK 35) and Apple App Store (.ipa, iOS 18) publishing
 ```
 
----
-
-## 5️⃣ REQUIREMENTS (Technical Prerequisites)
-*(Copy & paste into the **Requirements** box)*
-
-```text
-• Flutter SDK 3.12.0 or higher (Dart 3.x compatible)
-• Android Studio (Hedgehog / Ladybug or newer) or Visual Studio Code
-• Java JDK 17 (bundled with Android Studio)
-• Android SDK with Minimum API Level 21 (Android 5.0) and Target API Level 34/35 (Android 14/15)
-• macOS with Xcode 15+ & CocoaPods 1.12+ (Only required for compiling iOS builds)
-• A live Cheetah Courier & WMS backend OR your custom REST API server with HTTPS
-```
-
----
-
-## 6️⃣ INSTRUCTIONS (Installation & Setup)
+### Instructions
 *(Copy & paste into the **Instructions** box)*
 
 ```text
@@ -173,30 +163,90 @@ Cross-platform Flutter app for delivery drivers & warehouse pickers — Live GPS
 
 ---
 
-## 7️⃣ CATEGORY & ATTRIBUTES
-*(Select these options on the form)*
+## 2️⃣ FILES
+*(Upload your files and fill in URLs as shown in the "Files" section)*
 
-- **Category:** `Mobile Apps > Flutter` (or `Mobile Apps > Android` / `iOS`)
-- **Files Included:**
-  - [x] Dart Code Files
-  - [x] Java / Kotlin Android Files
-  - [x] Swift / Objective-C iOS Files
-  - [x] HTML & CSS (Documentation)
-  - [x] JSON / Assets / Icons
-- **Frameworks / Libraries:** `Flutter`, `Dart`, `GetX`, `Firebase (FCM)`, `Hive`, `Geolocator`, `Mobile Scanner`, `Signature`
-- **Operating Systems / Compatible With:** `Android 5.0+ (API 21 - 35)`, `iOS 14.0 - 18.x`, `iPhone`, `iPad`
+- **Upload file:** Upload your final `cheetah_driver_app.zip` archive here.
+- **Demo URL:** 
+```text
+https://cheetah.ayan24.me
+```
+- **Screenshots:** Upload your high-resolution app presentation images here.
 
 ---
 
-## 8️⃣ PREVIEW
-*(Fill in the Preview URLs)*
+## 3️⃣ CATEGORY & ATTRIBUTES
+*(Select EXACTLY these checkboxes based on the Cheetah App's features)*
 
-- **Demo URL:** `https://cheetah.ayan24.me`
-- **Video URL:** *(Optional / Add YouTube demo link if recorded)*
+```text
+Category:
+- Flutter
+
+Files included (Check these):
+[x] .html
+[x] .css
+[x] .m
+[x] .swift
+[x] .java
+[x] .apk
+[x] Layered .png
+[x] .json
+[x] .dart
+[x] .kt
+[x] .gradle
+[x] .gradle.kts
+[x] .yml/.yaml
+[x] .md
+[x] pubspec.yaml
+
+Operating Systems (Check these):
+[x] iOS 15.0
+[x] iOS 16.0
+[x] iOS 17.0
+[x] iOS 18.0
+[x] Android 5.0
+[x] Android 6.0
+[x] Android 7.0
+[x] Android 8.0
+[x] Android 9.0
+[x] Android 10.0
+[x] Android 11.0
+[x] Android 12.0
+[x] Android 13.0
+[x] Android 14.0
+[x] Android 15.0
+[x] Android 16.0
+
+Programming language (Check these):
+[x] Java
+[x] Kotlin
+[x] Dart
+[x] Objective-C
+[x] Swift
+
+App framework / engine (Check these):
+[x] Android (Native)
+[x] iOS (Native)
+[x] Flutter
+```
 
 ---
 
-## 9️⃣ TAGS (Search Keywords)
+## 4️⃣ PRICING
+*(Fill in the pricing fields in USD)*
+
+- **Item cost:**
+```text
+49
+```
+- **Extended:**
+```text
+149
+```
+
+---
+
+## 5️⃣ TAGS
 *(Copy & paste into the **Tags** input box)*
 
 ```text
@@ -205,16 +255,10 @@ flutter app, delivery driver app, courier app, warehouse picker, wms app, fireba
 
 ---
 
-## 🔟 PRICING RECOMMENDATION
-*(Fill in the pricing fields)*
+## 6️⃣ MESSAGE TO REVIEWER
 
-- **Regular License:** **$39** – **$49** *(Recommended: $49)*
-- **Extended License:** **$149** – **$199** *(Recommended: $149)*
-
----
-
-## 1️⃣1️⃣ COMMENTS TO REVIEWER
-*(Copy & paste into the **Comments to reviewer / Notes** box)*
+### Message
+*(Copy & paste into the **Message** box)*
 
 ```text
 Hello Codester Quality & Review Team,
@@ -249,3 +293,13 @@ DOCUMENTATION & ASSETS INCLUDED:
 
 Thank you for your time and review!
 ```
+
+- **Apply for Free file of the week:** Check if you want to participate.
+- **Apply for Flash Deal:** Check if you want to participate.
+
+---
+
+## 7️⃣ SUBMIT
+
+- **I have the rights to sell this item:** Check this box `[x] Yes`
+- Click the **Submit** button!

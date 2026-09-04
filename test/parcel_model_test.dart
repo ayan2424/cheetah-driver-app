@@ -1,4 +1,5 @@
 import 'package:cheetah_driver_app/models/parcel_model.dart';
+import 'package:cheetah_driver_app/utils/constants.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -53,5 +54,11 @@ void main() {
     expect(parcel.isDelivered, isTrue);
     expect(parcel.codSettled, isFalse);
     expect(parcel.paymentInstruction, 'Sender invoice pending — do not collect');
+  });
+
+  test('AppConstants resolves base and endpoint URLs with trailing slash', () {
+    expect(AppConstants.baseUrl.endsWith('/'), isTrue);
+    expect(AppConstants.apiUrl, '${AppConstants.baseUrl}api/v1/driver/');
+    expect(AppConstants.pickerApiUrl, '${AppConstants.baseUrl}api/v1/picker/');
   });
 }

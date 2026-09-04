@@ -29,10 +29,18 @@ class AppColorsLight {
 }
 
 class AppConstants {
-  // Live Domain URL for Courier APIs (HTTPS)
-  static const String baseUrl = 'https://cheetah.ayan24.me/';
-  static const String apiUrl = '${baseUrl}api/v1/driver/';
-  static const String pickerApiUrl = '${baseUrl}api/v1/picker/';
+  // Configurable base URL via --dart-define=BASE_URL=https://yourdomain.com
+  // Defaults to production live server https://cheetah.ayan24.me/
+  static const String _envBaseUrl = String.fromEnvironment(
+    'BASE_URL',
+    defaultValue: 'https://cheetah.ayan24.me',
+  );
+
+  /// Normalized base domain URL with guaranteed trailing slash
+  static String get baseUrl =>
+      _envBaseUrl.endsWith('/') ? _envBaseUrl : '$_envBaseUrl/';
+  static String get apiUrl => '${baseUrl}api/v1/driver/';
+  static String get pickerApiUrl => '${baseUrl}api/v1/picker/';
 }
 
 class AppRoutes {

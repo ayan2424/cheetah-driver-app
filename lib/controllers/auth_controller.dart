@@ -299,9 +299,15 @@ class AuthController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  /// Terminates active session, shuts down background telemetry, and flushes local credentials.
+  /// Terminates active session, shuts down background telemetry, revokes server token, and flushes local credentials.
   Future<void> logout() async {
     LocationService.stopLiveLocationTracking();
+    final token = userToken.value;
+    if (token.isNotEmpty) {
+      try {
+        await ApiService.logout(token);
+      } catch (_) {}
+    }
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
     await SessionStore.clearToken();
