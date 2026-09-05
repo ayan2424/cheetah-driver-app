@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Cheetah Driver &amp; Warehouse Picker App - Help &amp; Setup Guide</title>
+        <style type="text/css">
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+                color: #24292e;
+                background-color: #f6f8fa;
+                margin: 0;
+                padding: 30px 20px;
+            }
+            .container {
+                max-width: 800px;
+                margin: 0 auto;
+                background: #ffffff;
+                border: 1px solid #e1e4e8;
+                border-radius: 8px;
+                padding: 35px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            }
+            h1 {
+                font-size: 24px;
+                color: #0366d6;
+                border-bottom: 2px solid #eaecef;
+                padding-bottom: 12px;
+                margin-top: 0;
+            }
+            h2 {
+                font-size: 18px;
+                color: #24292e;
+                margin-top: 25px;
+                border-bottom: 1px solid #eaecef;
+                padding-bottom: 8px;
+            }
+            p, li {
+                color: #444d56;
+            }
+            ul, ol {
+                padding-left: 24px;
+            }
+            li {
+                margin-bottom: 8px;
+            }
+            code {
+                background-color: #f1f3f5;
+                color: #d63384;
+                padding: 2px 6px;
+                border-radius: 4px;
+                font-family: Consolas, Monaco, "Courier New", monospace;
+                font-size: 13px;
+            }
+            pre {
+                background-color: #1e1e2e;
+                color: #f8f8f2;
+                padding: 14px;
+                border-radius: 6px;
+                overflow-x: auto;
+                font-family: Consolas, Monaco, "Courier New", monospace;
+                font-size: 13px;
+            }
+            .badge {
+                display: inline-block;
+                background: #28a745;
+                color: #ffffff;
+                padding: 3px 8px;
+                font-size: 12px;
+                border-radius: 12px;
+                font-weight: bold;
+            }
+            .card {
+                background: #f8f9fa;
+                border-left: 4px solid #0366d6;
+                padding: 12px 16px;
+                margin: 15px 0;
+                border-radius: 0 4px 4px 0;
+            }
+            .footer {
+                margin-top: 35px;
+                padding-top: 15px;
+                border-top: 1px solid #eaecef;
+                font-size: 12px;
+                color: #6a737d;
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>📦 Cheetah - Delivery Driver &amp; Warehouse Picker App</h1>
+            <p>Thank you for purchasing <strong>Cheetah Driver &amp; Warehouse Picker Mobile App (Flutter 3.x)</strong> from CodeGrape! <span class="badge">v1.0.0 Production Release</span></p>
+
+            <div class="card">
+                <strong>⚡ Quick Summary:</strong> Cross-platform Flutter client for Delivery Riders and Warehouse Fulfillment Pickers with digital signature Proof-of-Delivery, barcode scanning, GPS telemetry, and offline sync.
+            </div>
+
+            <h2>📁 What Is Included in This Package</h2>
+            <ul>
+                <li><code>lib/</code> — Full Dart/Flutter source code organized in clean GetX (MVC-S) architecture.</li>
+                <li><code>android/</code> — Complete Android project workspace (Gradle, Android 14/15 Target SDK 34/35, Min SDK 21).</li>
+                <li><code>ios/</code> — Complete iOS Xcode workspace (CocoaPods ready, iOS 15.0+ compatible).</li>
+                <li><code>assets/</code> — App icons, graphics, and visual asset files.</li>
+                <li><code>pubspec.yaml</code> — All Flutter dependencies, assets, and font configurations.</li>
+                <li><code>Help.html</code> — This quick help guide.</li>
+            </ul>
+
+            <h2>🔤 Font(s) &amp; Dependencies Used</h2>
+            <ul>
+                <li><strong>Fonts:</strong> Google Fonts (Poppins / Roboto via <code>google_fonts</code> package).</li>
+                <li><strong>State Management:</strong> GetX (<code>get: ^4.6.6</code>).</li>
+                <li><strong>Local Storage &amp; Offline Queue:</strong> Hive (<code>hive: ^2.2.3</code>) &amp; GetStorage.</li>
+                <li><strong>Hardware &amp; Camera:</strong> <code>mobile_scanner</code>, <code>geolocator</code>, <code>signature</code>, <code>image_picker</code>.</li>
+                <li><strong>Push Notifications:</strong> Firebase Cloud Messaging (<code>firebase_messaging: ^15.1.3</code>).</li>
+            </ul>
+
+            <h2>🚀 How to Configure &amp; Run the Project</h2>
+            <ol>
+                <li>
+                    <strong>Step 1: Extract &amp; Open</strong><br />
+                    Extract the downloaded zip package and open the project in <strong>Visual Studio Code</strong> or <strong>Android Studio</strong>.
+                </li>
+                <li>
+                    <strong>Step 2: Connect Your Backend URL</strong><br />
+                    Open <code>lib/utils/constants.dart</code> and change the API domain to your own live server:<br />
+                    <pre>static const String baseUrl = 'https://your-domain.com/';</pre>
+                </li>
+                <li>
+                    <strong>Step 3: Install Flutter Dependencies</strong><br />
+                    Open your terminal in the root folder and execute:<br />
+                    <pre>flutter pub get</pre>
+                </li>
+                <li>
+                    <strong>Step 4: Run on Device or Emulator</strong><br />
+                    Connect your Android/iOS physical device or start an emulator, then run:<br />
+                    <pre>flutter run</pre>
+                </li>
+                <li>
+                    <strong>Step 5: Compiling Production Release Builds</strong><br />
+                    <ul>
+                        <li><strong>Android App Bundle (.aab for Google Play):</strong> <code>flutter build appbundle --release</code></li>
+                        <li><strong>Android Standalone APK:</strong> <code>flutter build apk --release</code></li>
+                        <li><strong>Apple iOS Release (IPA):</strong> <code>flutter build ipa --release</code></li>
+                    </ul>
+                </li>
+            </ol>
+
+            <h2>🧪 Live Demo Testing Credentials</h2>
+            <ul>
+                <li><strong>Live Backend URL:</strong> <a href="https://cheetah.ayan24.me" target="_blank">https://cheetah.ayan24.me</a></li>
+                <li><strong>Delivery Driver Demo:</strong> <code>rider@cheetah.com</code> / Password: <code>Rider123</code></li>
+                <li><strong>Warehouse Picker Demo:</strong> <code>picker@cheetah.com</code> / Password: <code>Picker123</code></li>
+            </ul>
+
+            <h2>💬 Support &amp; Inquiries</h2>
+            <p>If you have any questions, encounter any issues during setup, or require assistance, please feel free to reach out via our author profile contact form on CodeGrape. We are always happy to assist you!</p>
+
+            <div class="footer">
+                Good luck using Cheetah Driver &amp; Warehouse Picker in your logistics projects!<br />
+                &copy; 2026 All rights reserved.
+            </div>
+        </div>
+    </body>
+</html>
