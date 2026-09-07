@@ -286,40 +286,48 @@ flutter app, delivery driver app, courier app, warehouse picker, wms app, fireba
 ## 6️⃣ MESSAGE TO REVIEWER
 
 ### Message
-*(Copy & paste into the **Message** box)*
+*(Copy & paste this message into the **Message to Reviewer** / **Comments** box upon re-submission)*
 
 ```text
-Hello Codester Quality & Review Team,
+Dear Codester Quality & Review Team,
 
-Thank you for reviewing the Cheetah Driver & Warehouse Picker Mobile App (Flutter 3.x / Dart 3.x).
+Thank you for your review and feedback on our item "Cheetah - Delivery Driver & Warehouse Picker Mobile App".
 
-This is a production-grade, hand-crafted enterprise logistics client built from the ground up to accompany modern courier and WMS operations. It contains zero AI wrappers, zero license locks, zero domain restrictions, and zero obfuscation. All code is cleanly structured under reactive MVVM (GetX) with decoupled hardware services.
+Regarding the previous rejection note ("Not suitable for sale on the Codester marketplace"), we understood that submitting purely as a client-side Flutter companion without its own backend and database rendered the product incomplete for standalone buyers.
 
-KEY PRODUCTION VALIDATION HIGHLIGHTS:
-1. Static Analysis: Passed 'flutter analyze' with ZERO issues, ZERO warnings, and ZERO errors.
-2. OS Compatibility: Validated on Android 14 & 15 (Target SDK 35, Min SDK 21) and iOS 18 (Xcode 16 / CocoaPods 1.15+).
-3. Native Hardware Security:
-   - Tokens stored in Android Keystore / Apple Keychain (AES-256 GCM via flutter_secure_storage).
-   - Offline POD Queue uses Hive with AES-256 local encryption and automatic connectivity re-sync.
-   - Low-level OS hardware listeners detect GPS disable tampering and alert dispatchers.
-4. Testing Suite: Complete test scenarios documented in TESTING.md with unit tests in test/parcel_model_test.dart.
+We have addressed this completely by transforming the item into a 100% SELF-CONTAINED, FULL-STACK TURNKEY PACKAGE:
 
-LIVE DEMO TESTING INSTRUCTIONS:
-- Backend Demo Server: https://cheetah.ayan24.me
-- Test Driver Login:
-  Email: rider@cheetah.com  |  Password: Rider123
-  (Features: View real parcel CHT-KHI-000001, test status filters, test touch signature pad, test photo drop-off attachment, view live COD cash wallet).
-- Test Warehouse Picker Login:
-  Email: picker@cheetah.com  |  Password: Picker123
-  (Features: WMS 5-tier spatial bin guidance 'Warehouse Central Hub -> Zone A -> Aisle 04 -> Shelf B -> Bin 03', SKU barcode camera scanner with flashlight & haptic feedback).
+1. STANDALONE PHP REST API BACKEND INCLUDED (backend/):
+   - Added complete standalone PHP 8.0+ REST API backend with zero framework overhead.
+   - Uses pure PHP with secure mysqli prepared statements for 100% compatibility with any standard cPanel, shared hosting, Apache, LiteSpeed, Nginx, or VPS.
+   - Includes all driver endpoints: login (rate-limited, SHA-256 tokens), parcels list, ePOD status update with drop-off photo & touch signature upload, live GPS telemetry logging, COD wallet ledger, profile management, and WMS pick task endpoints.
 
-DOCUMENTATION & ASSETS INCLUDED:
-- Complete standalone interactive documentation (Documentation.html) with live search and dark/light modes.
-- Full architectural engineering guide (DOCUMENTATION.md).
-- Dedicated Firebase FCM push notification setup guide (FIREBASE_SETUP.md).
-- Full source code for Android (Gradle) and iOS (Xcode/CocoaPods) ready for compiling.
+2. STANDALONE READY-TO-IMPORT MYSQL DATABASE (backend/database/driver_app.sql):
+   - Included full MySQL schema (14 tables) with pre-seeded demo accounts, active shipments, branches, and warehouse pick tasks.
+   - Works immediately upon import into any MySQL 5.7+ / 8.0+ or MariaDB database via phpMyAdmin in 1 click.
 
-Thank you for your time and review!
+3. OFFICIAL POSTMAN COLLECTION v2.1 & ENVIRONMENT (postman/):
+   - Added complete Postman Collection (Cheetah_Driver_App_API.postman_collection.json) and Environment.
+   - Features automated test scripts that capture and set the Bearer token automatically upon login for instant API testing.
+
+4. UPDATED DOCUMENTATION & SETUP GUIDES:
+   - Added backend 5-minute cPanel deployment guide (backend/README.md).
+   - Updated interactive Documentation.html with "Standalone Backend & Database Setup" and "Postman Explorer" sections.
+
+5. CODE QUALITY & VALIDATION:
+   - Mobile: Passed 'flutter analyze' with 0 errors and 0 warnings. Android 14/15 (Target SDK 35, Min SDK 21) & iOS 18 ready.
+   - Backend: All 14 PHP files verified with 'php -l' — zero syntax errors.
+   - Hardware security: Android Keystore / Apple Keychain AES-256 GCM token storage, Hive AES-256 offline queue, hardware GPS anti-tampering listeners.
+
+LIVE DEMO CREDENTIALS:
+- Web Backend / API: https://cheetah.ayan24.me
+- Android Demo APK: https://drive.google.com/drive/folders/1Ul3lGfaKFBJUpGvX-2vkYimJDzXMoiXj?usp=sharing
+- Driver Demo Account: rider@cheetah.com  |  Password: Rider123
+- Picker Demo Account: picker@cheetah.com |  Password: Picker123
+
+Any buyer can now deploy this solution completely independently on their own hosting in 5 minutes without needing external software.
+
+Thank you very much for your time and re-evaluation!
 ```
 
 - **Apply for Free file of the week:** Check if you want to participate.
