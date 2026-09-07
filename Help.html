@@ -86,12 +86,19 @@
                 color: #6a737d;
                 text-align: center;
             }
+            a {
+                color: #0366d6;
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
         </style>
     </head>
     <body>
         <div class="container">
             <h1>📦 Cheetah - Delivery Driver &amp; Warehouse Picker App</h1>
-            <p>Thank you for purchasing <strong>Cheetah Driver &amp; Warehouse Picker Mobile App (Flutter 3.x)</strong> from CodeGrape! <span class="badge">v1.0.0 Production Release</span></p>
+            <p>Thank you for purchasing <strong>Cheetah Driver &amp; Warehouse Picker Mobile App (Flutter 3.x)</strong>! <span class="badge">v1.0.0 Production Release</span></p>
 
             <div class="card">
                 <strong>⚡ Quick Summary:</strong> Cross-platform Flutter client for Delivery Riders and Warehouse Fulfillment Pickers with digital signature Proof-of-Delivery, barcode scanning, GPS telemetry, and offline sync.
@@ -119,16 +126,20 @@
             <h2>🚀 How to Configure &amp; Run the Project</h2>
             <ol>
                 <li>
-                    <strong>Step 1: Extract &amp; Open</strong><br />
-                    Extract the downloaded zip package and open the project in <strong>Visual Studio Code</strong> or <strong>Android Studio</strong>.
+                    <strong>Step 1: Extract the Package</strong><br />
+                    Extract the downloaded zip package. You will find both the Flutter app source code, the standalone <code>backend/</code> folder, and the <code>postman/</code> API collection.
                 </li>
                 <li>
-                    <strong>Step 2: Connect Your Backend URL</strong><br />
-                    Open <code>lib/utils/constants.dart</code> and change the API domain to your own live server:<br />
-                    <pre>static const String baseUrl = 'https://your-domain.com/';</pre>
+                    <strong>Step 2: Deploy Standalone Backend (Optional if connecting to existing API)</strong><br />
+                    Import <code>backend/database/driver_app.sql</code> into your MySQL database, configure your DB credentials in <code>backend/config.php</code>, and upload the <code>backend/</code> folder to your web server (e.g., <code>https://api.yourdomain.com/</code>).
                 </li>
                 <li>
-                    <strong>Step 3: Install Flutter Dependencies</strong><br />
+                    <strong>Step 3: Connect Your Backend URL in Flutter</strong><br />
+                    Open <code>lib/utils/constants.dart</code> and change the API domain to your live backend server:<br />
+                    <pre>static const String baseUrl = 'https://api.yourdomain.com/';</pre>
+                </li>
+                <li>
+                    <strong>Step 4: Install Flutter Dependencies</strong><br />
                     Open your terminal in the root folder and execute:<br />
                     <pre>flutter pub get</pre>
                 </li>
@@ -147,15 +158,16 @@
                 </li>
             </ol>
 
-            <h2>🧪 Live Demo Testing Credentials</h2>
+            <h2>🧪 Live Demo &amp; APK Download</h2>
             <ul>
-                <li><strong>Live Backend URL:</strong> <a href="https://cheetah.ayan24.me" target="_blank">https://cheetah.ayan24.me</a></li>
-                <li><strong>Delivery Driver Demo:</strong> <code>rider@cheetah.com</code> / Password: <code>Rider123</code></li>
-                <li><strong>Warehouse Picker Demo:</strong> <code>picker@cheetah.com</code> / Password: <code>Picker123</code></li>
+                <li><strong>📥 Download Demo APK (Google Drive):</strong> <a href="https://drive.google.com/drive/folders/1Ul3lGfaKFBJUpGvX-2vkYimJDzXMoiXj?usp=sharing" target="_blank">Download Demo APK</a></li>
+                <li><strong>🌐 Live Backend URL:</strong> <a href="https://cheetah.ayan24.me" target="_blank">https://cheetah.ayan24.me</a></li>
+                <li><strong>🚗 Delivery Driver Demo:</strong> <code>rider@cheetah.com</code> / Password: <code>Rider123</code></li>
+                <li><strong>🏗️ Warehouse Picker Demo:</strong> <code>picker@cheetah.com</code> / Password: <code>Picker123</code></li>
             </ul>
 
             <h2>💬 Support &amp; Inquiries</h2>
-            <p>If you have any questions, encounter any issues during setup, or require assistance, please feel free to reach out via our author profile contact form on CodeGrape. We are always happy to assist you!</p>
+            <p>If you have any questions, encounter any issues during setup, or require assistance, please feel free to reach out via our author profile contact form. We are always happy to assist you!</p>
 
             <div class="footer">
                 Good luck using Cheetah Driver &amp; Warehouse Picker in your logistics projects!<br />

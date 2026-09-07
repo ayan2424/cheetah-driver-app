@@ -504,6 +504,8 @@ tr:hover td { background: var(--bg-card-hover); }
       <div class="nav-group-title">Setup & Integration</div>
       <ul class="nav-links">
         <li><a href="#quickstart" class="nav-link"><i class="fa-solid fa-bolt"></i> Quickstart Guide</a></li>
+        <li><a href="#backend-setup" class="nav-link"><i class="fa-solid fa-server"></i> Standalone Backend & DB</a></li>
+        <li><a href="#postman" class="nav-link"><i class="fa-solid fa-paper-plane"></i> Postman Collection</a></li>
         <li><a href="#configuration" class="nav-link"><i class="fa-solid fa-sliders"></i> API Configuration</a></li>
         <li><a href="#whitelabel" class="nav-link"><i class="fa-solid fa-palette"></i> White-Labeling & Branding</a></li>
         <li><a href="#languages" class="nav-link"><i class="fa-solid fa-language"></i> Multi-Language</a></li>
@@ -659,6 +661,17 @@ tr:hover td { background: var(--bg-card-hover); }
           <button class="btn-copy" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
         </div>
         <pre><code>cheetah_driver_app/
+├── backend/                    # Standalone PHP REST API & Database
+│   ├── config.php              # DB connection, CORS, auth helpers & error handlers
+│   ├── database/
+│   │   └── driver_app.sql      # Standalone schema with pre-seeded demo drivers & tasks
+│   ├── api/v1/driver/          # Driver REST API endpoints (login, parcels, POD, wallet)
+│   ├── api/v1/picker/          # Picker REST API endpoints (WMS pick tasks)
+│   ├── uploads/                # POD photos, signature PNGs & profile avatars
+│   └── README.md               # Standalone backend setup & deployment guide
+├── postman/                    # API Testing Suite
+│   ├── Cheetah_Driver_App_API.postman_collection.json # Official Postman Collection v2.1
+│   └── Cheetah_Driver_App_Environment.postman_environment.json # Postman Environment
 ├── android/                    # Android Native Gradle Project (API 21-35)
 ├── ios/                        # iOS Native Xcode Workspace (iOS 14.0+)
 ├── assets/                     # App Logos, Icons, and Audio Effects
@@ -806,6 +819,118 @@ cd ios && pod install --repo-update && cd ..
 flutter run</code></pre>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- Standalone Backend & Database Setup -->
+    <section id="backend-setup">
+      <h2 class="section-heading"><i class="fa-solid fa-server"></i> Standalone Backend & Database Setup</h2>
+      <p>
+        The package includes a <strong>100% self-contained standalone PHP REST API backend and MySQL database</strong> located in the <code>backend/</code> folder. You can deploy this backend independently on any standard cPanel, Apache, LiteSpeed, Nginx, or VPS hosting.
+      </p>
+
+      <div class="callout tip">
+        <i class="fa-solid fa-bolt"></i>
+        <div class="callout-content">
+          <strong>Zero Framework Overhead:</strong> The backend is written in pure, optimized PHP 8.0+ with <code>mysqli</code> prepared statements. No Composer install, no Laravel overhead, and no complicated build steps required!
+        </div>
+      </div>
+
+      <h3 class="sub-heading"><i class="fa-solid fa-database"></i> Step 1: Import MySQL Database</h3>
+      <p>
+        1. Open your hosting control panel (<strong>cPanel phpMyAdmin</strong>, <strong>Adminer</strong>, or MySQL CLI).<br>
+        2. Create a new MySQL database (e.g., <code>cheetah_driver_db</code>).<br>
+        3. Click the <strong>Import</strong> tab, select <code>backend/database/driver_app.sql</code> from this package, and click <strong>Go / Execute</strong>.
+      </p>
+
+      <h3 class="sub-heading"><i class="fa-solid fa-file-code"></i> Step 2: Configure Database Credentials</h3>
+      <p>
+        Open <code>backend/config.php</code> in any code or text editor and update your database credentials:
+      </p>
+
+      <div class="code-container">
+        <div class="code-header">
+          <div class="code-lang-tag"><i class="fa-regular fa-file-code"></i> backend/config.php</div>
+          <button class="btn-copy" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+        </div>
+        <pre><code>// Update with your MySQL credentials
+define('DB_HOST', 'localhost');          // Usually 'localhost'
+define('DB_USER', 'your_db_username');   // Your database username
+define('DB_PASS', 'your_db_password');   // Your database password
+define('DB_NAME', 'cheetah_driver_db');  // Database name created in Step 1
+define('DB_PORT', 3306);                 // Default MySQL port</code></pre>
+      </div>
+
+      <h3 class="sub-heading"><i class="fa-solid fa-cloud-arrow-up"></i> Step 3: Upload Backend to Server</h3>
+      <p>
+        Upload the entire <code>backend/</code> folder to your web server (e.g. into <code>public_html/api/</code> or on a dedicated subdomain like <code>https://api.yourdomain.com/</code>). Ensure the <code>uploads/</code> directory has write permissions (<code>0755</code>).
+      </p>
+
+      <h3 class="sub-heading"><i class="fa-solid fa-users-gear"></i> Pre-Seeded Demo Accounts</h3>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Role</th>
+              <th>Email</th>
+              <th>Password</th>
+              <th>Assigned Demo Scope</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>🛵 <strong>Delivery Driver</strong></td>
+              <td><code>rider@cheetah.com</code></td>
+              <td><code>Rider123</code></td>
+              <td>Karachi Central Hub (5 Active Parcels & COD Wallet)</td>
+            </tr>
+            <tr>
+              <td>🏭 <strong>Warehouse Picker</strong></td>
+              <td><code>picker@cheetah.com</code></td>
+              <td><code>Picker123</code></td>
+              <td>Karachi Central Hub (2 WMS Pick Tasks)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Postman Collection -->
+    <section id="postman">
+      <h2 class="section-heading"><i class="fa-solid fa-paper-plane"></i> Official Postman Collection (v2.1)</h2>
+      <p>
+        An enterprise-grade Postman collection and environment are bundled inside the <code>postman/</code> directory for rapid API validation, load testing, and custom endpoint integration.
+      </p>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon-wrap orange"><i class="fa-solid fa-key"></i></div>
+          <div class="feature-title">Auto Bearer Token</div>
+          <p class="feature-desc">The Driver & Picker Login requests include automated Postman test scripts that capture the 30-day token and store it directly in <code>{{bearer_token}}</code>.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon-wrap green"><i class="fa-solid fa-box-open"></i></div>
+          <div class="feature-title">Full ePOD Suite</div>
+          <p class="feature-desc">Pre-configured multipart form-data requests for submitting consignee signatures, drop-off photos, delivery OTP verification, and status updates.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon-wrap blue"><i class="fa-solid fa-warehouse"></i></div>
+          <div class="feature-title">WMS Picker APIs</div>
+          <p class="feature-desc">Endpoints for retrieving assigned wave picking tasks and transitioning sales orders to <code>Prepared</code> state.</p>
+        </div>
+      </div>
+
+      <div class="code-container">
+        <div class="code-header">
+          <div class="code-lang-tag"><i class="fa-solid fa-terminal"></i> Quick Postman Import</div>
+          <button class="btn-copy" onclick="copyCode(this)"><i class="fa-regular fa-copy"></i> Copy</button>
+        </div>
+        <pre><code>1. Open Postman -> Click "Import" (Top Left).
+2. Select: postman/Cheetah_Driver_App_API.postman_collection.json
+3. Select: postman/Cheetah_Driver_App_Environment.postman_environment.json
+4. Select the "Cheetah Mobile App API Environment" from the environment dropdown.
+5. Update "base_url" with your live backend domain (e.g. https://api.yourdomain.com/).
+6. Send the "Driver Login" request -> The bearer token will automatically populate!</code></pre>
       </div>
     </section>
 

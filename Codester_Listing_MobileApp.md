@@ -10,14 +10,14 @@
 *(Copy & paste into the **Title** input box)*
 
 ```text
-Cheetah - Delivery Driver & Warehouse Picker Mobile App (Flutter | Android & iOS)
+Cheetah - Delivery Driver & Warehouse Picker Mobile App with Standalone PHP REST API (Flutter | Android & iOS)
 ```
 
 ### Short description
 *(Copy & paste into the **Short description** input box — Max 150-160 characters)*
 
 ```text
-Cross-platform Flutter app for delivery drivers & warehouse pickers — Live GPS tracking, digital signature POD, barcode scanning & offline sync.
+Complete Flutter app for delivery drivers & pickers — Includes standalone PHP REST API, ready MySQL DB, Postman collection, ePOD & live GPS tracking.
 ```
 
 ### Description
@@ -26,9 +26,9 @@ Cross-platform Flutter app for delivery drivers & warehouse pickers — Live GPS
 ```html
 <h3>🛵 Cheetah Driver & Warehouse Picker App — Enterprise Cross-Platform Mobile Suite (Flutter 3.x)</h3>
 
-<p>The <strong>Cheetah Driver & Warehouse Picker Mobile App</strong> is an enterprise-grade, high-performance cross-platform application developed with <strong>Flutter 3.x</strong> and <strong>Dart 3.x</strong>. Engineered as the official mobile companion for the <strong>Cheetah Courier Management & WMS SaaS (v10.0 Commercial Release)</strong>, it provides a specialized, role-isolated operational client for both <strong>Courier Delivery Drivers / Riders</strong> and <strong>WMS Warehouse Pickers</strong>.</p>
+<p>The <strong>Cheetah Driver & Warehouse Picker Mobile App</strong> is an enterprise-grade, high-performance cross-platform application developed with <strong>Flutter 3.x</strong> and <strong>Dart 3.x</strong>. It provides a complete, turnkey mobile solution for both <strong>Courier Delivery Drivers / Riders</strong> and <strong>WMS Warehouse Pickers</strong>.</p>
 
-<p>Whether connected natively to the Cheetah Courier backend or integrated into your own custom logistics REST API, this app delivers 60/120 FPS fluid animations, hardware-level GPS anti-tampering enforcement, digital customer signatures, drop-off photo proof of delivery (POD), live camera barcode scanning, and zero-data-loss AES-256 encrypted offline queueing.</p>
+<p><strong>🔥 100% SELF-CONTAINED FULL-STACK SOLUTION:</strong> Unlike typical client-only mobile apps that require expensive proprietary software, this package <strong>includes a complete standalone PHP REST API backend, ready-to-import MySQL database, and official Postman collection</strong>. You can host and run this system independently on any standard cPanel, shared hosting, Apache, LiteSpeed, Nginx, or cloud VPS within 5 minutes!</p>
 
 <hr>
 
@@ -62,13 +62,23 @@ Cross-platform Flutter app for delivery drivers & warehouse pickers — Live GPS
 
 <hr>
 
+<h3>🖥️ Standalone PHP REST API Backend Included</h3>
+<ul>
+  <li><strong>Standalone PHP 8.0+ Backend:</strong> Pure PHP with <code>mysqli</code> prepared statements — zero framework overhead, ultra-fast response times.</li>
+  <li><strong>MySQL Database Dump:</strong> Complete <code>driver_app.sql</code> database script with pre-seeded demo drivers, pickers, branches, active parcels, and pick tasks.</li>
+  <li><strong>Official Postman Collection (v2.1):</strong> Pre-configured Postman Collection & Environment with automated bearer token authentication for instant testing.</li>
+  <li><strong>Universal Hosting Compatibility:</strong> Runs effortlessly on any standard cPanel shared hosting, Apache, Nginx, or VPS.</li>
+</ul>
+
+<hr>
+
 <h3>🛡️ Enterprise Features & Reliability</h3>
 
 <ul>
   <li><strong>🔔 Firebase Cloud Messaging (FCM) Ready:</strong> Real-time background wake-on-lock push notifications alerting drivers to newly assigned parcels and warehouse pickers to fresh sales order fulfillment batches. Works in standalone mode or connected to Firebase.</li>
   <li><strong>🔒 AES-256 Encrypted Offline Queue:</strong> In underground parking lots, basements, or remote delivery routes with zero cell reception, POD records and status updates are encrypted with AES-256 and stored locally in Hive. The app automatically retries and flushes queued uploads the moment internet connectivity returns.</li>
   <li><strong>🛰️ Hardware GPS Anti-Tampering Guard:</strong> Active OS hardware listeners detect any attempt to disable location services, notifying dispatchers instantly with a <code>gps_enabled: 0</code> alert and locking the screen with a mandatory prompt to re-enable GPS.</li>
-  <li><strong>🔐 19-Layer Backend Security Alignment:</strong> Hardware-backed token storage in Android Keystore / iOS Keychain, SHA-256 bearer tokens at rest, 5-attempt brute-force rate-limiting lockout on login, and captive portal HTML response bleed guards.</li>
+  <li><strong>🔐 19-Layer Backend Security Alignment:</strong> Hardware-backed token storage in Android Keystore / iOS Keychain, SHA-256 bearer tokens at rest, 10-attempt brute-force rate-limiting lockout on login, and captive portal HTML response bleed guards.</li>
   <li><strong>🌐 23-Language Support with Full RTL:</strong> Pre-configured with translations for English, Spanish, Arabic (with native RTL layout mirroring), French, German, Hindi, Urdu, Portuguese, Russian, and Chinese.</li>
   <li><strong>🌓 Dark & Light Glassmorphic UI:</strong> Stunning, high-contrast visual design with system auto-detection and manual toggle.</li>
   <li><strong>📱 Universal Device Compatibility:</strong> Fully optimized for smartphones, tablets, and rugged industrial handheld Android barcode scanners (Zebra, Honeywell, Newland).</li>
@@ -79,7 +89,11 @@ Cross-platform Flutter app for delivery drivers & warehouse pickers — Live GPS
 <h3>📊 Live Demo & Testing</h3>
 
 <p>Test the mobile app authentication and integration live with our demo backend:</p>
-<p><strong>🔗 Web Backend Demo:</strong> <a href="https://cheetah.ayan24.me" target="_blank">https://cheetah.ayan24.me</a></p>
+<p>👉 <strong>📥 Download Android Demo APK:</strong> <br>
+<a href="https://drive.google.com/drive/folders/1Ul3lGfaKFBJUpGvX-2vkYimJDzXMoiXj?usp=sharing" target="_blank"><strong>Click Here to Download Demo APK (Google Drive)</strong></a><br>
+<em>(Install the APK directly on your Android phone or emulator to test the full mobile experience)</em></p>
+<p>👉 <strong>🌐 Live Web Dispatcher Backend:</strong> <br>
+<a href="https://cheetah.ayan24.me" target="_blank"><strong>https://cheetah.ayan24.me</strong></a></p>
 
 <ul>
   <li><strong>🚗 Driver Demo Login:</strong> <code>rider@cheetah.com</code> / Password: <code>Rider123</code></li>
@@ -91,9 +105,13 @@ Cross-platform Flutter app for delivery drivers & warehouse pickers — Live GPS
 <h3>📦 What You Will Receive</h3>
 <ul>
   <li>Full Flutter 3.x & Dart 3.x Source Code (MVC-S GetX Architecture).</li>
+  <li><strong>Complete Standalone PHP REST API Backend Source Code (<code>backend/</code>).</strong></li>
+  <li><strong>Ready-to-Import MySQL Database Dump (<code>backend/database/driver_app.sql</code>).</strong></li>
+  <li><strong>Official Postman Collection v2.1 & Environment (<code>postman/</code>).</strong></li>
   <li>Android Project Workspace (Gradle, ProGuard rules, Android 14/15 target, API 21-35).</li>
   <li>iOS Xcode Workspace (CocoaPods, iOS 14.0 to 18.x compatible).</li>
   <li>Interactive Buyer Documentation HTML Webpage (<code>Documentation.html</code>) with live search and copy-code snippets.</li>
+  <li>Backend Deployment & Configuration Guide (<code>backend/README.md</code>).</li>
   <li>Full Developer Technical Markdown Documentation (<code>DOCUMENTATION.md</code>).</li>
   <li>Dedicated Firebase Push Notifications Setup Guide (<code>FIREBASE_SETUP.md</code>).</li>
   <li>Step-by-step App Store & Google Play publishing guide.</li>
@@ -103,12 +121,12 @@ Cross-platform Flutter app for delivery drivers & warehouse pickers — Live GPS
 
 <h3>⚙️ Technical Requirements</h3>
 <ul>
-  <li>Flutter SDK 3.12.0 or higher (Dart 3.x compatible)</li>
-  <li>Android Studio (Hedgehog / Ladybug or newer) or Visual Studio Code</li>
-  <li>Java JDK 17 (bundled with Android Studio)</li>
-  <li>Android SDK with Minimum API Level 21 (Android 5.0) and Target API Level 34/35 (Android 14/15)</li>
-  <li>macOS with Xcode 15+ & CocoaPods 1.12+ (Only required for compiling iOS builds)</li>
-  <li>A live Cheetah Courier & WMS backend OR your custom REST API server with HTTPS</li>
+  <li><strong>Flutter SDK:</strong> 3.12.0 or higher (Dart 3.x compatible)</li>
+  <li><strong>Backend Server:</strong> Any standard web hosting with PHP 8.0+ and MySQL 5.7+ / MariaDB 10.3+ (cPanel, Apache, Nginx, or VPS)</li>
+  <li><strong>IDE:</strong> Android Studio (Hedgehog / Ladybug or newer) or Visual Studio Code</li>
+  <li><strong>Java:</strong> JDK 17 (bundled with Android Studio)</li>
+  <li><strong>Android SDK:</strong> Minimum API Level 21 (Android 5.0) and Target API Level 34/35 (Android 14/15)</li>
+  <li><strong>iOS (Optional):</strong> macOS with Xcode 15+ & CocoaPods 1.12+ (Only required for compiling iOS builds)</li>
 </ul>
 ```
 
@@ -117,6 +135,9 @@ Cross-platform Flutter app for delivery drivers & warehouse pickers — Live GPS
 
 ```text
 • Complete cross-platform Flutter 3.x source code for Android & iOS
+• Standalone PHP 8.0+ REST API backend with zero framework overhead included in package
+• Ready-to-import MySQL database dump (driver_app.sql) with pre-seeded demo records
+• Official Postman Collection v2.1 and Environment for rapid API validation
 • Dual-role operational interface: Delivery Driver & Warehouse Picker in one single app
 • Branded CHT- Tracking Numbers (CHT-KHI-000001 format) compatibility with camera barcode recognition
 • Firebase Cloud Messaging (FCM) push notification engine for instant dispatch alerts
@@ -133,7 +154,7 @@ Cross-platform Flutter app for delivery drivers & warehouse pickers — Live GPS
 • 23-Language internationalization including full RTL layout support (Arabic, Urdu)
 • Premium Dark and Light glassmorphic themes with system auto-detection
 • Token-based Bearer authentication with hardware-backed Android Keystore / iOS Keychain storage
-• 5-attempt brute-force rate-limiting lockout protection on API authentication
+• 10-attempt brute-force rate-limiting lockout protection on API authentication
 • Clean GetX (MVC-S) architecture with reactive controllers and decoupled services
 • Dedicated Firebase FCM setup guide (FIREBASE_SETUP.md) & interactive HTML docs (Documentation.html)
 • Ready for Google Play Store (.aab bundle, Target SDK 35) and Apple App Store (.ipa, iOS 18) publishing
@@ -144,21 +165,24 @@ Cross-platform Flutter app for delivery drivers & warehouse pickers — Live GPS
 
 ```text
 1. Extract the downloaded cheetah_driver_app.zip package.
-2. Open the project folder in Visual Studio Code or Android Studio.
-3. Open "lib/utils/constants.dart" and update baseUrl with your live domain:
-   static const String baseUrl = 'https://your-domain.com/';
-4. Open your terminal in the project root and run:
-   flutter pub get
-5. To test on a connected Android device or emulator:
-   flutter run
-6. For iOS builds (on macOS):
-   cd ios && pod install --repo-update && cd ..
-   flutter run
-7. To generate production release builds:
+2. BACKEND SETUP (5 Minutes):
+   a. Open phpMyAdmin / cPanel and import "backend/database/driver_app.sql".
+   b. Open "backend/config.php" and enter your MySQL database credentials.
+   c. Upload the "backend/" folder to your hosting server (e.g. https://api.yourdomain.com/).
+3. MOBILE APP SETUP:
+   a. Open the Flutter project in Visual Studio Code or Android Studio.
+   b. Open "lib/utils/constants.dart" and update baseUrl with your live backend domain:
+      static const String baseUrl = 'https://api.yourdomain.com/';
+   c. Run: flutter pub get
+4. TO TEST ON EMULATOR / DEVICE:
+   Run: flutter run
+5. TO TEST APIS DIRECTLY WITH POSTMAN:
+   Import "postman/Cheetah_Driver_App_API.postman_collection.json" and "postman/Cheetah_Driver_App_Environment.postman_environment.json".
+6. FOR PRODUCTION BUILDS:
    - Android App Bundle (Google Play): flutter build appbundle --release
    - Android Standalone APK: flutter build apk --release
    - Apple iOS Release IPA: flutter build ipa --release
-8. For complete step-by-step branding, custom icons, and app store publishing instructions, open "Documentation.html" included in the root folder.
+7. For complete step-by-step branding, custom icons, and app store publishing instructions, open "Documentation.html" included in the root folder.
 ```
 
 ---
@@ -183,6 +207,8 @@ Category:
 - Flutter
 
 Files included (Check these):
+[x] .php
+[x] .sql
 [x] .html
 [x] .css
 [x] .m
@@ -218,6 +244,8 @@ Operating Systems (Check these):
 [x] Android 16.0
 
 Programming language (Check these):
+[x] PHP
+[x] SQL
 [x] Java
 [x] Kotlin
 [x] Dart

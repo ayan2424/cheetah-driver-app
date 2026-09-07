@@ -1,0 +1,347 @@
+{
+  "info": {
+    "_postman_id": "c7a8b910-1234-4567-89ab-cdef01234567",
+    "name": "Cheetah Driver & Warehouse Picker REST API",
+    "description": "Official Postman Collection for Cheetah Delivery Driver & Warehouse Picker Mobile Suite (Flutter 3.x).\nIncludes authentication, delivery management, electronic Proof of Delivery (ePOD), GPS telemetry, COD wallet, and WMS pick tasks.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Authentication",
+      "item": [
+        {
+          "name": "Driver Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.success && jsonData.token) {",
+                  "    pm.environment.set(\"bearer_token\", jsonData.token);",
+                  "    console.log(\"Bearer token automatically saved to environment:\", jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/x-www-form-urlencoded" }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "email", "value": "{{driver_email}}", "type": "text" },
+                { "key": "password", "value": "{{driver_password}}", "type": "text" }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}api/v1/driver/login.php",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "driver", "login.php"]
+            },
+            "description": "Authenticates driver and returns 30-day Bearer token. Saves token to {{bearer_token}} automatically."
+          }
+        },
+        {
+          "name": "Picker Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.success && jsonData.token) {",
+                  "    pm.environment.set(\"bearer_token\", jsonData.token);",
+                  "    console.log(\"Picker Bearer token saved:\", jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/x-www-form-urlencoded" }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "email", "value": "{{picker_email}}", "type": "text" },
+                { "key": "password", "value": "{{picker_password}}", "type": "text" }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}api/v1/driver/login.php",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "driver", "login.php"]
+            },
+            "description": "Authenticates warehouse picker and returns role 'picker'."
+          }
+        },
+        {
+          "name": "Fetch Profile",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{bearer_token}}" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}api/v1/driver/get_profile.php",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "driver", "get_profile.php"]
+            },
+            "description": "Returns full user profile, avatar URL, branch details, and daily statistics."
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{bearer_token}}" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "name", "value": "Rashid Khan", "type": "text" },
+                { "key": "phone", "value": "+92 300 1234567", "type": "text" },
+                { "key": "preset_avatar", "value": "", "type": "text" }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}api/v1/driver/update_profile.php",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "driver", "update_profile.php"]
+            },
+            "description": "Updates driver contact details or avatar photo."
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{bearer_token}}" },
+              { "key": "Content-Type", "value": "application/x-www-form-urlencoded" }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "current_password", "value": "Rider123", "type": "text" },
+                { "key": "new_password", "value": "Rider1234", "type": "text" }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}api/v1/driver/change_password.php",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "driver", "change_password.php"]
+            },
+            "description": "Validates current credentials and applies new password hash."
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/x-www-form-urlencoded" }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "email", "value": "{{driver_email}}", "type": "text" }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}api/v1/driver/forgot_password.php",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "driver", "forgot_password.php"]
+            },
+            "description": "Requests automated password reset link."
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{bearer_token}}" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}api/v1/driver/logout.php",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "driver", "logout.php"]
+            },
+            "description": "Invalidates the active server Bearer token."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Delivery Driver Operations",
+      "item": [
+        {
+          "name": "Fetch Assigned Parcels",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{bearer_token}}" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}api/v1/driver/get_parcels.php",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "driver", "get_parcels.php"]
+            },
+            "description": "Fetches delivery shipments assigned to authenticated driver with summary stats (out_for_delivery, delivered_today, cod_total)."
+          }
+        },
+        {
+          "name": "Update Status & Submit POD",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{bearer_token}}" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "parcel_id", "value": "1", "type": "text" },
+                { "key": "tracking_number", "value": "CHT-KHI-000101", "type": "text" },
+                { "key": "status", "value": "Delivered", "type": "text" },
+                { "key": "receiver_name", "value": "Zubair Ahmed", "type": "text" },
+                { "key": "description", "value": "Handed over to consignee in person at Clifton", "type": "text" },
+                { "key": "delivery_otp", "value": "", "type": "text" },
+                { "key": "photo", "type": "file", "src": [] },
+                { "key": "signature", "type": "file", "src": [] }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}api/v1/driver/update_status.php",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "driver", "update_status.php"]
+            },
+            "description": "Updates parcel status, verifies OTP (if required), uploads drop-off photo & signature PNG, and credits COD wallet."
+          }
+        },
+        {
+          "name": "Update Live GPS Telemetry",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{bearer_token}}" },
+              { "key": "Content-Type", "value": "application/x-www-form-urlencoded" }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "latitude", "value": "24.8607", "type": "text" },
+                { "key": "longitude", "value": "67.0011", "type": "text" },
+                { "key": "speed", "value": "32.5", "type": "text" },
+                { "key": "heading", "value": "145.0", "type": "text" },
+                { "key": "battery_level", "value": "88", "type": "text" },
+                { "key": "gps_enabled", "value": "1", "type": "text" },
+                { "key": "is_mock", "value": "0", "type": "text" }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}api/v1/driver/update_location.php",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "driver", "update_location.php"]
+            },
+            "description": "Transmits background GPS coordinates and sensor health to live operations map."
+          }
+        },
+        {
+          "name": "Fetch Driver COD Wallet",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{bearer_token}}" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}api/v1/driver/get_wallet.php",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "driver", "get_wallet.php"]
+            },
+            "description": "Returns unremitted COD cash in custody, commission balance, and recent payout transactions."
+          }
+        },
+        {
+          "name": "Sync FCM Push Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{bearer_token}}" },
+              { "key": "Content-Type", "value": "application/x-www-form-urlencoded" }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "fcm_token", "value": "dK8_fcm_sample_device_registration_token_12345", "type": "text" }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}api/v1/driver/update_fcm_token.php",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "driver", "update_fcm_token.php"]
+            },
+            "description": "Registers device Firebase Cloud Messaging token for targeted background dispatch alerts."
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Warehouse Picker Operations",
+      "item": [
+        {
+          "name": "Fetch WMS Pick Tasks",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{bearer_token}}" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}api/v1/picker/wms_get_pick_tasks.php",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "picker", "wms_get_pick_tasks.php"]
+            },
+            "description": "Fetches sales order wave picking directives assigned to authenticated picker."
+          }
+        },
+        {
+          "name": "Update Pick Task Status",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{bearer_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"task_id\": 1,\n  \"status\": \"Completed\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}api/v1/picker/wms_update_task.php",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "picker", "wms_update_task.php"]
+            },
+            "description": "Transitions task status ('In Progress', 'Completed') and updates parent sales order."
+          }
+        }
+      ]
+    }
+  ]
+}
