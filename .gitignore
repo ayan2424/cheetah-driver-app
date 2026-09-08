@@ -44,3 +44,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Pre-built APK binary (included in zip for Codester, ignored from git)
+demo_apk/*.apk
+

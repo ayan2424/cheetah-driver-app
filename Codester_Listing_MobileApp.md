@@ -160,6 +160,21 @@ Complete Flutter app for delivery drivers & pickers — Includes standalone PHP 
 • Ready for Google Play Store (.aab bundle, Target SDK 35) and Apple App Store (.ipa, iOS 18) publishing
 ```
 
+### Requirements
+*(Copy & paste into the **Requirements** box)*
+
+```text
+• Flutter SDK 3.12.0 or higher (Dart 3.x compatible)
+• Android Studio (Hedgehog / Ladybug or newer) or Visual Studio Code
+• Java JDK 17 (bundled with Android Studio)
+• Android SDK with Minimum API Level 21 (Android 5.0) and Target API Level 34/35 (Android 14/15)
+• macOS with Xcode 15+ & CocoaPods 1.12+ (Only required for compiling iOS builds)
+• Web Server with PHP 8.0 or higher (Supports cPanel, Shared Hosting, Apache, Nginx, LiteSpeed, or VPS)
+• MySQL 5.7+ / MySQL 8.0+ or MariaDB 10.4+
+• PHP Extensions: mysqli, json, openssl, mbstring (Standard on virtually all web hosts)
+• Postman v10+ (Optional, for API testing)
+```
+
 ### Instructions
 *(Copy & paste into the **Instructions** box)*
 
@@ -193,8 +208,9 @@ Complete Flutter app for delivery drivers & pickers — Includes standalone PHP 
 - **Upload file:** Upload your final `cheetah_driver_app.zip` archive here.
 - **Demo URL:** 
 ```text
-https://cheetah.ayan24.me
+https://drive.google.com/drive/folders/1Ul3lGfaKFBJUpGvX-2vkYimJDzXMoiXj?usp=sharing
 ```
+*(Note: Putting the Google Drive APK link here allows Codester reviewers to directly download and test the mobile app on their phone/emulator, preventing rejections!)*
 - **Screenshots:** Upload your high-resolution app presentation images here.
 
 ---
@@ -245,7 +261,6 @@ Operating Systems (Check these):
 
 Programming language (Check these):
 [x] PHP
-[x] SQL
 [x] Java
 [x] Kotlin
 [x] Dart
