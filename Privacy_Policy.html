@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — Cheetah Driver & Warehouse Picker App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root {
+  --primary: #FF4D00;
+  --bg: #09090B;
+  --bg-card: #121216;
+  --border: rgba(255, 255, 255, 0.08);
+  --text: #F4F4F6;
+  --text-muted: #9CA3AF;
+  --font-main: 'Inter', sans-serif;
+  --font-heading: 'Outfit', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-main);
+  line-height: 1.7;
+  padding: 40px 20px;
+}
+.container {
+  max-width: 820px;
+  margin: 0 auto;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px 32px;
+}
+.header {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 24px;
+  margin-bottom: 32px;
+}
+h1 {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+h1 span { color: var(--primary); }
+.meta {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+}
+h2 {
+  font-family: var(--font-heading);
+  font-size: 1.35rem;
+  margin: 32px 0 14px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+h2 i { color: var(--primary); font-size: 1.1rem; }
+p, li {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 14px;
+}
+strong { color: var(--text); }
+ul, ol { padding-left: 24px; margin-bottom: 18px; }
+li { margin-bottom: 8px; }
+.card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 20px;
+  margin: 18px 0;
+}
+.badge {
+  display: inline-block;
+  background: rgba(255,77,0,0.15);
+  color: var(--primary);
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 0.9rem;
+}
+th, td {
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+th {
+  background: rgba(255,255,255,0.04);
+  color: var(--text);
+  font-weight: 600;
+}
+td { color: var(--text-muted); }
+.footer {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+a { color: var(--primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <span class="badge"><i class="fa-solid fa-shield-halved"></i> Privacy Policy & Compliance</span>
+    <h1>Cheetah Driver & Picker <span>Mobile Suite</span></h1>
+    <div class="meta">
+      <strong>Effective Date:</strong> September 8, 2026 &bull; <strong>Version:</strong> v1.0.0 Commercial
+    </div>
+  </div>
+
+  <p>
+    This Privacy Policy outlines how the <strong>Cheetah Driver & Warehouse Picker Mobile Application</strong> ("the Application"), developed by Cheetah Logistics, handles the collection, processing, transmission, and protection of user data for delivery couriers and warehouse fulfillment staff.
+  </p>
+
+  <h2><i class="fa-solid fa-location-crosshairs"></i> 1. Location Data (Foreground & Background Telemetry)</h2>
+  <div class="card">
+    <p><strong>Why Location Data is Required:</strong></p>
+    <ul>
+      <li><strong>Navigation:</strong> Provides one-tap turn-by-turn routing via Google Maps, Apple Maps, and Waze to customer delivery addresses.</li>
+      <li><strong>Live Dispatcher Tracking:</strong> Broadcasts periodic GPS coordinates (latitude, longitude, speed, and heading) to central logistics dispatchers while shipments are marked "Out for Delivery".</li>
+      <li><strong>ePOD Geostamping:</strong> Records legal delivery location coordinates on consignee Proof of Delivery (ePOD) receipts.</li>
+    </ul>
+    <p><strong>Background Location:</strong> Background tracking occurs only during active driver shifts when assigned parcels are en route. A persistent notification is displayed in the Android status bar whenever tracking is active. Drivers may disable tracking by logging out.</p>
+  </div>
+
+  <h2><i class="fa-solid fa-camera"></i> 2. Camera & Proof of Delivery (ePOD) Media</h2>
+  <div class="card">
+    <ul>
+      <li><strong>Barcode & QR Scanning:</strong> The device camera is accessed to scan parcel tracking numbers (<code>CHT-</code> format) and warehouse bin shelf barcodes. No video or camera streams are permanently stored on device.</li>
+      <li><strong>Drop-off Proof Photos:</strong> Photos taken upon parcel delivery are compressed, watermarked with tracking details on the server, and transmitted securely via HTTPS.</li>
+      <li><strong>Touchscreen Signatures:</strong> Recipient signatures are exported as PNG graphics and attached to the digital delivery receipt.</li>
+    </ul>
+  </div>
+
+  <h2><i class="fa-solid fa-lock"></i> 3. Security & Data Storage</h2>
+  <p>
+    All network traffic is encrypted via <strong>TLS 1.3 / HTTPS</strong>. Authentication credentials and offline delivery records are protected with <strong>AES-256</strong> hardware-backed encryption using the Android Keystore and Apple iOS Keychain.
+  </p>
+
+  <h2><i class="fa-solid fa-ban"></i> 4. Zero Advertising Policy</h2>
+  <p>
+    We <strong>do NOT sell, rent, or trade</strong> driver locations, customer information, or package telemetry to third-party ad networks or brokers. Data is strictly utilized for commercial logistics operations.
+  </p>
+
+  <h2><i class="fa-solid fa-list-check"></i> 5. Device Permissions Summary</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Permission</th>
+        <th>Purpose</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>ACCESS_FINE_LOCATION</code></td>
+        <td>Turn-by-turn navigation & route geocoding</td>
+        <td>Mandatory for active route</td>
+      </tr>
+      <tr>
+        <td><code>ACCESS_BACKGROUND_LOCATION</code></td>
+        <td>Live fleet map telemetry during transit</td>
+        <td>Active during shift</td>
+      </tr>
+      <tr>
+        <td><code>CAMERA</code></td>
+        <td>Barcode scanner & delivery drop-off photo</td>
+        <td>Mandatory for ePOD</td>
+      </tr>
+      <tr>
+        <td><code>POST_NOTIFICATIONS</code></td>
+        <td>New parcel and dispatch alerts (FCM)</td>
+        <td>Recommended</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2><i class="fa-solid fa-envelope"></i> 6. Inquiries & Contact</h2>
+  <p>
+    For technical support, privacy compliance, or account deletion inquiries:<br>
+    <strong>Developer:</strong> Cheetah Logistics Solutions<br>
+    <strong>Email:</strong> <a href="mailto:support@cheetah.ayan24.me">support@cheetah.ayan24.me</a><br>
+    <strong>Platform Portal:</strong> <a href="https://cheetah.ayan24.me" target="_blank">https://cheetah.ayan24.me</a>
+  </p>
+
+  <div class="footer">
+    &copy; 2026 Cheetah Courier & Logistics Management System. All rights reserved.
+  </div>
+</div>
+
+</body>
+</html>
