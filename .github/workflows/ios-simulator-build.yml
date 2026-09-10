@@ -30,6 +30,7 @@ jobs:
         run: |
           flutter config --no-enable-swift-package-manager
           rm -rf ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/swiftpm
+          rm -rf ios/Pods ios/Podfile.lock
 
       - name: Precache Flutter iOS Artifacts
         run: flutter precache --ios
@@ -41,7 +42,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ios/Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          key: ${{ runner.os }}-pods-${{ hashFiles('pubspec.lock') }}
           restore-keys: |
             ${{ runner.os }}-pods-
 
