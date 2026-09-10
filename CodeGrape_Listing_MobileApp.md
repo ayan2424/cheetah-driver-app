@@ -98,6 +98,7 @@ Cheetah - Delivery Driver & Warehouse Picker Mobile App (Flutter)
   <li><strong>🌐 23-Language Support with Full RTL:</strong> Pre-configured with translations for English, Spanish, Arabic (with native RTL layout mirroring), French, German, Hindi, Urdu, Portuguese, Russian, and Chinese.</li>
   <li><strong>🌓 Dark & Light Glassmorphic UI:</strong> Stunning, high-contrast visual design with system auto-detection and manual toggle.</li>
   <li><strong>📱 Universal Device Compatibility:</strong> Fully optimized for smartphones, tablets, and rugged industrial handheld Android barcode scanners (Zebra, Honeywell, Newland).</li>
+  <li><strong>☁️ 1-Click Cloud Builds via GitHub Actions (Zero Local Setup Required!):</strong> Low-spec computer or don't own a Mac? Includes pre-configured GitHub Actions CI/CD workflows for both <strong>Android</strong> (<code>android-build.yml</code> — compiles Release APK &amp; Google Play AAB) and <strong>iOS</strong> (<code>ios-simulator-build.yml</code> — compiles iOS build on cloud macOS runners). Simply push to GitHub and download your compiled builds directly!</li>
 </ul>
 
 <hr>
@@ -112,7 +113,8 @@ Cheetah - Delivery Driver & Warehouse Picker Mobile App (Flutter)
   <li>iOS Xcode Workspace (CocoaPods ready, iOS 15.0 to 18.x compatible).</li>
   <li>Interactive CodeGrape-Compliant Help Guide (<code>Help.html</code>) included in the root.</li>
   <li>Backend Deployment & Configuration Guide (<code>backend/README.md</code>).</li>
-  <li>Firebase Cloud Messaging Setup Guide.</li>
+  <li>Dedicated Firebase Cloud Messaging Setup Guide.</li>
+  <li><strong>Automated Cloud Build CI/CD Workflows (<code>.github/workflows/</code>) — 1-click cloud builds for both Android (APK &amp; AAB) and iOS without installing local SDKs!</strong></li>
   <li>Step-by-step App Store & Google Play publishing instructions.</li>
 </ul>
 ```
@@ -194,13 +196,15 @@ Thank you for reviewing the Cheetah Driver & Warehouse Picker Mobile App (Flutte
 This is a production-grade, hand-crafted enterprise logistics client built from the ground up for delivery drivers and warehouse pickers. It contains zero AI wrappers, zero license locks, zero domain restrictions, and zero obfuscation.
 
 KEY PRODUCTION HIGHLIGHTS:
-1. Static Analysis: Passed 'flutter analyze' with 0 errors and 0 warnings.
-2. OS Compatibility: 
+1. Complete Turnkey Full-Stack: Includes standalone PHP 8.0+ REST API backend (backend/), ready MySQL DB dump (driver_app.sql), and official Postman collection (postman/).
+2. Static Analysis & Code Quality: Passed 'flutter analyze' with 0 errors and 0 warnings. Pure PHP mysqli prepared statements with zero syntax errors.
+3. Automated 1-Click Cloud Builds (.github/workflows/): Pre-configured CI/CD workflows for Android (Release APK & AAB) and iOS builds without local SDK setup.
+4. OS Compatibility: 
    - Android: Min SDK 21 (Android 5.0), Target SDK 34/35 (Android 14 & 15).
    - iOS: Target iOS 15.0 to 18.x (CocoaPods ready).
-3. Hardware Security: Tokens stored in Android Keystore / iOS Keychain (AES-256 GCM).
-4. Offline POD Queue: Uses Hive with AES-256 local encryption and automatic re-sync.
-5. Documentation: Included CodeGrape-compliant 'Help.html' guide inside the main package root.
+5. Hardware Security: Tokens stored in Android Keystore / iOS Keychain (AES-256 GCM).
+6. Offline POD Queue: Uses Hive with AES-256 local encryption and automatic re-sync upon network restore.
+7. Documentation: Included CodeGrape-compliant 'Help.html' guide inside the main package root.
 
 DEMO ACCESS & TESTING:
 - Live Dispatch Backend: https://cheetah.ayan24.me

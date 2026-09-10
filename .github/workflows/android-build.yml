@@ -1,0 +1,50 @@
+name: Android Release Build (APK & AAB)
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Android APK & App Bundle
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Build Android Release APK
+        run: flutter build apk --release
+
+      - name: Build Android App Bundle (.aab for Google Play)
+        run: flutter build appbundle --release
+
+      - name: Upload Android Release APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cheetah-driver-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 14
+
+      - name: Upload Google Play App Bundle (AAB) Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cheetah-driver-playstore-aab
+          path: build/app/outputs/bundle/release/app-release.aab
+          retention-days: 14

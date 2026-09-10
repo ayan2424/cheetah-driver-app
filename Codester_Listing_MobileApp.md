@@ -82,6 +82,7 @@ Complete Flutter app for delivery drivers & pickers — Includes standalone PHP 
   <li><strong>🌐 23-Language Support with Full RTL:</strong> Pre-configured with translations for English, Spanish, Arabic (with native RTL layout mirroring), French, German, Hindi, Urdu, Portuguese, Russian, and Chinese.</li>
   <li><strong>🌓 Dark & Light Glassmorphic UI:</strong> Stunning, high-contrast visual design with system auto-detection and manual toggle.</li>
   <li><strong>📱 Universal Device Compatibility:</strong> Fully optimized for smartphones, tablets, and rugged industrial handheld Android barcode scanners (Zebra, Honeywell, Newland).</li>
+  <li><strong>☁️ 1-Click Cloud Builds via GitHub Actions (Zero Local Setup Required!):</strong> Low-spec computer or don't own a Mac? Cheetah includes pre-configured GitHub Actions CI/CD workflows for both <strong>Android</strong> (<code>android-build.yml</code> — compiles Release APK &amp; Google Play AAB) and <strong>iOS</strong> (<code>ios-simulator-build.yml</code> — compiles iOS build on cloud macOS runners). Simply push to GitHub and download your compiled builds directly from the browser!</li>
 </ul>
 
 <hr>
@@ -112,8 +113,9 @@ Complete Flutter app for delivery drivers & pickers — Includes standalone PHP 
   <li>iOS Xcode Workspace (CocoaPods, iOS 14.0 to 18.x compatible).</li>
   <li>Interactive Buyer Documentation HTML Webpage (<code>Documentation.html</code>) with live search and copy-code snippets.</li>
   <li>Backend Deployment & Configuration Guide (<code>backend/README.md</code>).</li>
-  <li>Full Developer Technical Markdown Documentation (<code>DOCUMENTATION.md</code>).</li>
+  <li>Testing &amp; QA Checklist with Verification Credentials (<code>TESTING.md</code>).</li>
   <li>Dedicated Firebase Push Notifications Setup Guide (<code>FIREBASE_SETUP.md</code>).</li>
+  <li><strong>Automated Cloud Build CI/CD Workflows (<code>.github/workflows/</code>) — 1-click cloud builds for both Android (APK &amp; AAB) and iOS without installing local SDKs!</strong></li>
   <li>Step-by-step App Store & Google Play publishing guide.</li>
 </ul>
 
@@ -331,8 +333,12 @@ We have addressed this completely by transforming the item into a 100% SELF-CONT
 
 5. CODE QUALITY & VALIDATION:
    - Mobile: Passed 'flutter analyze' with 0 errors and 0 warnings. Android 14/15 (Target SDK 35, Min SDK 21) & iOS 18 ready.
-   - Backend: All 14 PHP files verified with 'php -l' — zero syntax errors.
+   - Backend: All PHP files verified with 'php -l' — zero syntax errors.
    - Hardware security: Android Keystore / Apple Keychain AES-256 GCM token storage, Hive AES-256 offline queue, hardware GPS anti-tampering listeners.
+
+6. 1-CLICK CLOUD BUILDS VIA GITHUB ACTIONS (.github/workflows/):
+   - Added pre-configured CI/CD workflows for both Android (Release APK & Google Play AAB) and iOS builds.
+   - Buyers without a Mac or with low-spec PCs can compile builds in the cloud with zero local setup.
 
 LIVE DEMO CREDENTIALS:
 - Web Backend / API: https://cheetah.ayan24.me

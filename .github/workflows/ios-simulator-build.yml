@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
@@ -26,6 +26,11 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: Disable Swift Package Manager (Use Pure CocoaPods)
+        run: |
+          flutter config --no-enable-swift-package-manager
+          rm -rf ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/swiftpm
+
       - name: Precache Flutter iOS Artifacts
         run: flutter precache --ios
 
@@ -33,7 +38,7 @@ jobs:
         run: flutter pub get
 
       - name: Cache CocoaPods Pods
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ios/Pods
           key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
