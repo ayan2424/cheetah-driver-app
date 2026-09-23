@@ -36,13 +36,13 @@ class OfflineSyncService {
   static const String boxName = 'offline_pod_queue';
   static const String _encryptionKeyName = 'offline_pod_queue_key_v1';
   static final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
-  
+
   /// Global Hive box reference for queued offline deliveries.
   static late Box box;
-  
+
   /// Connectivity listener subscription for auto-syncing when network returns.
   static StreamSubscription<List<ConnectivityResult>>? _subscription;
-  
+
   /// Re-entrancy guard to prevent overlapping background sync executions.
   static bool _isSyncing = false;
 
@@ -68,27 +68,28 @@ class OfflineSyncService {
       await legacyBox.close();
       await Hive.deleteBoxFromDisk(boxName);
       final key = await _loadOrCreateEncryptionKey();
-      box = await Hive.openBox(
-        boxName,
-        encryptionCipher: HiveAesCipher(key),
-      );
+      box = await Hive.openBox(boxName, encryptionCipher: HiveAesCipher(key));
       if (pending.isNotEmpty) {
         await box.addAll(pending);
       }
     } else {
       final key = await _loadOrCreateEncryptionKey();
-      box = await Hive.openBox(
-        boxName,
-        encryptionCipher: HiveAesCipher(key),
-      );
+      box = await Hive.openBox(boxName, encryptionCipher: HiveAesCipher(key));
     }
-    
+
     // Automatically trigger queue sync whenever device regains internet connection.
-    _subscription = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> results) {
-      if (results.contains(ConnectivityResult.mobile) || results.contains(ConnectivityResult.wifi)) {
+    _subscription = Connectivity().onConnectivityChanged.listen((
+      List<ConnectivityResult> results,
+    ) {
+      if (results.contains(ConnectivityResult.mobile) ||
+          results.contains(ConnectivityResult.wifi)) {
         syncPendingPods();
       }
     });
+
+    // A previously queued POD must also sync when the app starts online; a
+    // connectivity-change event is not guaranteed in that scenario.
+    unawaited(syncPendingPods());
   }
 
   /// Cancels connectivity stream listeners and releases resources on app shutdown.
@@ -175,21 +176,26 @@ class OfflineSyncService {
             deliveryOtp: payload['deliveryOtp'],
             photoFile: photoFile,
             signatureBytes: signatureBytes,
+            deliveryLatitude: _readDouble(payload['delivery_latitude']),
+            deliveryLongitude: _readDouble(payload['delivery_longitude']),
           );
 
-          // Evict from queue when server confirms successful status update and POD ingestion,
-          // or when server returns a permanent terminal error (e.g. already delivered or transition invalid)
+          // Retain every rejected record for review/retry. An expired session,
+          // reassigned run-sheet, or delayed server response must never erase
+          // legal delivery evidence from the courier's device.
           if (res['success'] == true) {
             await box.delete(key);
-          } else if (res['error'] != null) {
-            final err = res['error'].toString().toLowerCase();
-            if (err.contains('transition is not allowed') ||
-                err.contains('not found') ||
-                err.contains('unauthorized')) {
-              // Terminal state: parcel cannot be transitioned or was already updated.
-              // Evict to prevent dead-looping on future connectivity triggers.
-              await box.delete(key);
-            }
+          } else {
+            final updatedPayload = Map<String, dynamic>.from(payload);
+            updatedPayload['sync_attempts'] =
+                ((payload['sync_attempts'] as num?)?.toInt() ?? 0) + 1;
+            updatedPayload['last_sync_error'] =
+                (res['error'] ?? 'The server rejected this delivery evidence.')
+                    .toString();
+            updatedPayload['last_sync_attempt_at'] = DateTime.now()
+                .toUtc()
+                .toIso8601String();
+            await box.put(key, updatedPayload);
           }
         } catch (_) {
           // Leave item in the queue for next synchronization cycle
@@ -197,5 +203,10 @@ class OfflineSyncService {
       }
     }
     _isSyncing = false;
+  }
+
+  static double? _readDouble(dynamic value) {
+    if (value is num) return value.toDouble();
+    return double.tryParse(value?.toString() ?? '');
   }
 }

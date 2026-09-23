@@ -42,6 +42,7 @@ class ApiService {
       return {
         'success': false,
         'error': 'The server returned an invalid response. Please try again.',
+        'retryable': response.statusCode >= 500,
       };
     }
 
@@ -58,6 +59,10 @@ class ApiService {
           ...decoded,
           'success': false,
           'error': decoded['error'] ?? 'The request could not be completed.',
+          'retryable':
+              response.statusCode == 408 ||
+              response.statusCode == 429 ||
+              response.statusCode >= 500,
         };
       }
       return decoded;
@@ -185,7 +190,10 @@ class ApiService {
         final ParcelStats stats = ParcelStats.fromJson(data['stats']);
         return {'success': true, 'parcels': parcels, 'stats': stats};
       }
-      return {'success': false, 'error': data['error'] ?? 'Failed to fetch parcels'};
+      return {
+        'success': false,
+        'error': data['error'] ?? 'Failed to fetch parcels',
+      };
     } catch (_) {
       return {
         'success': false,
@@ -216,6 +224,8 @@ class ApiService {
     String? deliveryOtp,
     File? photoFile,
     Uint8List? signatureBytes,
+    double? deliveryLatitude,
+    double? deliveryLongitude,
   }) async {
     try {
       var request = http.MultipartRequest(
@@ -232,6 +242,13 @@ class ApiService {
 
       if (deliveryOtp != null && deliveryOtp.isNotEmpty) {
         request.fields['delivery_otp'] = deliveryOtp;
+      }
+      if (deliveryLatitude != null && deliveryLongitude != null) {
+        request.fields['delivery_latitude'] = deliveryLatitude.toStringAsFixed(
+          8,
+        );
+        request.fields['delivery_longitude'] = deliveryLongitude
+            .toStringAsFixed(8);
       }
 
       if (photoFile != null) {
@@ -257,6 +274,7 @@ class ApiService {
       return {
         'success': false,
         'error': 'Failed to submit POD. Saved to offline queue if offline.',
+        'retryable': true,
       };
     }
   }
@@ -352,10 +370,7 @@ class ApiService {
           .timeout(_requestTimeout);
       return _decodeResponse(response);
     } catch (_) {
-      return {
-        'success': false,
-        'error': 'Failed to send GPS telemetry.',
-      };
+      return {'success': false, 'error': 'Failed to send GPS telemetry.'};
     }
   }
 
@@ -376,7 +391,8 @@ class ApiService {
     } catch (_) {
       return {
         'success': false,
-        'error': 'Failed to load warehouse pick tasks. Please check your network.',
+        'error':
+            'Failed to load warehouse pick tasks. Please check your network.',
       };
     }
   }
@@ -424,10 +440,7 @@ class ApiService {
           .timeout(_requestTimeout);
       return _decodeResponse(response);
     } catch (_) {
-      return {
-        'success': false,
-        'error': 'Failed to reach server for logout.',
-      };
+      return {'success': false, 'error': 'Failed to reach server for logout.'};
     }
   }
 }

@@ -8,6 +8,7 @@ import '../services/offline_sync_service.dart';
 import 'auth_controller.dart';
 import 'dart:convert';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:geolocator/geolocator.dart';
 
 /// [ParcelController] manages the courier's assigned delivery manifest, multi-status filtering,
 /// real-time search queries, summary statistics, and online/offline Proof of Delivery (POD) submissions.
@@ -161,24 +162,56 @@ class ParcelController extends GetxController {
     isSubmittingPod.value = true;
     final token = authController.userToken.value;
 
+    // A delivery record is a legal handover, not merely a status change. Keep
+    // the same evidence contract online and offline so a courier cannot create
+    // a delivered parcel that lacks a recipient acknowledgement or location.
+    if (status == 'Delivered' &&
+        (photoFile == null ||
+            signatureBytes == null ||
+            signatureBytes.isEmpty)) {
+      Get.snackbar(
+        'Proof of Delivery Required',
+        'Capture a delivery photo and the recipient signature before completing delivery.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      isSubmittingPod.value = false;
+      return false;
+    }
+
+    final deliveryCoordinates = status == 'Delivered'
+        ? await _captureDeliveryCoordinates()
+        : null;
+    if (status == 'Delivered' && deliveryCoordinates == null) {
+      Get.snackbar(
+        'Location Required',
+        'Turn on location and try again so the delivery can be geostamped.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      isSubmittingPod.value = false;
+      return false;
+    }
+
+    final payload = {
+      'parcelId': parcelId.toString(),
+      'trackingNumber': trackingNumber,
+      'status': status,
+      'receiverName': receiverName,
+      'description': description,
+      'deliveryOtp': deliveryOtp,
+      'photo_path': photoFile?.path,
+      'signature_base64': signatureBytes != null
+          ? base64Encode(signatureBytes)
+          : null,
+      'delivery_latitude': deliveryCoordinates?['latitude'],
+      'delivery_longitude': deliveryCoordinates?['longitude'],
+    };
+
     // Check connectivity before initiating network upload
     final connectivityResult = await (Connectivity().checkConnectivity());
-    if (!connectivityResult.contains(ConnectivityResult.mobile) && 
+    if (!connectivityResult.contains(ConnectivityResult.mobile) &&
         !connectivityResult.contains(ConnectivityResult.wifi)) {
-      
-      final payload = {
-        'parcelId': parcelId.toString(),
-        'trackingNumber': trackingNumber,
-        'status': status,
-        'receiverName': receiverName,
-        'description': description,
-        'deliveryOtp': deliveryOtp,
-        'photo_path': photoFile?.path,
-        'signature_base64': signatureBytes != null ? base64Encode(signatureBytes) : null,
-      };
-
       await OfflineSyncService.savePodToQueue(payload);
-      
+
       Get.snackbar(
         'Offline Mode 📦',
         'No internet connection. Delivery saved locally and will auto-sync when online.',
@@ -198,6 +231,8 @@ class ParcelController extends GetxController {
       deliveryOtp: deliveryOtp,
       photoFile: photoFile,
       signatureBytes: signatureBytes,
+      deliveryLatitude: deliveryCoordinates?['latitude'],
+      deliveryLongitude: deliveryCoordinates?['longitude'],
     );
 
     isSubmittingPod.value = false;
@@ -211,6 +246,17 @@ class ParcelController extends GetxController {
       // Synchronize manifest and COD totals so UI updates before bottom sheet dismisses
       await fetchParcels();
       return true;
+    } else if (res['retryable'] == true) {
+      // A timeout or 5xx response may happen after the device has already
+      // captured valid evidence. Queue it instead of asking the courier to
+      // repeat a delivery or silently losing the proof.
+      await OfflineSyncService.savePodToQueue(payload);
+      Get.snackbar(
+        'Saved for Sync',
+        'Delivery proof is encrypted on this device and will retry automatically.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return true;
     } else {
       Get.snackbar(
         'Error',
@@ -218,6 +264,42 @@ class ParcelController extends GetxController {
         snackPosition: SnackPosition.BOTTOM,
       );
       return false;
+    }
+  }
+
+  /// Takes a fresh location sample for the legal delivery record. Live fleet
+  /// telemetry is not sufficient here because it can be up to 30 seconds old.
+  Future<Map<String, double>?> _captureDeliveryCoordinates() async {
+    try {
+      if (!await Geolocator.isLocationServiceEnabled()) {
+        return null;
+      }
+
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        return null;
+      }
+
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+        timeLimit: const Duration(seconds: 12),
+      );
+      if (!position.latitude.isFinite ||
+          !position.longitude.isFinite ||
+          position.latitude < -90 ||
+          position.latitude > 90 ||
+          position.longitude < -180 ||
+          position.longitude > 180) {
+        return null;
+      }
+
+      return {'latitude': position.latitude, 'longitude': position.longitude};
+    } catch (_) {
+      return null;
     }
   }
 }

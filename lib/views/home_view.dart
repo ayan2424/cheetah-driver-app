@@ -18,6 +18,7 @@ import '../utils/constants.dart';
 import '../utils/app_translations.dart';
 import 'home/qr_scanner_view.dart';
 import 'home/tabs/picking_tab.dart';
+
 class HomeView extends StatelessWidget {
   // AuthController is registered once in main.dart and owns the active token,
   // theme, and session. Reusing it keeps delivery and cash-log refreshes in
@@ -117,11 +118,18 @@ class HomeView extends StatelessWidget {
                       final count = box.length;
                       if (count == 0) return const SizedBox.shrink();
                       return Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
                         color: AppColors.accentGold.withValues(alpha: 0.18),
                         child: Row(
                           children: [
-                            const Icon(Icons.cloud_off, size: 18, color: AppColors.accentGold),
+                            const Icon(
+                              Icons.cloud_off,
+                              size: 18,
+                              color: AppColors.accentGold,
+                            ),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
@@ -249,7 +257,12 @@ class HomeView extends StatelessWidget {
                           t('COD Log'),
                           isDark,
                         ),
-                        _buildNavItem(2, Icons.account_balance, t('Wallet'), isDark),
+                        _buildNavItem(
+                          2,
+                          Icons.account_balance,
+                          t('Wallet'),
+                          isDark,
+                        ),
                         _buildNavItem(3, Icons.inventory, t('Picking'), isDark),
                         _buildNavItem(4, Icons.person, t('Profile'), isDark),
                       ],
@@ -589,7 +602,9 @@ class HomeView extends StatelessWidget {
             backgroundColor: const Color(0xFF059669),
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 12),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
           ),
         ),
         const SizedBox(height: 20),
@@ -674,8 +689,6 @@ class HomeView extends StatelessWidget {
       ],
     );
   }
-
-
 
   // TAB 3: Rider Profile & System Info (Clean 3-Card Architecture)
   // ══════════════════════════════════════════════════════════════
@@ -801,9 +814,16 @@ class HomeView extends StatelessWidget {
                 child: Center(
                   child: Column(
                     children: [
-                      Icon(Icons.inbox, size: 60, color: subtextColor.withOpacity(0.5)),
+                      Icon(
+                        Icons.inbox,
+                        size: 60,
+                        color: subtextColor.withOpacity(0.5),
+                      ),
                       const SizedBox(height: 16),
-                      Text(t('No payouts yet'), style: TextStyle(color: subtextColor)),
+                      Text(
+                        t('No payouts yet'),
+                        style: TextStyle(color: subtextColor),
+                      ),
                     ],
                   ),
                 ),
@@ -824,7 +844,9 @@ class HomeView extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: isPaid ? Colors.green.withOpacity(0.1) : Colors.orange.withOpacity(0.1),
+                          color: isPaid
+                              ? Colors.green.withOpacity(0.1)
+                              : Colors.orange.withOpacity(0.1),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -1055,7 +1077,9 @@ class HomeView extends StatelessWidget {
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            authController.userRole.value == 'picker' ? t('Picker Account Active') : t('Rider Account Active'),
+                            authController.userRole.value == 'picker'
+                                ? t('Picker Account Active')
+                                : t('Rider Account Active'),
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
@@ -2028,19 +2052,36 @@ class HomeView extends StatelessWidget {
                             children: [
                               GestureDetector(
                                 onTap: () async {
-                                  final data = await Clipboard.getData(Clipboard.kTextPlain);
-                                  if (data != null && data.text != null && data.text!.isNotEmpty) {
+                                  final data = await Clipboard.getData(
+                                    Clipboard.kTextPlain,
+                                  );
+                                  if (data != null &&
+                                      data.text != null &&
+                                      data.text!.isNotEmpty) {
                                     otpController.text = data.text!.trim();
-                                    Get.snackbar('OTP', 'Pasted OTP from clipboard', snackPosition: SnackPosition.BOTTOM, duration: const Duration(seconds: 1));
+                                    Get.snackbar(
+                                      'OTP',
+                                      'Pasted OTP from clipboard',
+                                      snackPosition: SnackPosition.BOTTOM,
+                                      duration: const Duration(seconds: 1),
+                                    );
                                   }
                                 },
                                 child: Row(
                                   children: [
-                                    const Icon(Icons.paste_rounded, size: 15, color: AppColors.accentBlue),
+                                    const Icon(
+                                      Icons.paste_rounded,
+                                      size: 15,
+                                      color: AppColors.accentBlue,
+                                    ),
                                     const SizedBox(width: 3),
                                     Text(
                                       t('Paste'),
-                                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.accentBlue),
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.accentBlue,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -2048,22 +2089,34 @@ class HomeView extends StatelessWidget {
                               const SizedBox(width: 12),
                               GestureDetector(
                                 onTap: () async {
-                                  final scanned = await Get.to(() => const QrScannerView());
+                                  final scanned = await Get.to(
+                                    () => const QrScannerView(),
+                                  );
                                   if (scanned != null) {
                                     String code = scanned.toString().trim();
                                     if (code.startsWith('OTP:')) {
-                                      code = code.replaceFirst('OTP:', '').trim();
+                                      code = code
+                                          .replaceFirst('OTP:', '')
+                                          .trim();
                                     }
                                     otpController.text = code;
                                   }
                                 },
                                 child: Row(
                                   children: [
-                                    const Icon(Icons.qr_code_scanner, size: 15, color: AppColors.primary),
+                                    const Icon(
+                                      Icons.qr_code_scanner,
+                                      size: 15,
+                                      color: AppColors.primary,
+                                    ),
                                     const SizedBox(width: 3),
                                     Text(
                                       t('Scan QR'),
-                                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.primary),
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.primary,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -2086,17 +2139,26 @@ class HomeView extends StatelessWidget {
                         ),
                         decoration: InputDecoration(
                           hintText: '• • • •',
-                          hintStyle: TextStyle(color: subtextColor, letterSpacing: 6),
+                          hintStyle: TextStyle(
+                            color: subtextColor,
+                            letterSpacing: 6,
+                          ),
                           filled: true,
                           fillColor: AppColors.background,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide(color: borderColor),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                            borderSide: const BorderSide(
+                              color: AppColors.primary,
+                              width: 2,
+                            ),
                           ),
                         ),
                       ),
@@ -2145,10 +2207,32 @@ class HomeView extends StatelessWidget {
                           );
                           return;
                         }
+                        if (selectedPhoto == null) {
+                          Get.snackbar(
+                            'Proof of Delivery Required',
+                            'Capture or select a delivery photo before completing delivery.',
+                            snackPosition: SnackPosition.BOTTOM,
+                          );
+                          return;
+                        }
+                        if (signatureController.isEmpty) {
+                          Get.snackbar(
+                            'Proof of Delivery Required',
+                            'Please collect the recipient signature before completing delivery.',
+                            snackPosition: SnackPosition.BOTTOM,
+                          );
+                          return;
+                        }
 
                         Uint8List? signatureBytes;
-                        if (signatureController.isNotEmpty) {
-                          signatureBytes = await signatureController.toPngBytes();
+                        signatureBytes = await signatureController.toPngBytes();
+                        if (signatureBytes == null || signatureBytes.isEmpty) {
+                          Get.snackbar(
+                            'Signature Error',
+                            'The signature could not be captured. Please sign again.',
+                            snackPosition: SnackPosition.BOTTOM,
+                          );
+                          return;
                         }
 
                         if (!ctx.mounted) return;
@@ -2278,13 +2362,17 @@ class HomeView extends StatelessWidget {
 
     String query = '';
     if (trackingNumber != null && trackingNumber.isNotEmpty) {
-      final nameGreeting = (customerName != null && customerName.isNotEmpty && customerName != 'N/A')
+      final nameGreeting =
+          (customerName != null &&
+              customerName.isNotEmpty &&
+              customerName != 'N/A')
           ? 'Hello $customerName! '
           : 'Hello! ';
       final codNote = (codAmount != null && codAmount > 0)
           ? ' Cash to collect (COD): Rs. ${codAmount.toStringAsFixed(0)}.'
           : '';
-      final msg = '$nameGreeting This is your Cheetah Courier rider regarding package #$trackingNumber.$codNote I will be arriving at your delivery address shortly.';
+      final msg =
+          '$nameGreeting This is your Cheetah Courier rider regarding package #$trackingNumber.$codNote I will be arriving at your delivery address shortly.';
       query = '?text=${Uri.encodeComponent(msg)}';
     }
 
@@ -2316,7 +2404,8 @@ class HomeView extends StatelessWidget {
     final date = DateTime.now().toLocal().toString().split(' ')[0];
     final codSum = parcelController.stats.value.codTotal.toStringAsFixed(0);
 
-    final summary = '''
+    final summary =
+        '''
 📦 *Cheetah Courier — Driver Shift Handover*
 👤 *Driver:* $rider
 🏢 *Branch:* $branch
@@ -2328,7 +2417,9 @@ class HomeView extends StatelessWidget {
 ━━━━━━━━━━━━━━━━━
 _Handover report generated via Cheetah Driver Mobile App_''';
 
-    final Uri url = Uri.parse('https://wa.me/?text=${Uri.encodeComponent(summary)}');
+    final Uri url = Uri.parse(
+      'https://wa.me/?text=${Uri.encodeComponent(summary)}',
+    );
     try {
       if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
         await launchUrl(url);
@@ -2786,7 +2877,9 @@ _Handover report generated via Cheetah Driver Mobile App_''';
 
                 _buildThemeOptionTile(
                   title: t('Light Mode'),
-                  subtitle: t('Clean high-contrast theme for daylight visibility'),
+                  subtitle: t(
+                    'Clean high-contrast theme for daylight visibility',
+                  ),
                   icon: Icons.light_mode_outlined,
                   isSelected: currentMode == 'light',
                   onTap: () {
@@ -3116,7 +3209,9 @@ _Handover report generated via Cheetah Driver Mobile App_''';
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  t('Offline Mode Active — Deliveries will be encrypted & queued locally'),
+                  t(
+                    'Offline Mode Active — Deliveries will be encrypted & queued locally',
+                  ),
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 12.5,
@@ -3145,11 +3240,17 @@ _Handover report generated via Cheetah Driver Mobile App_''';
           ),
           child: Row(
             children: [
-              const Icon(Icons.cloud_done_rounded, color: Colors.white, size: 18),
+              const Icon(
+                Icons.cloud_done_rounded,
+                color: Colors.white,
+                size: 18,
+              ),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  t('Internet Restored — Syncing queued deliveries with Cheetah server...'),
+                  t(
+                    'Internet Restored — Syncing queued deliveries with Cheetah server...',
+                  ),
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 12.5,
@@ -3167,9 +3268,17 @@ _Handover report generated via Cheetah Driver Mobile App_''';
   }
 
   /// Renders a fluid shimmer skeleton loading list for modern visual feedback.
-  Widget _buildShimmerLoadingList(bool isDark, Color cardColor, Color borderColor) {
-    final baseColor = isDark ? const Color(0xFF1B1B22) : const Color(0xFFE2E8F0);
-    final highlightColor = isDark ? const Color(0xFF282834) : const Color(0xFFF8FAFC);
+  Widget _buildShimmerLoadingList(
+    bool isDark,
+    Color cardColor,
+    Color borderColor,
+  ) {
+    final baseColor = isDark
+        ? const Color(0xFF1B1B22)
+        : const Color(0xFFE2E8F0);
+    final highlightColor = isDark
+        ? const Color(0xFF282834)
+        : const Color(0xFFF8FAFC);
 
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
