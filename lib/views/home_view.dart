@@ -32,6 +32,12 @@ class HomeView extends StatelessWidget {
 
   String t(String text) => text.localize(authController.selectedLanguage.value);
 
+  String get _currencyCode =>
+      parcelController.parcelsList.isNotEmpty &&
+              parcelController.parcelsList.first.currencyCode.isNotEmpty
+          ? parcelController.parcelsList.first.currencyCode
+          : 'USD';
+
   @override
   Widget build(BuildContext context) {
     return Obx(() {
@@ -117,6 +123,70 @@ class HomeView extends StatelessWidget {
                     builder: (context, Box box, _) {
                       final count = box.length;
                       if (count == 0) return const SizedBox.shrink();
+                      dynamic failedKey;
+                      String? lastError;
+                      for (final key in box.keys) {
+                        final item = box.get(key) as Map<dynamic, dynamic>?;
+                        if (item != null &&
+                            ((item['sync_attempts'] as num?)?.toInt() ?? 0) > 0 &&
+                            item['last_sync_error'] != null) {
+                          failedKey = key;
+                          lastError = item['last_sync_error'].toString();
+                          break;
+                        }
+                      }
+                      if (failedKey != null && lastError != null) {
+                        return Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          color: Colors.redAccent.withValues(alpha: 0.18),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.error_outline,
+                                size: 18,
+                                color: Colors.redAccent,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  lastError,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.redAccent,
+                                  ),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () =>
+                                    OfflineSyncService.syncPendingPods(),
+                                child: Text(
+                                  t('Retry'),
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () => box.delete(failedKey),
+                                child: Text(
+                                  t('Discard'),
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.redAccent,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
                       return Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
@@ -408,7 +478,7 @@ class HomeView extends StatelessWidget {
               Expanded(
                 child: _buildKpiCard(
                   t('COD Pending Cash'),
-                  'Rs. ${parcelController.stats.value.codTotal.toStringAsFixed(0)}',
+                  '$_currencyCode ${parcelController.stats.value.codTotal.toStringAsFixed(0)}',
                   Icons.payments_outlined,
                   AppColors.accentGreen,
                   cardColor,
@@ -550,7 +620,7 @@ class HomeView extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                'Rs. ${parcelController.stats.value.codTotal.toStringAsFixed(0)}',
+                '$_currencyCode ${parcelController.stats.value.codTotal.toStringAsFixed(0)}',
                 style: const TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.bold,
@@ -563,7 +633,7 @@ class HomeView extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      'Delivered total: Rs. ${totalDeliveredCash.toStringAsFixed(0)}',
+                      'Delivered total: $_currencyCode ${totalDeliveredCash.toStringAsFixed(0)}',
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         color: Colors.white70,
@@ -673,7 +743,7 @@ class HomeView extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Rs. ${p.amount.toStringAsFixed(0)}',
+                    '${p.currencyCode} ${p.amount.toStringAsFixed(0)}',
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
@@ -742,7 +812,7 @@ class HomeView extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Rs. ${walletController.pendingBalance.value.toStringAsFixed(2)}',
+                    '$_currencyCode ${walletController.pendingBalance.value.toStringAsFixed(2)}',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 32,
@@ -764,7 +834,7 @@ class HomeView extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            'Rs. ${walletController.totalEarned.value.toStringAsFixed(2)}',
+                            '$_currencyCode ${walletController.totalEarned.value.toStringAsFixed(2)}',
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16,
@@ -784,7 +854,7 @@ class HomeView extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            'Rs. ${walletController.totalPaid.value.toStringAsFixed(2)}',
+                            '$_currencyCode ${walletController.totalPaid.value.toStringAsFixed(2)}',
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16,
@@ -880,7 +950,7 @@ class HomeView extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        '+ Rs. ${double.parse(tx['amount'].toString()).toStringAsFixed(2)}',
+                        '+ $_currencyCode ${double.parse(tx['amount'].toString()).toStringAsFixed(2)}',
                         style: TextStyle(
                           color: isPaid ? Colors.green : AppColors.primary,
                           fontWeight: FontWeight.bold,
@@ -1284,7 +1354,7 @@ class HomeView extends StatelessWidget {
                 textColor: textColor,
                 subtextColor: subtextColor,
                 onTap: () => _launchExternalUrl(
-                  'https://cheetah.ayan24.me/terms-and-conditions',
+                  '${AppConstants.baseUrl}terms-and-conditions',
                 ),
               ),
               _buildProfileTile(
@@ -1296,7 +1366,7 @@ class HomeView extends StatelessWidget {
                 textColor: textColor,
                 subtextColor: subtextColor,
                 onTap: () => _launchExternalUrl(
-                  'https://cheetah.ayan24.me/privacy-policy',
+                  '${AppConstants.baseUrl}privacy-policy',
                 ),
               ),
               _buildProfileTile(
@@ -1308,7 +1378,7 @@ class HomeView extends StatelessWidget {
                 textColor: textColor,
                 subtextColor: subtextColor,
                 onTap: () => _launchExternalUrl(
-                  'https://cheetah.ayan24.me/data-deletion',
+                  '${AppConstants.baseUrl}data-deletion',
                 ),
               ),
             ],
@@ -1667,7 +1737,7 @@ class HomeView extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      '${p.paymentInstruction} (Rs. ${p.amount.toStringAsFixed(0)})',
+                      '${p.paymentInstruction} (${p.currencyCode} ${p.amount.toStringAsFixed(0)})',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
@@ -1697,6 +1767,7 @@ class HomeView extends StatelessWidget {
                       customerName: p.receiverName,
                       trackingNumber: p.trackingNumber,
                       codAmount: p.isCod ? p.amount : null,
+                      currencyCode: p.currencyCode,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -1730,24 +1801,26 @@ class HomeView extends StatelessWidget {
                 ),
               ),
             )
-          else
+          else if (p.status != 'Out for Delivery')
             ElevatedButton.icon(
-              onPressed: () => _showPodBottomSheet(
-                context,
-                p,
-                cardColor,
-                borderColor,
-                textColor,
-                subtextColor,
-              ),
-              icon: const Icon(Icons.camera_alt, size: 18),
+              onPressed: () async {
+                await parcelController.submitPod(
+                  parcelId: p.id,
+                  trackingNumber: p.trackingNumber,
+                  status: 'Out for Delivery',
+                  receiverName: p.receiverName,
+                  description: 'Out for Delivery',
+                );
+              },
+              icon: const Icon(Icons.local_shipping_outlined, size: 18),
               label: Text(
-                t('Mark Delivered & POD'),
+                t('Start Delivery (Out for Delivery)'),
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
+                backgroundColor: AppColors.accentGold,
                 foregroundColor: Colors.white,
                 minimumSize: const Size(double.infinity, 46),
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -1755,6 +1828,68 @@ class HomeView extends StatelessWidget {
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
+            )
+          else
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () => _showPodBottomSheet(
+                    context,
+                    p,
+                    cardColor,
+                    borderColor,
+                    textColor,
+                    subtextColor,
+                  ),
+                  icon: const Icon(Icons.camera_alt, size: 18),
+                  label: Text(
+                    t('Mark Delivered & POD'),
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(double.infinity, 46),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                OutlinedButton.icon(
+                  onPressed: () async {
+                    await parcelController.submitPod(
+                      parcelId: p.id,
+                      trackingNumber: p.trackingNumber,
+                      status: 'Returned',
+                      receiverName: p.receiverName,
+                      description: 'Returned by driver',
+                    );
+                  },
+                  icon: const Icon(Icons.assignment_return_outlined, size: 18),
+                  label: Text(
+                    t('Mark Returned'),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.redAccent,
+                    side: const BorderSide(color: Colors.redAccent),
+                    minimumSize: const Size(double.infinity, 42),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                ),
+              ],
             ),
         ],
       ),
@@ -2356,6 +2491,7 @@ class HomeView extends StatelessWidget {
     String? customerName,
     String? trackingNumber,
     double? codAmount,
+    String currencyCode = 'USD',
   }) async {
     final cleanPhone = phone.replaceAll(RegExp(r'[^\d]'), '');
     if (cleanPhone.isEmpty) return;
@@ -2369,7 +2505,7 @@ class HomeView extends StatelessWidget {
           ? 'Hello $customerName! '
           : 'Hello! ';
       final codNote = (codAmount != null && codAmount > 0)
-          ? ' Cash to collect (COD): Rs. ${codAmount.toStringAsFixed(0)}.'
+          ? ' Cash to collect (COD): $currencyCode ${codAmount.toStringAsFixed(0)}.'
           : '';
       final msg =
           '$nameGreeting This is your Cheetah Courier rider regarding package #$trackingNumber.$codNote I will be arriving at your delivery address shortly.';
@@ -2412,7 +2548,7 @@ class HomeView extends StatelessWidget {
 📅 *Date:* $date
 ━━━━━━━━━━━━━━━━━
 ✅ *Delivered Parcels:* $deliveredCount
-💵 *Total COD Collected:* Rs. $codSum
+💵 *Total COD Collected:* $_currencyCode $codSum
 ⏳ *Pending Settlement:* $pendingSettlementCount parcels
 ━━━━━━━━━━━━━━━━━
 _Handover report generated via Cheetah Driver Mobile App_''';
@@ -3144,14 +3280,6 @@ _Handover report generated via Cheetah Driver Mobile App_''';
                           Get.snackbar(
                             'Validation Error',
                             'New password must be at least 8 characters long',
-                            snackPosition: SnackPosition.BOTTOM,
-                          );
-                          return;
-                        }
-                        if (newPassCtrl.text.length < 6) {
-                          Get.snackbar(
-                            'Validation Error',
-                            'Password must be at least 6 characters',
                             snackPosition: SnackPosition.BOTTOM,
                           );
                           return;

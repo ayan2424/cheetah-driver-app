@@ -9,6 +9,7 @@ class ParcelModel {
   final String paymentStatus;
   final bool codSettled;
   final double amount;
+  final String currencyCode;
   final String originBranchName;
   final String createdAt;
   final bool requiresOtp;
@@ -24,12 +25,14 @@ class ParcelModel {
     required this.paymentStatus,
     required this.codSettled,
     required this.amount,
+    this.currencyCode = 'USD',
     required this.originBranchName,
     required this.createdAt,
     required this.requiresOtp,
   });
 
   factory ParcelModel.fromJson(Map<String, dynamic> json) {
+    final rawCurrency = (json['currency_code'] ?? '').toString().trim();
     return ParcelModel(
       id: int.tryParse(json['id'].toString()) ?? 0,
       trackingNumber: json['tracking_number'] ?? '',
@@ -41,6 +44,7 @@ class ParcelModel {
       paymentStatus: json['payment_status'] ?? 'Unpaid',
       codSettled: json['cod_settled'].toString() == '1',
       amount: double.tryParse(json['amount'].toString()) ?? 0.0,
+      currencyCode: rawCurrency.isNotEmpty ? rawCurrency : 'USD',
       originBranchName: json['origin_branch_name'] ?? 'Central Hub',
       createdAt: json['created_at'] ?? '',
       requiresOtp: json['requires_otp'] == true,

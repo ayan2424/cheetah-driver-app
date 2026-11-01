@@ -84,6 +84,13 @@ class CheetahDriverApp extends StatelessWidget {
         ),
         initialRoute: AppRoutes.SPLASH,
         getPages: AppPages.routes,
+        builder: (context, child) {
+          final isRtl = currentLang == 'ar' || currentLang == 'ur';
+          return Directionality(
+            textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+            child: child ?? const SizedBox.shrink(),
+          );
+        },
       );
     });
   }

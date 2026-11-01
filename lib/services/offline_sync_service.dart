@@ -5,8 +5,11 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
+import '../controllers/parcel_controller.dart';
+import '../controllers/wallet_controller.dart';
 import 'api_service.dart';
 import 'session_store.dart';
 
@@ -147,6 +150,7 @@ class OfflineSyncService {
     if (token.isEmpty) return;
 
     _isSyncing = true;
+    bool anySynced = false;
     final keys = box.keys.toList();
 
     for (var key in keys) {
@@ -185,6 +189,7 @@ class OfflineSyncService {
           // legal delivery evidence from the courier's device.
           if (res['success'] == true) {
             await box.delete(key);
+            anySynced = true;
           } else {
             final updatedPayload = Map<String, dynamic>.from(payload);
             updatedPayload['sync_attempts'] =
@@ -203,6 +208,14 @@ class OfflineSyncService {
       }
     }
     _isSyncing = false;
+    if (anySynced) {
+      if (Get.isRegistered<ParcelController>()) {
+        unawaited(Get.find<ParcelController>().fetchParcels());
+      }
+      if (Get.isRegistered<WalletController>()) {
+        unawaited(Get.find<WalletController>().fetchWallet());
+      }
+    }
   }
 
   static double? _readDouble(dynamic value) {

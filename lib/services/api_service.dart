@@ -279,6 +279,34 @@ class ApiService {
     }
   }
 
+  /// Alias for [updateStatusWithPod] allowing optional signature/photo when `status != 'Delivered'`.
+  static Future<Map<String, dynamic>> submitProofOfDelivery({
+    required String token,
+    required String parcelId,
+    required String trackingNumber,
+    required String status,
+    String receiverName = '',
+    String description = '',
+    String? deliveryOtp,
+    File? photoFile,
+    Uint8List? signatureBytes,
+    double? deliveryLatitude,
+    double? deliveryLongitude,
+  }) =>
+      updateStatusWithPod(
+        token: token,
+        parcelId: parcelId,
+        trackingNumber: trackingNumber,
+        status: status,
+        receiverName: receiverName,
+        description: description,
+        deliveryOtp: deliveryOtp,
+        photoFile: photoFile,
+        signatureBytes: signatureBytes,
+        deliveryLatitude: deliveryLatitude,
+        deliveryLongitude: deliveryLongitude,
+      );
+
   /// Updates driver profile information and profile photo/avatar preset via `update_profile.php`.
   static Future<Map<String, dynamic>> updateProfile({
     required String token,
