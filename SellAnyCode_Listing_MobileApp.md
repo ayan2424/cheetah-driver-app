@@ -47,7 +47,7 @@ Cross-platform Flutter 3.x app for delivery drivers & warehouse pickers with sta
 *(Copy & paste into the **Live Demo URL** field)*
 
 ```text
-https://cheetah.ayan24.me
+https://cheetah.creatsify.tech
 ```
 
 ---
@@ -74,13 +74,13 @@ https://cheetah.ayan24.me
     <em>(Install the APK directly on your Android phone or emulator to test the full mobile experience)</em></p>
 
     <p>👉 <strong>🌐 Live Web Dispatcher Backend:</strong> <br>
-    <a href="https://cheetah.ayan24.me" target="_blank" rel="noopener"><strong>https://cheetah.ayan24.me</strong></a></p>
+    <a href="https://cheetah.creatsify.tech" target="_blank" rel="noopener"><strong>https://cheetah.creatsify.tech</strong></a></p>
 
     <p><strong>🔑 Demo Login Accounts (for both App and Web):</strong></p>
     <ul>
-        <li><strong>🚗 Delivery Driver Demo:</strong> <code>rider@cheetah.com</code> / Password: <code>Rider123</code><br>
+        <li><strong>🚗 Delivery Driver Demo:</strong> <code>rider@creatsify.tech</code> / Password: <code>Rider123</code><br>
         <em>(Features: Real shipments timeline, digital signature pad, photo POD capture, COD wallet ledger, turn-by-turn GPS navigation)</em></li>
-        <li><strong>🏗️ Warehouse Picker Demo:</strong> <code>picker@cheetah.com</code> / Password: <code>Picker123</code><br>
+        <li><strong>🏗️ Warehouse Picker Demo:</strong> <code>picker@creatsify.tech</code> / Password: <code>Picker123</code><br>
         <em>(Features: 5-tier spatial bin guidance, SKU barcode/QR camera scanner with flashlight &amp; haptic feedback)</em></li>
     </ul>
 
@@ -227,10 +227,10 @@ KEY PRODUCTION HIGHLIGHTS:
 7. Documentation: Included comprehensive visual 'Help.html' guide inside the main package root.
 
 LIVE DEMO ACCESS & TESTING:
-- Live Dispatch Backend: https://cheetah.ayan24.me
+- Live Dispatch Backend: https://cheetah.creatsify.tech
 - Downloadable Android Demo APK: https://drive.google.com/drive/folders/1Ul3lGfaKFBJUpGvX-2vkYimJDzXMoiXj?usp=sharing
-- Test Driver Login: rider@cheetah.com / Password: Rider123
-- Test Warehouse Picker Login: picker@cheetah.com / Password: Picker123
+- Test Driver Login: rider@creatsify.tech / Password: Rider123
+- Test Warehouse Picker Login: picker@creatsify.tech / Password: Picker123
 
 Thank you for your review and support!
 ```

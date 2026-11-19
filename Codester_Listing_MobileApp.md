@@ -94,11 +94,11 @@ Complete Flutter app for delivery drivers & pickers — Includes standalone PHP 
 <a href="https://drive.google.com/drive/folders/1Ul3lGfaKFBJUpGvX-2vkYimJDzXMoiXj?usp=sharing" target="_blank"><strong>Click Here to Download Demo APK (Google Drive)</strong></a><br>
 <em>(Install the APK directly on your Android phone or emulator to test the full mobile experience)</em></p>
 <p>👉 <strong>🌐 Live Web Dispatcher Backend:</strong> <br>
-<a href="https://cheetah.ayan24.me" target="_blank"><strong>https://cheetah.ayan24.me</strong></a></p>
+<a href="https://cheetah.creatsify.tech" target="_blank"><strong>https://cheetah.creatsify.tech</strong></a></p>
 
 <ul>
-  <li><strong>🚗 Driver Demo Login:</strong> <code>rider@cheetah.com</code> / Password: <code>Rider123</code></li>
-  <li><strong>🏗️ Picker Demo Login:</strong> <code>picker@cheetah.com</code> / Password: <code>Picker123</code></li>
+  <li><strong>🚗 Driver Demo Login:</strong> <code>rider@creatsify.tech</code> / Password: <code>Rider123</code></li>
+  <li><strong>🏗️ Picker Demo Login:</strong> <code>picker@creatsify.tech</code> / Password: <code>Picker123</code></li>
 </ul>
 
 <hr>
@@ -341,10 +341,10 @@ We have addressed this completely by transforming the item into a 100% SELF-CONT
    - Buyers without a Mac or with low-spec PCs can compile builds in the cloud with zero local setup.
 
 LIVE DEMO CREDENTIALS:
-- Web Backend / API: https://cheetah.ayan24.me
+- Web Backend / API: https://cheetah.creatsify.tech
 - Android Demo APK: https://drive.google.com/drive/folders/1Ul3lGfaKFBJUpGvX-2vkYimJDzXMoiXj?usp=sharing
-- Driver Demo Account: rider@cheetah.com  |  Password: Rider123
-- Picker Demo Account: picker@cheetah.com |  Password: Picker123
+- Driver Demo Account: rider@creatsify.tech  |  Password: Rider123
+- Picker Demo Account: picker@creatsify.tech |  Password: Picker123
 
 Any buyer can now deploy this solution completely independently on their own hosting in 5 minutes without needing external software.
 

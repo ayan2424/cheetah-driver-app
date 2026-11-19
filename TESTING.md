@@ -18,9 +18,9 @@ This document provides testing procedures, role credentials, edge case scenarios
 
 | Persona / Role | Email | Purpose / Testing Focus |
 | :--- | :--- | :--- |
-| **Courier Driver (Karachi Hub)** | `driver@cheetah.com` | Assigned delivery manifest, POD signature pad, camera proof, COD cash ledger, live GPS tracking. |
-| **Warehouse Picker (Central WMS)** | `picker@cheetah.com` | Warehouse pick waves, bin/shelf guidance, barcode scanning, order completion hooks. |
-| **System Admin (Web Portal)** | `admin@cheetah.com` | Dispatch live map, parcel assignment, branch scoping, and settlement approval. |
+| **Courier Driver (Karachi Hub)** | `driver@creatsify.tech` | Assigned delivery manifest, POD signature pad, camera proof, COD cash ledger, live GPS tracking. |
+| **Warehouse Picker (Central WMS)** | `picker@creatsify.tech` | Warehouse pick waves, bin/shelf guidance, barcode scanning, order completion hooks. |
+| **System Admin (Web Portal)** | `admin@creatsify.tech` | Dispatch live map, parcel assignment, branch scoping, and settlement approval. |
 
 *Default test password:* `password123` (or as configured on `https://cheetah.creatsify.tech/admin`)
 

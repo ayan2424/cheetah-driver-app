@@ -117,7 +117,7 @@ class LoginView extends StatelessWidget {
                     keyboardType: TextInputType.emailAddress,
                     style: TextStyle(color: textColor, fontSize: 15),
                     decoration: InputDecoration(
-                      hintText: 'e.g. rider@cheetah.com'.localize(lang),
+                      hintText: 'e.g. rider@creatsify.tech'.localize(lang),
                       hintStyle: TextStyle(color: subtextColor),
                       prefixIcon: const Icon(Icons.email_outlined, color: AppColors.primary),
                       filled: true,
@@ -215,7 +215,7 @@ class LoginView extends StatelessWidget {
                                     keyboardType: TextInputType.emailAddress,
                                     style: TextStyle(color: textColor, fontSize: 14),
                                     decoration: InputDecoration(
-                                      hintText: 'e.g. rider@cheetah.com'.localize(lang),
+                                      hintText: 'e.g. rider@creatsify.tech'.localize(lang),
                                       hintStyle: TextStyle(color: subtextColor),
                                       prefixIcon: const Icon(Icons.email_outlined, color: AppColors.primary),
                                       filled: true,
