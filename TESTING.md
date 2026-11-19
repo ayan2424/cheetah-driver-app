@@ -1,6 +1,6 @@
 # 🧪 Cheetah Driver App — Quality Assurance & Testing Matrix
 
-This document provides testing procedures, role credentials, edge case scenarios, and validation checklists for the **Cheetah Driver & Warehouse Picker Mobile App** integrated with the live backend at `https://cheetah.ayan24.me`.
+This document provides testing procedures, role credentials, edge case scenarios, and validation checklists for the **Cheetah Driver & Warehouse Picker Mobile App** integrated with the live backend at `https://cheetah.creatsify.tech`.
 
 ---
 
@@ -22,7 +22,7 @@ This document provides testing procedures, role credentials, edge case scenarios
 | **Warehouse Picker (Central WMS)** | `picker@cheetah.com` | Warehouse pick waves, bin/shelf guidance, barcode scanning, order completion hooks. |
 | **System Admin (Web Portal)** | `admin@cheetah.com` | Dispatch live map, parcel assignment, branch scoping, and settlement approval. |
 
-*Default test password:* `password123` (or as configured on `https://cheetah.ayan24.me/admin`)
+*Default test password:* `password123` (or as configured on `https://cheetah.creatsify.tech/admin`)
 
 ---
 
@@ -58,7 +58,7 @@ This document provides testing procedures, role credentials, edge case scenarios
 | :--- | :--- | :--- | :--- | :---: |
 | **POD-01** | Online Delivery Flow | 1. Select active parcel.<br>2. Tap 'Deliver Package'.<br>3. Enter receiver name, sign on touch canvas, capture camera photo.<br>4. Tap 'Submit POD'. | Uploads multipart payload to backend. Status updates to `Delivered`, stats update, and COD ledger increments. | ✅ PASS |
 | **POD-02** | Mandatory OTP Verification | 1. Attempt delivery on parcel with `requires_otp == true`.<br>2. Leave OTP empty. | Form validation prevents submission until valid 4-digit recipient PIN is provided. | ✅ PASS |
-| **POD-03** | Server Watermark Inspection | 1. Submit delivery photo.<br>2. View parcel proof on web portal (`https://cheetah.ayan24.me/track`). | Image displays semi-transparent bottom banner with tracking #, UTC timestamp, and driver name. | ✅ PASS |
+| **POD-03** | Server Watermark Inspection | 1. Submit delivery photo.<br>2. View parcel proof on web portal (`https://cheetah.creatsify.tech/track`). | Image displays semi-transparent bottom banner with tracking #, UTC timestamp, and driver name. | ✅ PASS |
 | **POD-04** | Offline POD Intercept | 1. Enable Airplane Mode (disable Wi-Fi & Cellular).<br>2. Submit POD with photo & signature. | App catches offline state, saves AES-256 encrypted payload in local Hive queue, shows 'Saved Locally' toast. | ✅ PASS |
 | **POD-05** | Auto-Sync on Network Restore | 1. With items in offline queue, disable Airplane Mode (reconnect internet). | `OfflineSyncService` detects connectivity transition, sequentially uploads queued PODs, and evicts from queue upon 200 OK. | ✅ PASS |
 
@@ -106,4 +106,4 @@ This document provides testing procedures, role credentials, edge case scenarios
 
 ## 🛠 Test Execution Notes
 - Automated static analysis passed with **0 errors and 0 warnings** via `flutter analyze`.
-- Endpoints verified with pure PHP 8.0+ / MySQLi backend running in production at `https://cheetah.ayan24.me`.
+- Endpoints verified with pure PHP 8.0+ / MySQLi backend running in production at `https://cheetah.creatsify.tech`.

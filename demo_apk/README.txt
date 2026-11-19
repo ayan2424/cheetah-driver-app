@@ -12,4 +12,4 @@ Installation Instructions for Testers / Reviewers:
    - Driver Demo:  rider@cheetah.com  | Password: Rider123
    - Picker Demo:  picker@cheetah.com | Password: Picker123
 
-Connected Backend: https://cheetah.ayan24.me/
+Connected Backend: https://cheetah.creatsify.tech/

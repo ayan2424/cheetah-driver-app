@@ -68,5 +68,5 @@ Users may revoke optional permissions at any time through their device operating
 For questions regarding this Privacy Policy, or to request deletion of personal driver data, please contact:
 
 - **Entity:** Cheetah Logistics Solutions
-- **Email:** support@cheetah.ayan24.me
-- **Support Portal:** https://cheetah.ayan24.me
+- **Email:** support@example.com
+- **Support Portal:** https://yourdomain.com
