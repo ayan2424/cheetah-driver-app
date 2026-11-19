@@ -30,10 +30,10 @@ class AppColorsLight {
 
 class AppConstants {
   // Configurable base URL via --dart-define=BASE_URL=https://yourdomain.com
-  // Defaults to production live server https://cheetah.ayan24.me/
+  // Defaults to live demo server https://cheetah.creatsify.tech/
   static const String _envBaseUrl = String.fromEnvironment(
     'BASE_URL',
-    defaultValue: 'https://cheetah.ayan24.me',
+    defaultValue: 'https://cheetah.creatsify.tech',
   );
 
   /// Normalized base domain URL with guaranteed trailing slash
