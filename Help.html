@@ -127,20 +127,19 @@
             <ol>
                 <li>
                     <strong>Step 1: Extract the Package</strong><br />
-                    Extract the downloaded zip package. You will find both the Flutter app source code, the standalone <code>backend/</code> folder, and the <code>postman/</code> API collection.
+                    Extract the downloaded zip package. You will find the pre-compiled Demo APK (<code>demo_apk/</code>), the Flutter app source code (<code>Upload/</code> with <code>postman/</code> API collection and <code>.github/workflows/</code> cloud builders), and full setup documentation (<code>Documentation/</code>).
                 </li>
                 <li>
-                    <strong>Step 2: Deploy Standalone Backend (Optional if connecting to existing API)</strong><br />
-                    Import <code>backend/database/driver_app.sql</code> into your MySQL database, configure your DB credentials in <code>backend/config.php</code>, and upload the <code>backend/</code> folder to your web server (e.g., <code>https://api.yourdomain.com/</code>).
+                    <strong>Step 2: Connect Your Cheetah Courier Backend URL</strong><br />
+                    Open <code>lib/utils/constants.dart</code> and update the default <code>BASE_URL</code> to your live Cheetah Courier server (or pass <code>--dart-define=BASE_URL=https://yourdomain.com</code> at build time):<br />
+                    <pre>static const String _envBaseUrl = String.fromEnvironment(
+  'BASE_URL',
+  defaultValue: 'https://yourdomain.com',
+);</pre>
                 </li>
                 <li>
-                    <strong>Step 3: Connect Your Backend URL in Flutter</strong><br />
-                    Open <code>lib/utils/constants.dart</code> and change the API domain to your live backend server:<br />
-                    <pre>static const String baseUrl = 'https://api.yourdomain.com/';</pre>
-                </li>
-                <li>
-                    <strong>Step 4: Install Flutter Dependencies</strong><br />
-                    Open your terminal in the root folder and execute:<br />
+                    <strong>Step 3: Install Flutter Dependencies</strong><br />
+                    Open your terminal in the <code>Upload/</code> folder and execute:<br />
                     <pre>flutter pub get</pre>
                 </li>
                 <li>
